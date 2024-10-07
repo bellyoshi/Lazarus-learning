@@ -26,6 +26,12 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="fpvectorial2aggpaspkg"/>
+      </Item>
+      <Item>
+        <PackageName Value="fpvectorialpkg"/>
+      </Item>
+      <Item>
         <PackageName Value="LCL"/>
       </Item>
     </RequiredPackages>

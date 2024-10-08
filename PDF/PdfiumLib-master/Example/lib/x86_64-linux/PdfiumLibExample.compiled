@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="/usr/bin/fpc" Date="1625802185"/>
-  <Params Value=" -Mdelphi -Scghi -Cg -O1 -g -gl -l -vewnhibq -Fi/home/bellyoshi/Lazarus-learning/PDF/PdfiumLib-master/Source -Fu/home/bellyoshi/Lazarus-learning/PDF/PdfiumLib-master/Source -Fu/usr/share/lazarus/3.4.0/components/printers/lib/x86_64-linux/gtk2 -Fu/usr/share/lazarus/3.4.0/components/cairocanvas/lib/x86_64-linux/gtk2 -Fu/usr/share/lazarus/3.4.0/lcl/units/x86_64-linux/gtk2 -Fu/usr/share/lazarus/3.4.0/lcl/units/x86_64-linux -Fu/usr/share/lazarus/3.4.0/components/freetype/lib/x86_64-linux -Fu/usr/share/lazarus/3.4.0/components/lazutils/lib/x86_64-linux -Fu/usr/share/lazarus/3.4.0/packager/units/x86_64-linux -Fu/home/bellyoshi/Lazarus-learning/PDF/PdfiumLib-master/Example/ -FE/home/bellyoshi/Lazarus-learning/PDF/PdfiumLib-master/Example/lib/x86_64-linux/ -o/home/bellyoshi/Lazarus-learning/PDF/PdfiumLib-master/Example/lib/x86_64-linux/PdfiumLibExample -dLCL -dLCLgtk2 -dBorland -dVer150 -dDelphi7 -dCompiler6_Up -dPUREPASCAL PdfiumLibExample.lpr"/>
-  <Complete Value="False"/>
-</CONFIG>

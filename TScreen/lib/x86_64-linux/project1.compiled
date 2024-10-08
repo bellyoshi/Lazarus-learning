@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="/usr/bin/fpc" Date="1625802185"/>
-  <Params Value=" -MObjFPC -Scghi -Cg -O1 -gw3 -gl -l -vewnhibq -Fi/home/bellyoshi/Lazarus-learning/TScreen/lib/x86_64-linux -Fu/usr/share/lazarus/3.4.0/lcl/units/x86_64-linux/gtk2 -Fu/usr/share/lazarus/3.4.0/lcl/units/x86_64-linux -Fu/usr/share/lazarus/3.4.0/components/freetype/lib/x86_64-linux -Fu/usr/share/lazarus/3.4.0/components/lazutils/lib/x86_64-linux -Fu/usr/share/lazarus/3.4.0/packager/units/x86_64-linux -Fu/home/bellyoshi/Lazarus-learning/TScreen/ -FU/home/bellyoshi/Lazarus-learning/TScreen/lib/x86_64-linux/ -FE/home/bellyoshi/Lazarus-learning/TScreen/ -o/home/bellyoshi/Lazarus-learning/TScreen/project1 -dLCL -dLCLgtk2 project1.lpr"/>
-</CONFIG>

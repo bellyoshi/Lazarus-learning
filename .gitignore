@@ -31,3 +31,5 @@ Debug/
 
 # Application bundle for Mac OS
 *.app/
+
+.vs/

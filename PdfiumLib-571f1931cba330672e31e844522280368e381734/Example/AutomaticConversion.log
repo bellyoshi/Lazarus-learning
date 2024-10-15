@@ -1,0 +1,38 @@
+PdfiumLibExample.lpi Note: カスタムオプションに追加されたdefines  -dBorland -dVer150 -dDelphi7 -dCompiler6_Up -dPUREPASCAL
+ Progress: すべてのユニットファイルが見つかりました
+PdfiumLibExample.lpr(1,26) Note: Added MODE Delphi syntax modifier after unit name.
+ : 
+ : *** プロジェクト／パッケージに属するユニットファイルを変換中 ***
+MainFrm.pas(1,14) Note: Added MODE Delphi syntax modifier after unit name.
+PdfiumCore.pas Note: uses節におけるユニット"Windows"を"LCLIntf, LCLType, LMessages"で置換しました。
+PdfiumCore.pas(1578,15) Note: CloseHandle(FFileHandle);の呼び出しをFileClose(FFileHandle);{ *CloseHandleから変換* }に置換
+PdfiumCore.pas(1489,7) Note: CloseHandle(FFileHandle);の呼び出しをFileClose(FFileHandle);{ *CloseHandleから変換* }に置換
+PdfiumCore.pas(1474,7) Note: CloseHandle(FFileMapping);の呼び出しをFileClose(FFileMapping);{ *CloseHandleから変換* }に置換
+PdfiumCtrl.pas Note: uses節からユニット"ShellAPI"を削除しました。
+PdfiumCtrl.pas Note: uses節におけるユニット"Windows"を"LCLIntf, LMessages"で置換しました。
+PdfiumLibExample.lpi Note: 依存するものとして追加されたパッケージ Printer4Lazarus
+PdfiumLib.pas Note: uses節におけるユニット"Windows"を"LCLIntf, LCLType, LMessages"で置換しました。
+ : 
+ : *** 使用ユニットの修正とフォームファイルの修復中 ***
+MainFrm.pas Note: プロパティを削除"SaveDialog1"
+MainFrm.pas Note: プロパティを削除"OpenDialog1"
+MainFrm.pas Note: プロパティを削除"PrintDialog1"
+MainFrm.pas Note: プロパティを削除"pnlButtons"
+MainFrm.pas Note: プロパティを削除"ListViewAttachments"
+MainFrm.pas Note: プロパティを削除"TextHeight"
+MainFrm.pas Note: プロパティを削除"PixelsPerInch"
+MainFrm.pas Note: プロパティを削除"OnCreate"
+MainFrm.pas Note: プロパティを削除"OldCreateOrder"
+MainFrm.pas Note: プロパティを削除"Font.Style"
+MainFrm.pas Note: プロパティを削除"Font.Name"
+MainFrm.pas Note: プロパティを削除"Font.Height"
+MainFrm.pas Note: プロパティを削除"Font.Color"
+MainFrm.pas Note: プロパティを削除"Font.Charset"
+MainFrm.pas Note: プロパティを削除"Color"
+MainFrm.pas Note: プロパティを削除"ClientWidth"
+MainFrm.pas Note: プロパティを削除"ClientHeight"
+MainFrm.pas Note: プロパティを削除"Caption"
+MainFrm.pas Note: プロパティを削除"Top"
+MainFrm.pas Note: プロパティを削除"Left"
+ Progress: 変換に要した時間:  00:00:10
+ : 変換の準備ができました

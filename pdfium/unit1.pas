@@ -48,7 +48,7 @@ begin
   end;
 
   // 最初のページを読み込む
-  page := FPDF_LoadPage(doc, 1);
+  page := FPDF_LoadPage(doc, 0);
   if page = nil then
   begin
     ShowMessage('Failed to load PDF page');

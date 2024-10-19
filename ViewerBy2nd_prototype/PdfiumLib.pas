@@ -9144,8 +9144,12 @@ const
   {$ENDIF FPC}
 
 const
+// linux => not mswindows libpdfium.so
+{$IFDEF MSWINDOWS}
   pdfium_dll = 'pdfium.dll';
-
+{$ELSE}
+  pdfium_dll = 'libpdfium.so';
+{$ENDIF MSWINDOWS}
 var
   PdfiumModule: HMODULE;
 

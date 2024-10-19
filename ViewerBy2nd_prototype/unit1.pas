@@ -5,7 +5,7 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, PdfiumCtrl,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls ,
   PdfiumCore, PdfiumLib, unit2;
 
 type
@@ -19,7 +19,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    FCtrl: TPdfControl;
+
   public
 
   end;

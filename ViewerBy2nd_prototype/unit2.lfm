@@ -1,0 +1,20 @@
+object Form2: TForm2
+  Left = 316
+  Height = 240
+  Top = 155
+  Width = 320
+  Caption = 'Form2'
+  ClientHeight = 240
+  ClientWidth = 320
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  OnResize = FormResize
+  LCLVersion = '3.6.0.0'
+  object Image1: TImage
+    Left = 45
+    Height = 113
+    Top = 22
+    Width = 113
+    OnClick = Image1Click
+  end
+end

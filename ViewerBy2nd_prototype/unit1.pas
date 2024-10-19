@@ -119,7 +119,7 @@ begin
   // PDFium ビットマップを作成
   PdfBitmap := TPdfBitmap.Create(w, h, bfBGRA);
   try
-    PdfBitmap.FillRect(0, 0, w, h, $00FF00); // 背景を緑色で塗りつぶし
+    PdfBitmap.FillRect(0, 0, w, h, $FFFFFFFF); // 背景を白色で塗りつぶし
     Page.DrawToPdfBitmap(PdfBitmap, 0, 0, w, h);
 
     // PDFium ビットマップのバッファサイズを計算

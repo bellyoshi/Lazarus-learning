@@ -24,12 +24,17 @@ type
     procedure FormResize(Sender: TObject);
 
     procedure FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+
     procedure MenuItemCloseClick(Sender: TObject);
     procedure MenuItemFullScreenClick(Sender: TObject);
     procedure MenuItemWindowModeClick(Sender: TObject);
   private
+    HasBitmap : Boolean;
     FIsFullScreen: Boolean;
+    Ratio: Double;
     procedure SetIsFullScreen(Value: Boolean);
+    procedure StretchImage();
+
   public
     procedure SetBitmap(Bitmap: TBitmap);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
@@ -44,20 +49,47 @@ implementation
 {$R *.lfm}
 procedure TForm2.FormCreate(Sender: TObject);
 begin
-  // Image1のStretchプロパティをTrueに設定して画像が伸縮するようにする
-  Image1.Stretch := True;
+  HasBitmap := False;
+
 end;
+
+procedure TForm2.StretchImage();
+var
+  formRatio : Double;
+  NewWidth, NewHeight: Integer;
+begin
+  if not HasBitmap then Exit;
+  formRatio := ClientWidth / ClientHeight;
+  if formRatio > Ratio then
+  begin
+    // 縦が基準
+    NewHeight := ClientHeight;
+    NewWidth := Round(NewHeight * Ratio);
+  end
+  else
+  begin
+    // 横が基準
+    NewWidth := ClientWidth;
+    NewHeight := Round(NewWidth / Ratio);
+  end;
+
+  // Stretchしておく
+  Image1.Stretch := True;
+  // フォームのクライアント領域にImage1をフィットさせる
+  Image1.Width := NewWidth;
+  Image1.Height := NewHeight;
+
+  // 中央に配置
+  Image1.Left := (ClientWidth - NewWidth) div 2;
+  Image1.Top := (ClientHeight - NewHeight) div 2;
+
+end;
+
 
 procedure TForm2.FormResize(Sender: TObject);
 begin
-  // フォームのクライアント領域にImage1をフィットさせる
-  Image1.Top:= 0;
-  Image1.Left:= 0;
-  Image1.Width := ClientWidth;
-  Image1.Height := ClientHeight;
+  StretchImage;
 end;
-
-
 
 procedure TForm2.SetIsFullScreen(Value: Boolean);
 begin
@@ -85,6 +117,9 @@ begin
   Handled := True;  // イベントを処理済みにする
 end;
 
+
+
+
 procedure TForm2.MenuItemFullScreenClick(Sender: TObject);
 begin
   IsFullScreen := True;  // フルスクリーンに切り替える
@@ -107,6 +142,10 @@ procedure TForm2.SetBitmap(Bitmap : TBitmap);
   if Assigned(Bitmap) then
   begin
     Image1.Picture.Bitmap.Assign(Bitmap);
+    HasBitmap := True;
+    StretchImage;
+        // 画像のアスペクト比を計算
+    Ratio := Bitmap.Width / Bitmap.Height;
   end;
 end;
 end.

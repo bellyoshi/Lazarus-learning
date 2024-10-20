@@ -5,7 +5,8 @@ unit Unit2;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
+  PdfiumCore;
 
 type
 
@@ -32,11 +33,12 @@ type
     HasBitmap : Boolean;
     FIsFullScreen: Boolean;
     Ratio: Double;
+    Page: TPdfPage;
     procedure SetIsFullScreen(Value: Boolean);
     procedure StretchImage();
-
-  public
     procedure SetBitmap(Bitmap: TBitmap);
+  public
+    procedure SetPage(aPage : TPdfPage);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
 
   end;
@@ -47,6 +49,67 @@ var
 implementation
 
 {$R *.lfm}
+procedure LoadBitmapFromRawImage(Bitmap: TBitmap; const AIMarge: TBytes; Width, Height: Integer);
+var
+  Y, RowSize: Integer;
+  SrcPtr: PByte;
+  DestPtr: Pointer;
+begin
+  // ビットマップのサイズとピクセルフォーマットを設定
+  Bitmap.Width := Width;
+  Bitmap.Height := Height;
+  Bitmap.PixelFormat := pf32bit; // 32bit (RGBA) の画像データ
+
+  // 1行あたりのデータサイズ (4バイト/ピクセル * 幅)
+  RowSize := Width * 4;
+
+  // 生データの先頭ポインタ
+  SrcPtr := @AIMarge[0];
+
+  // 行ごとにデータをコピー
+  for Y := 0 to Height - 1 do
+  begin
+    // 現在の行の先頭のメモリポインタを取得
+    DestPtr := Bitmap.ScanLine[Y];
+    // 1行分のデータをコピー
+    Move(SrcPtr^, DestPtr^, RowSize);
+    // 次の行に進む
+    Inc(SrcPtr, RowSize);
+  end;
+end;
+procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
+var
+  SizeInt: Integer;
+  PdfBitmap: TPdfBitmap;
+  AIMarge: TBytes;
+  buffer: Pointer;
+begin
+
+
+  // PDFium ビットマップを作成
+  PdfBitmap := TPdfBitmap.Create(w, h, bfBGRA);
+  try
+    PdfBitmap.FillRect(0, 0, w, h, $FFFFFFFF); // 背景を白色で塗りつぶし
+    Page.DrawToPdfBitmap(PdfBitmap, 0, 0, w, h,prNormal, [proLCDOptimized]);
+
+    // PDFium ビットマップのバッファサイズを計算
+    SizeInt := w * h * 4; // 4バイト/ピクセル (RGBA)
+
+    // バイト配列を初期化
+    SetLength(AIMarge, SizeInt);
+
+    // PDFium のバッファを取得して、バイト配列にコピー
+    buffer := PdfBitmap.GetBuffer;
+    Move(buffer^, AIMarge[0], SizeInt);
+
+    // バイト配列から Delphi のビットマップにデータをコピー
+    LoadBitmapFromRawImage(Bitmap, AIMarge, w, h);
+    Bitmap.SaveToFile('temp.bmp');
+  finally
+    PdfBitmap.Free;
+  end;
+end;
+
 procedure TForm2.FormCreate(Sender: TObject);
 begin
   HasBitmap := False;
@@ -57,6 +120,7 @@ procedure TForm2.StretchImage();
 var
   formRatio : Double;
   NewWidth, NewHeight: Integer;
+  Bitmap : TBitmap;
 begin
   if not HasBitmap then Exit;
   formRatio := ClientWidth / ClientHeight;
@@ -74,7 +138,7 @@ begin
   end;
 
   // Stretchしておく
-  Image1.Stretch := True;
+  //Image1.Stretch := False;
   // フォームのクライアント領域にImage1をフィットさせる
   Image1.Width := NewWidth;
   Image1.Height := NewHeight;
@@ -82,6 +146,18 @@ begin
   // 中央に配置
   Image1.Left := (ClientWidth - NewWidth) div 2;
   Image1.Top := (ClientHeight - NewHeight) div 2;
+
+  try
+      // PDFium ページを Delphi ビットマップに描画
+    Bitmap := TBitmap.Create;
+    DrawToBitmap(Self.Page, Bitmap, NewWidth,NewHeight);
+
+  SetBitmap(Bitmap);
+
+    finally
+      Bitmap.Free;
+    end;
+
 
 end;
 
@@ -135,18 +211,21 @@ begin
   Close;  // フォームを閉じる
 end;
 
-
+procedure TForm2.SetPage(aPage : TPdfPage);
+begin
+      HasBitmap := True;
+     Self.Page := aPage;
+     Ratio := Page.Width / Page.Height;     // 画像のアスペクト比を計算
+         StretchImage;
+end;
 
 procedure TForm2.SetBitmap(Bitmap : TBitmap);
   begin
   if Assigned(Bitmap) then
   begin
     Image1.Picture.Bitmap.Assign(Bitmap);
-    HasBitmap := True;
-    StretchImage;
-        // 画像のアスペクト比を計算
-    Ratio := Bitmap.Width / Bitmap.Height;
   end;
 end;
+
 end.
 

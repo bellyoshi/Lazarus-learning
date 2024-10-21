@@ -220,10 +220,22 @@ begin
 end;
 
 procedure TForm2.SetBitmap(Bitmap : TBitmap);
-  begin
-  if Assigned(Bitmap) then
-  begin
-    Image1.Picture.Bitmap.Assign(Bitmap);
+var
+  TempBitmap: TBitmap;
+begin
+  // 新しい24ビットのTBitmapを作成
+  TempBitmap := TBitmap.Create;
+  try
+    TempBitmap.PixelFormat := pf24bit;  // 24ビットに設定
+    TempBitmap.SetSize(Bitmap.Width, Bitmap.Height);
+
+    // 32ビットビットマップから24ビットビットマップにコピー
+    TempBitmap.Canvas.Draw(0, 0, Bitmap);
+
+
+    Image1.Picture.Bitmap.Assign(TempBitmap);
+  finally
+    TempBitmap.Free;
   end;
 end;
 

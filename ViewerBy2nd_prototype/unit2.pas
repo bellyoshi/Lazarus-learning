@@ -179,6 +179,8 @@ var
 begin
   if not HasBitmap then Exit;
   formRatio := ClientWidth / ClientHeight;
+
+  //widthを32の倍数にしなければLinux環境ですじがでる。
   if formRatio > Ratio then
   begin
     // 縦が基準

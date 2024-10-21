@@ -149,6 +149,7 @@ begin
       Inc(DestPtr);
 
       Inc(SourcePtr);  // アルファチャンネル（32ビット目）を無視
+      Inc(SourcePtr);
     end;
   end;
 

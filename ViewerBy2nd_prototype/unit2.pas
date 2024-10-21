@@ -273,8 +273,8 @@ begin
   // 新しい24ビットのTBitmapを作成
   TempBitmap := ConvertBitmap32To24Bit(Bitmap);
 
-
-  Image1.Picture.Bitmap.Assign(TempBitmap);
+  Image1.Picture.Bitmap.Assign(Bitmap);
+  Image1.Canvas.Draw(0,0, TempBitmap);
 
   TempBitmap.Free;
 

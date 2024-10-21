@@ -110,6 +110,51 @@ begin
   end;
 end;
 
+
+function ConvertBitmap32To24Bit(SourceBitmap: TBitmap): TBitmap;
+var
+  X, Y: Integer;
+  SourcePtr, DestPtr: PByte;
+  SourceLine, DestLine: PByteArray;
+  TempBitmap: TBitmap;
+begin
+  // 新しい24ビットのTBitmapを作成
+  TempBitmap := TBitmap.Create;
+  TempBitmap.PixelFormat := pf24bit;  // 24ビットに設定
+  TempBitmap.SetSize(SourceBitmap.Width, SourceBitmap.Height);  // 元の画像サイズを保持
+
+  // 各ラインのピクセルを直接コピーする
+  for Y := 0 to SourceBitmap.Height - 1 do
+  begin
+    SourceLine := SourceBitmap.ScanLine[Y];  // 32ビットの行データ
+    DestLine := TempBitmap.ScanLine[Y];      // 24ビットの行データ
+
+    SourcePtr := @SourceLine[0];
+    DestPtr := @DestLine[0];
+
+    // 各ピクセルをコピー（RGBデータのみコピーしてアルファを無視）
+    for X := 0 to SourceBitmap.Width - 1 do
+    begin
+      DestPtr^ := SourcePtr^;      // B
+      Inc(DestPtr);
+      Inc(SourcePtr);
+
+      DestPtr^ := SourcePtr^;      // G
+      Inc(DestPtr);
+      Inc(SourcePtr);
+
+      DestPtr^ := SourcePtr^;      // R
+      Inc(DestPtr);
+      Inc(SourcePtr);
+
+      Inc(SourcePtr);  // アルファチャンネル（32ビット目）を無視
+    end;
+  end;
+
+  // 新しい24ビットビットマップを返す
+  Result := TempBitmap;
+end;
+
 procedure TForm2.FormCreate(Sender: TObject);
 begin
   HasBitmap := False;
@@ -224,19 +269,13 @@ var
   TempBitmap: TBitmap;
 begin
   // 新しい24ビットのTBitmapを作成
-  TempBitmap := TBitmap.Create;
-  try
-    TempBitmap.PixelFormat := pf24bit;  // 24ビットに設定
-    TempBitmap.SetSize(Bitmap.Width, Bitmap.Height);
-
-    // 32ビットビットマップから24ビットビットマップにコピー
-    TempBitmap.Canvas.Draw(0, 0, Bitmap);
+  TempBitmap := ConvertBitmap32To24Bit(Bitmap);
 
 
-    Image1.Picture.Bitmap.Assign(TempBitmap);
-  finally
-    TempBitmap.Free;
-  end;
+  Image1.Picture.Bitmap.Assign(TempBitmap);
+
+  TempBitmap.Free;
+
 end;
 
 end.

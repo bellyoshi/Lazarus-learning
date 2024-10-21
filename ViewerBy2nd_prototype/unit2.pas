@@ -269,8 +269,9 @@ var
   TempBitmap: TBitmap;
 begin
   // 新しい24ビットのTBitmapを作成
-  TempBitmap := ConvertBitmap32To24Bit(Bitmap);
-
+  //TempBitmap := ConvertBitmap32To24Bit(Bitmap);
+  TempBitmap := TBitmap.Create;
+  TempBitmap.LoadFromFile('temp.bmp');
 
   Image1.Picture.Bitmap.Assign(TempBitmap);
 

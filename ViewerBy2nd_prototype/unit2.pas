@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-  PdfiumCore;
+  PdfiumCore, GraphType;
 
 type
 
@@ -49,6 +49,7 @@ var
 implementation
 
 {$R *.lfm}
+{
 procedure LoadBitmapFromRawImage(Bitmap: TBitmap; const AIMarge: TBytes; Width, Height: Integer);
 var
   Y, RowSize: Integer;
@@ -76,13 +77,14 @@ begin
     // 次の行に進む
     Inc(SrcPtr, RowSize);
   end;
-end;
+end;  }
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
 var
   SizeInt: Integer;
   PdfBitmap: TPdfBitmap;
   AIMarge: TBytes;
   buffer: Pointer;
+  RawImage: TRawImage;
 begin
 
 
@@ -103,12 +105,18 @@ begin
     Move(buffer^, AIMarge[0], SizeInt);
 
     // バイト配列から Delphi のビットマップにデータをコピー
-    LoadBitmapFromRawImage(Bitmap, AIMarge, w, h);
+    //LoadBitmapFromRawImage(Bitmap, AIMarge, w, h);
+    RawImage.Init;
+    RawImage.Description.Init_BPP32_B8G8R8A8_M1_BIO_TTB(w, h);
+    RawImage.CreateData(true);
+    RawImage.Data:=@AIMarge[0];
+    Bitmap.LoadFromRawImage(RawImage, false);
   finally
     PdfBitmap.Free;
   end;
 end;
 
+{
 
 function ConvertBitmap32To24Bit(SourceBitmap: TBitmap): TBitmap;
 var
@@ -156,7 +164,7 @@ begin
   // 新しい24ビットビットマップを返す
   Result := TempBitmap;
 end;
-
+         }
 procedure TForm2.FormCreate(Sender: TObject);
 begin
   HasBitmap := False;
@@ -267,16 +275,12 @@ begin
 end;
 
 procedure TForm2.SetBitmap(Bitmap : TBitmap);
-var
-  TempBitmap: TBitmap;
+
 begin
-  // 新しい24ビットのTBitmapを作成
-  TempBitmap := ConvertBitmap32To24Bit(Bitmap);
 
   Image1.Picture.Bitmap.Assign(Bitmap);
-  Image1.Canvas.Draw(0,0, TempBitmap);
 
-  TempBitmap.Free;
+
 
 end;
 

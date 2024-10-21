@@ -104,7 +104,6 @@ begin
 
     // バイト配列から Delphi のビットマップにデータをコピー
     LoadBitmapFromRawImage(Bitmap, AIMarge, w, h);
-    Bitmap.SaveToFile('temp.bmp');
   finally
     PdfBitmap.Free;
   end;
@@ -114,8 +113,13 @@ end;
 function ConvertBitmap32To24Bit(SourceBitmap: TBitmap): TBitmap;
 var
   X, Y: Integer;
+  SourcePtr, DestPtr: PByte;
+  SourceLine, DestLine: PByteArray;
   TempBitmap: TBitmap;
 begin
+  if SourceBitmap.PixelFormat <> pf32bit then
+    raise Exception.Create('Source bitmap is not 32-bit.');
+
   // 新しい24ビットのTBitmapを作成
   TempBitmap := TBitmap.Create;
   TempBitmap.PixelFormat := pf24bit;  // 24ビットに設定
@@ -124,11 +128,27 @@ begin
   // 各ラインのピクセルを直接コピーする
   for Y := 0 to SourceBitmap.Height - 1 do
   begin
+    SourceLine := SourceBitmap.ScanLine[Y];  // 32ビットの行データ
+    DestLine := TempBitmap.ScanLine[Y];      // 24ビットの行データ
+
+    SourcePtr := @SourceLine[0];
+    DestPtr := @DestLine[0];
 
     // 各ピクセルをコピー（RGBデータのみコピーしてアルファを無視）
     for X := 0 to SourceBitmap.Width - 1 do
     begin
-      TempBitmap.Canvas.Pixels[X,Y] := SourceBitmap.Canvas.Pixels[X,Y];
+      DestPtr^ := SourcePtr^;      // B
+      Inc(DestPtr);
+      Inc(SourcePtr);
+
+      DestPtr^ := SourcePtr^;      // G
+      Inc(DestPtr);
+      Inc(SourcePtr);
+
+      DestPtr^ := SourcePtr^;      // R
+      Inc(DestPtr);
+
+      Inc(SourcePtr);  // アルファチャンネル（32ビット目）を無視
     end;
   end;
 
@@ -251,10 +271,7 @@ var
 begin
   // 新しい24ビットのTBitmapを作成
   TempBitmap := ConvertBitmap32To24Bit(Bitmap);
-  TempBitmap.SaveToFile('temp2.bmp');
-  TempBitmap.Free;
-  TempBitmap := TBitmap.Create;
-  TempBitmap.LoadFromFile('temp2.bmp');
+
 
   Image1.Picture.Bitmap.Assign(TempBitmap);
 

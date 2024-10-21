@@ -92,7 +92,7 @@ begin
   PdfBitmap := TPdfBitmap.Create(w, h, bfBGRA);
   try
     PdfBitmap.FillRect(0, 0, w, h, $FFFFFFFF); // 背景を白色で塗りつぶし
-    Page.DrawToPdfBitmap(PdfBitmap, 0, 0, w, h,prNormal, [proLCDOptimized]);
+    Page.DrawToPdfBitmap(PdfBitmap, 0, 0, w, h);
 
     // PDFium ビットマップのバッファサイズを計算
     SizeInt := w * h * 4; // 4バイト/ピクセル (RGBA)
@@ -183,12 +183,12 @@ begin
   begin
     // 縦が基準
     NewHeight := ClientHeight;
-    NewWidth := Round(NewHeight * Ratio);
+    NewWidth := Round(NewHeight * Ratio / 32) * 32;
   end
   else
   begin
     // 横が基準
-    NewWidth := ClientWidth;
+    NewWidth := Round(ClientWidth / 32) * 32;
     NewHeight := Round(NewWidth / Ratio);
   end;
 
@@ -278,8 +278,9 @@ procedure TForm2.SetBitmap(Bitmap : TBitmap);
 
 begin
 
+  //Bitmap.SaveToFile('/var/tmp/temp.bmp');
+  //Image1.Picture.LoadFromFile('/var/tmp/temp.bmp');
   Image1.Picture.Bitmap.Assign(Bitmap);
-
 
 
 end;

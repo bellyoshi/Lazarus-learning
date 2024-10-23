@@ -1,24 +1,25 @@
 object Form2: TForm2
   Left = 316
-  Height = 192
+  Height = 240
   Top = 155
-  Width = 256
+  Width = 320
   Caption = 'Form2'
-  ClientHeight = 192
-  ClientWidth = 256
+  ClientHeight = 240
+  ClientWidth = 320
+  DesignTimePPI = 120
   OnCreate = FormCreate
   OnResize = FormResize
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object Image1: TImage
-    Left = 36
-    Height = 90
-    Top = 18
-    Width = 90
+    Left = 45
+    Height = 112
+    Top = 22
+    Width = 112
     PopupMenu = PopupMenu1
   end
   object PopupMenu1: TPopupMenu
-    Left = 151
-    Top = 18
+    Left = 189
+    Top = 23
     object MenuItemWindowMode: TMenuItem
       Caption = 'ウインドウ'
       OnClick = MenuItemWindowModeClick

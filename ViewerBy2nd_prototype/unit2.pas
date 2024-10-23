@@ -57,14 +57,19 @@ begin
 
 end;
 
-function AlignToPixelStep(Value: Integer; Step: Integer): Integer;
+function RoundToStep(Value: Integer; Step: Integer): Integer;
 begin
   Result := Round(Value / Step) * Step;
 end;
 
-procedure TForm2.StretchImage();
+function RoundWidthToStep(Value: Integer) : Integer;
 const
   PIXEL_STEP = 8;  // widthを8の倍数にしなければLinux環境ですじがでる。
+begin
+  Result := RoundToStep(Value, PIXEL_STEP);
+end;
+
+procedure TForm2.StretchImage();
 var
   formRatio : Double;
   NewWidth, NewHeight: Integer;
@@ -77,12 +82,12 @@ begin
   begin
     // 縦が基準
     NewHeight := ClientHeight;
-    NewWidth := AlignToPixelStep(Round(NewHeight * pdfImageCreator.Ratio), PIXEL_STEP);
+    NewWidth := RoundWidthToStep(Round(NewHeight * pdfImageCreator.Ratio));
   end
   else
   begin
     // 横が基準
-    NewWidth := AlignToPixelStep(ClientWidth, PIXEL_STEP);
+    NewWidth := RoundWidthToStep(ClientWidth);
     NewHeight := Round(NewWidth / pdfImageCreator.Ratio);
   end;
 

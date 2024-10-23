@@ -57,7 +57,14 @@ begin
 
 end;
 
+function AlignToPixelStep(Value: Integer; Step: Integer): Integer;
+begin
+  Result := Round(Value / Step) * Step;
+end;
+
 procedure TForm2.StretchImage();
+const
+  PIXEL_STEP = 8;  // widthを8の倍数にしなければLinux環境ですじがでる。
 var
   formRatio : Double;
   NewWidth, NewHeight: Integer;
@@ -66,22 +73,21 @@ begin
   if not HasBitmap then Exit;
   formRatio := ClientWidth / ClientHeight;
 
-  //widthを32の倍数にしなければLinux環境ですじがでる。
-  if formRatio >pdfImageCreator.Ratio then
+  if formRatio > pdfImageCreator.Ratio then
   begin
     // 縦が基準
     NewHeight := ClientHeight;
-    NewWidth := Round(NewHeight * pdfImageCreator.Ratio / 32) * 32;
+    NewWidth := AlignToPixelStep(Round(NewHeight * pdfImageCreator.Ratio), PIXEL_STEP);
   end
   else
   begin
     // 横が基準
-    NewWidth := Round(ClientWidth / 32) * 32;
+    NewWidth := AlignToPixelStep(ClientWidth, PIXEL_STEP);
     NewHeight := Round(NewWidth / pdfImageCreator.Ratio);
   end;
 
   // Stretchしておく
-  //Image1.Stretch := False;
+  // Image1.Stretch := False;
   // フォームのクライアント領域にImage1をフィットさせる
   Image1.Width := NewWidth;
   Image1.Height := NewHeight;
@@ -91,16 +97,16 @@ begin
   Image1.Top := (ClientHeight - NewHeight) div 2;
 
   try
-      // PDFium ページを Delphi ビットマップに描画
+    // PDFium ページを Delphi ビットマップに描画
     Bitmap := pdfImageCreator.GetBitmap(NewWidth, NewHeight);
     SetBitmap(Bitmap);
-
-    finally
-      Bitmap.Free;
-    end;
-
+  finally
+    Bitmap.Free;
+  end;
 
 end;
+
+
 
 
 procedure TForm2.FormResize(Sender: TObject);

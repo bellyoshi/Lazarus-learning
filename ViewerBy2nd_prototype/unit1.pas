@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls ,
-  PdfiumCore, PdfiumLib, unit2;
+  PdfiumCore, PdfiumLib, unit2, unit3;
 
 type
 
@@ -91,20 +91,13 @@ begin
 
   if not OpenDialog1.Execute then Exit;
 
-  pdfDocument := TPdfDocument.Create;
-  try
-    pdfDocument.LoadFromFile(OpenDialog1.FileName);
-
-    // 最初のページを取得
-    page := pdfDocument.Pages[0];
+  pdfImageCreator := TPdfImageCreator.Create(OpenDialog1.FileName);
 
 
-      Form2.SetPage(page);
-      Form2.Show();
-
-  finally
+  Form2.SetPage();
+  Form2.Show();
  //   pdfDocument.Free;
-  end;
+
 end;
 
 

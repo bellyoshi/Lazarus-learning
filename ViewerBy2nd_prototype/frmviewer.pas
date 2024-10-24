@@ -1,4 +1,4 @@
-unit Unit2;
+unit frmViewer;
 
 {$mode ObjFPC}{$H+}
 
@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-  PdfiumCore, Unit3;
+  PdfiumCore, PdfImageUnit;
 
 type
 
@@ -91,8 +91,7 @@ begin
     NewHeight := Round(NewWidth / pdfImageCreator.Ratio);
   end;
 
-  // Stretchしておく
-  // Image1.Stretch := False;
+
   // フォームのクライアント領域にImage1をフィットさせる
   Image1.Width := NewWidth;
   Image1.Height := NewHeight;
@@ -141,7 +140,7 @@ end;
 
 procedure TForm2.FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
-  PopupMenu1.PopUp(Mouse.CursorPos.X, Mouse.CursorPos.Y);
+  PopupMenu1.PopUp(MousePos.X, MousePos.Y);
   Handled := True;  // イベントを処理済みにする
 end;
 

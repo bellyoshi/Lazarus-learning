@@ -38,25 +38,25 @@
         <UnitName Value="viewer"/>
       </Unit>
       <Unit>
-        <Filename Value="unit1.pas"/>
+        <Filename Value="frmoperation.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit1"/>
+        <UnitName Value="frmOperation"/>
       </Unit>
       <Unit>
-        <Filename Value="unit2.pas"/>
+        <Filename Value="frmviewer.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form2"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Unit2"/>
+        <UnitName Value="frmViewer"/>
       </Unit>
       <Unit>
-        <Filename Value="unit3.pas"/>
+        <Filename Value="pdfimageunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Unit3"/>
+        <UnitName Value="PdfImageUnit"/>
       </Unit>
     </Units>
   </ProjectOptions>

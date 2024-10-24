@@ -5,8 +5,8 @@ unit frmOperation;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls ,
-  PdfiumCore, PdfiumLib, frmViewer, PdfImageUnit;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls ,
+  PdfiumCore, PdfiumLib, frmViewer, PdfImageRepository;
 
 type
 
@@ -14,9 +14,13 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
+    Button2: TButton;
+    Image1: TImage;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
 
@@ -41,7 +45,7 @@ begin
   {$ELSE}
   PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x86';
   {$ENDIF CPUX64}
-
+    repository := TPdfImageRepository.Create;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -51,13 +55,23 @@ begin
 
   if not OpenDialog1.Execute then Exit;
 
-  pdfImageCreator := TPdfImageCreator.Create(OpenDialog1.FileName);
+
+  repository.Open(OpenDialog1.FileName);
+  Image1.Picture.Bitmap.Assign(repository.GetThumbnailBitmap(Width, Height));
+
+end;
 
 
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  repository.View();
   Form2.SetPage();
   Form2.Show();
- //   pdfDocument.Free;
+end;
 
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  repository.Free;
 end;
 
 

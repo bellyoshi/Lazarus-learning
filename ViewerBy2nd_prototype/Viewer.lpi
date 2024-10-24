@@ -54,9 +54,14 @@
         <UnitName Value="frmViewer"/>
       </Unit>
       <Unit>
-        <Filename Value="pdfimageunit.pas"/>
+        <Filename Value="pdfimagecreator.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="PdfImageUnit"/>
+        <UnitName Value="PdfImageCreator"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pdfimagerepository.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PdfImageRepository"/>
       </Unit>
     </Units>
   </ProjectOptions>

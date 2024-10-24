@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-  PdfiumCore, PdfImageUnit;
+   PdfImageRepository;
 
 type
 
@@ -78,17 +78,17 @@ begin
   if not HasBitmap then Exit;
   formRatio := ClientWidth / ClientHeight;
 
-  if formRatio > pdfImageCreator.Ratio then
+  if formRatio > repository.ViewRatio then
   begin
     // 縦が基準
     NewHeight := ClientHeight;
-    NewWidth := RoundWidthToStep(Round(NewHeight * pdfImageCreator.Ratio));
+    NewWidth := RoundWidthToStep(Round(NewHeight * repository.ViewRatio));
   end
   else
   begin
     // 横が基準
     NewWidth := RoundWidthToStep(ClientWidth);
-    NewHeight := Round(NewWidth / pdfImageCreator.Ratio);
+    NewHeight := Round(NewWidth / repository.ViewRatio);
   end;
 
 
@@ -102,7 +102,7 @@ begin
 
   try
     // PDFium ページを Delphi ビットマップに描画
-    Bitmap := pdfImageCreator.GetBitmap(NewWidth, NewHeight);
+    Bitmap := repository.GetViewBitmap(NewWidth, NewHeight);
     SetBitmap(Bitmap);
   finally
     Bitmap.Free;
@@ -162,7 +162,7 @@ begin
   Close;  // フォームを閉じる
 end;
 
-procedure TForm2.SetPage();
+procedure TForm2.SetPage();//too: rename LoadBitmap
 begin
       HasBitmap := True;
       StretchImage;

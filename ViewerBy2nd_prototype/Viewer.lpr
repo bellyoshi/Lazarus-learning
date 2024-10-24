@@ -10,7 +10,8 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, printer4lazarus, frmOperation, frmViewer, PdfImageUnit
+  Forms, printer4lazarus, frmOperation, frmViewer
+
   { you can add units after this };
 
 {$R *.res}

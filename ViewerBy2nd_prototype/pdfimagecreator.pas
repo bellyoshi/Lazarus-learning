@@ -1,4 +1,4 @@
-unit PdfImageUnit;
+unit PdfImageCreator;
 
 {$mode ObjFPC}{$H+}
 
@@ -9,6 +9,8 @@ uses
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
 
 type
+
+
   TPdfImageCreator = class
   private
     FPdfDocument: TPdfDocument;
@@ -23,8 +25,8 @@ type
     property Ratio : Double read GetRatio;
   end;
 
-var
-  pdfImageCreator : TPdfImageCreator;
+
+
 
 
 
@@ -99,7 +101,7 @@ end;
 
 destructor TPdfImageCreator.Destroy;
 begin
-  FPdfDocument.Free;  // PDF ドキュメントのメモリ解放
+  FPdfDocument.Free();
   inherited;
 end;
 
@@ -122,6 +124,7 @@ begin
 
   Result := Bitmap;
 end;
+
 
 end.
 

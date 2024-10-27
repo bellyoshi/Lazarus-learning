@@ -61,7 +61,16 @@
       <Unit>
         <Filename Value="pdfimagerepository.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="PdfImageRepository"/>
+        <UnitName Value="ViewerModel"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ViewerModel.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="controlfitter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ControlFitter"/>
       </Unit>
     </Units>
   </ProjectOptions>

@@ -1,4 +1,4 @@
-unit PdfImageRepository;
+unit ViewerModel;
 
 {$mode ObjFPC}{$H+}
 
@@ -7,12 +7,14 @@ uses
   Classes, SysUtils, Graphics, PdfImageCreator;
 
 type
-  TPdfImageRepository = class
+  //todo: rename to model
+  TViewerModel = class
   private
     FViewPdfDocument: TPdfImageCreator;
     FOperationPdfDocument: TPdfImageCreator;
     FHasViewDocument: Boolean;
     function GetViewRatio: Double;  // ViewRatio getter
+    function GetThumbnailRatio: Double;
   public
     destructor Destroy; override;
     function Open(const Filename: string): Boolean;
@@ -21,15 +23,16 @@ type
     function GetThumbnailBitmap(Width, Height: Integer): TBitmap;
     property HasViewDocument: Boolean read FHasViewDocument;
     property ViewRatio: Double read GetViewRatio;  // Expose ViewRatio property
+    property ThumbnailRatio: Double read GetThumbnailRatio;
   end;
 var
-  repository : TPdfImageRepository;
+  model : TViewerModel;
 
 implementation
+  
+  { TViewerModel }
 
-{ TPdfImageRepository }
-
-destructor TPdfImageRepository.Destroy;
+destructor TViewerModel.Destroy;
 begin
 
   if Assigned(FOperationPdfDocument) then
@@ -41,7 +44,7 @@ begin
   inherited Destroy;
 end;
 
-function TPdfImageRepository.Open(const Filename: string): Boolean;
+function TViewerModel.Open(const Filename: string): Boolean;
 begin
   try
     if Assigned(FOperationPdfDocument) then
@@ -56,7 +59,7 @@ begin
   end;
 end;
 
-procedure TPdfImageRepository.View;
+procedure TViewerModel.View;
 begin
   if Assigned(FViewPdfDocument) then
     FViewPdfDocument.Free;
@@ -66,7 +69,7 @@ begin
   FHasViewDocument := True;
 end;
 
-function TPdfImageRepository.GetViewBitmap(Width, Height: Integer): TBitmap;
+function TViewerModel.GetViewBitmap(Width, Height: Integer): TBitmap;
 begin
   Result := nil;
   if Assigned(FViewPdfDocument) then
@@ -75,7 +78,7 @@ begin
   end;
 end;
 
-function TPdfImageRepository.GetThumbnailBitmap(Width, Height: Integer): TBitmap;
+function TViewerModel.GetThumbnailBitmap(Width, Height: Integer): TBitmap;
 begin
   Result := nil;
   if Assigned(FOperationPdfDocument) then
@@ -84,12 +87,20 @@ begin
   end;
 end;
 
-function TPdfImageRepository.GetViewRatio: Double;
+function TViewerModel.GetViewRatio: Double;
 begin
   Result := 1;
   if Assigned(FViewPdfDocument) then
   begin
     Result := FViewPdfDocument.Ratio;
+  end;
+end;
+function TViewerModel.GetThumbnailRatio: Double;
+begin
+  Result := 1;
+  if Assigned(FOperationPdfDocument) then
+  begin
+    Result := FOperationPdfDocument.Ratio;
   end;
 end;
 

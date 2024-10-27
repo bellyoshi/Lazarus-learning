@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-   PdfImageRepository;
+   ViewerModel, ControlFitter;
 
 type
 
@@ -30,11 +30,10 @@ type
     procedure MenuItemFullScreenClick(Sender: TObject);
     procedure MenuItemWindowModeClick(Sender: TObject);
   private
-    HasBitmap : Boolean;
+    HasDocument : Boolean;
     FIsFullScreen: Boolean;
     procedure SetIsFullScreen(Value: Boolean);
     procedure StretchImage();
-    procedure SetBitmap(Bitmap: TBitmap);
   public
     procedure SetPage();
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
@@ -53,57 +52,25 @@ implementation
 
 procedure TForm2.FormCreate(Sender: TObject);
 begin
-  HasBitmap := False;
+  HasDocument := False;
 
 end;
 
-function RoundToStep(Value: Integer; Step: Integer): Integer;
-begin
-  Result := Round(Value / Step) * Step;
-end;
 
-function RoundWidthToStep(Value: Integer) : Integer;
-const
-  PIXEL_STEP = 8;  // widthを8の倍数にしなければLinux環境ですじがでる。
-begin
-  Result := RoundToStep(Value, PIXEL_STEP);
-end;
 
 procedure TForm2.StretchImage();
 var
-  formRatio : Double;
-  NewWidth, NewHeight: Integer;
   Bitmap : TBitmap;
 begin
-  if not HasBitmap then Exit;
-  formRatio := ClientWidth / ClientHeight;
-
-  if formRatio > repository.ViewRatio then
-  begin
-    // 縦が基準
-    NewHeight := ClientHeight;
-    NewWidth := RoundWidthToStep(Round(NewHeight * repository.ViewRatio));
-  end
-  else
-  begin
-    // 横が基準
-    NewWidth := RoundWidthToStep(ClientWidth);
-    NewHeight := Round(NewWidth / repository.ViewRatio);
-  end;
+  if not HasDocument then Exit;
 
 
-  // フォームのクライアント領域にImage1をフィットさせる
-  Image1.Width := NewWidth;
-  Image1.Height := NewHeight;
-
-  // 中央に配置
-  Image1.Left := (ClientWidth - NewWidth) div 2;
-  Image1.Top := (ClientHeight - NewHeight) div 2;
+  FitImageSize(Image1, ClientWidth, ClientHeight, model.ViewRatio);
 
   try
     // PDFium ページを Delphi ビットマップに描画
-    Bitmap := repository.GetViewBitmap(NewWidth, NewHeight);
-    SetBitmap(Bitmap);
+    Bitmap := model.GetViewBitmap(Image1.Width, Image1.Height);
+    Image1.Picture.Bitmap.Assign(Bitmap);
   finally
     Bitmap.Free;
   end;
@@ -164,18 +131,10 @@ end;
 
 procedure TForm2.SetPage();//too: rename LoadBitmap
 begin
-      HasBitmap := True;
+      HasDocument := True;
       StretchImage;
 end;
 
-procedure TForm2.SetBitmap(Bitmap : TBitmap);
-
-begin
-
-  Image1.Picture.Bitmap.Assign(Bitmap);
-
-
-end;
 
 end.
 

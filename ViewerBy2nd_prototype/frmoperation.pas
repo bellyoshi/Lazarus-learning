@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls ,
-  PdfiumCore, PdfiumLib, frmViewer, PdfImageRepository;
+  PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter;
 
 type
 
@@ -17,12 +17,15 @@ type
     Button2: TButton;
     Image1: TImage;
     OpenDialog1: TOpenDialog;
+    Panel1: TPanel;
     SaveDialog1: TSaveDialog;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+
   private
+    procedure StretchImage;
 
   public
 
@@ -45,7 +48,24 @@ begin
   {$ELSE}
   PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x86';
   {$ENDIF CPUX64}
-    repository := TPdfImageRepository.Create;
+    model := TViewerModel.Create;
+end;
+
+procedure TForm1.StretchImage;
+var
+  Bitmap : TBitmap;
+begin
+
+  FitImageSize(Image1, Panel1.Width, Panel1.Height, model.ThumbnailRatio);
+
+  try
+    // PDFium ページを Delphi ビットマップに描画
+    Bitmap := model.GetThumbnailBitmap(Image1.Width, Image1.Height);
+    Image1.Picture.Bitmap.Assign(Bitmap);
+  finally
+    Bitmap.Free;
+  end;
+
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -56,22 +76,23 @@ begin
   if not OpenDialog1.Execute then Exit;
 
 
-  repository.Open(OpenDialog1.FileName);
-  Image1.Picture.Bitmap.Assign(repository.GetThumbnailBitmap(Width, Height));
+  model.Open(OpenDialog1.FileName);
+
+        StretchImage;
 
 end;
 
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
-  repository.View();
+  model.View();
   Form2.SetPage();
   Form2.Show();
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  repository.Free;
+  model.Free;
 end;
 
 

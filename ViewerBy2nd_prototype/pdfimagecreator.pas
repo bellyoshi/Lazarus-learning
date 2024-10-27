@@ -15,6 +15,7 @@ type
   private
     FPdfDocument: TPdfDocument;
     FPageIndex: Integer;
+    function GetPageCount : Integer;
   public
     constructor Create(const Filename: string; PageIndex: Integer = 0);  // コンストラクタ
     destructor Destroy; override;  // デストラクタ
@@ -23,6 +24,7 @@ type
     function GetRatio(): Double;
     property PageIndex: Integer read FPageIndex write FPageIndex;  // ページのインデックス
     property Ratio : Double read GetRatio;
+    property PageCount : Integer read GetPageCount;
   end;
 
 
@@ -34,6 +36,11 @@ implementation
 
 uses
   GraphType;
+
+function TPdfImageCreator.GetPageCount : Integer;
+begin
+  Result := FPdfDocument.PageCount;
+end;
 
 function TPdfImageCreator.GetRatio() : Double;
 var

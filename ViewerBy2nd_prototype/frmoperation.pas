@@ -15,6 +15,8 @@ type
   TForm1 = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    NextButton: TButton;
+    PreviousButton: TButton;
     Image1: TImage;
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
@@ -23,10 +25,12 @@ type
     procedure Button2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure NextButtonClick(Sender: TObject);
+    procedure PreviousButtonClick(Sender: TObject);
 
   private
     procedure StretchImage;
-
+        procedure SetEnabled();
   public
 
   end;
@@ -40,6 +44,13 @@ implementation
 
 { TForm1 }
 
+procedure TForm1.SetEnabled();
+begin
+  Button2.Enabled:=model.HasOperationDocument;
+  NextButton.Enabled:= model.CanNext;
+  PreviousButton.Enabled := model.CanPrevious;
+end;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   {$IFDEF CPUX64}
@@ -49,6 +60,21 @@ begin
   PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x86';
   {$ENDIF CPUX64}
     model := TViewerModel.Create;
+end;
+
+procedure TForm1.NextButtonClick(Sender: TObject);
+begin
+  model.Next;
+  SetEnabled();
+  StretchImage();
+end;
+
+procedure TForm1.PreviousButtonClick(Sender: TObject);
+begin
+  model.Previous;
+  SetEnabled();
+  StretchImage();
+
 end;
 
 procedure TForm1.StretchImage;
@@ -77,8 +103,8 @@ begin
 
 
   model.Open(OpenDialog1.FileName);
-
-        StretchImage;
+  SetEnabled();
+  StretchImage;
 
 end;
 
@@ -86,6 +112,7 @@ end;
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   model.View();
+  SetEnabled();
   Form2.SetPage();
   Form2.Show();
 end;

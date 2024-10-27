@@ -30,10 +30,10 @@ type
     procedure MenuItemFullScreenClick(Sender: TObject);
     procedure MenuItemWindowModeClick(Sender: TObject);
   private
-    HasDocument : Boolean;
     FIsFullScreen: Boolean;
     procedure SetIsFullScreen(Value: Boolean);
     procedure StretchImage();
+
   public
     procedure SetPage();
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
@@ -50,9 +50,10 @@ implementation
 
 
 
+
 procedure TForm2.FormCreate(Sender: TObject);
 begin
-  HasDocument := False;
+{todo : initialize}
 
 end;
 
@@ -62,7 +63,7 @@ procedure TForm2.StretchImage();
 var
   Bitmap : TBitmap;
 begin
-  if not HasDocument then Exit;
+  if not model.HasViewDocument then Exit;
 
 
   FitImageSize(Image1, ClientWidth, ClientHeight, model.ViewRatio);
@@ -131,7 +132,6 @@ end;
 
 procedure TForm2.SetPage();//too: rename LoadBitmap
 begin
-      HasDocument := True;
       StretchImage;
 end;
 

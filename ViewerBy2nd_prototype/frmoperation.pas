@@ -30,7 +30,7 @@ type
 
   private
     procedure StretchImage;
-        procedure SetEnabled();
+    procedure SetCtlEnabled();
   public
 
   end;
@@ -44,7 +44,7 @@ implementation
 
 { TForm1 }
 
-procedure TForm1.SetEnabled();
+procedure TForm1.SetCtlEnabled();
 begin
   Button2.Enabled:=model.HasOperationDocument;
   NextButton.Enabled:= model.CanNext;
@@ -65,14 +65,14 @@ end;
 procedure TForm1.NextButtonClick(Sender: TObject);
 begin
   model.Next;
-  SetEnabled();
+  SetCtlEnabled();
   StretchImage();
 end;
 
 procedure TForm1.PreviousButtonClick(Sender: TObject);
 begin
   model.Previous;
-  SetEnabled();
+  SetCtlEnabled();
   StretchImage();
 
 end;
@@ -103,7 +103,7 @@ begin
 
 
   model.Open(OpenDialog1.FileName);
-  SetEnabled();
+  SetCtlEnabled();
   StretchImage;
 
 end;
@@ -112,7 +112,7 @@ end;
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   model.View();
-  SetEnabled();
+  SetCtlEnabled();
   Form2.SetPage();
   Form2.Show();
 end;

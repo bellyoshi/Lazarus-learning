@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, printer4lazarus, frmOperation, frmViewer, ViewerModel
+  Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit
 
   { you can add units after this };
 
@@ -20,8 +20,9 @@ begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TForm2, Form2);
+  Application.CreateForm(TOperationForm, OperationForm);
+  Application.CreateForm(TViewerForm, ViewerForm);
+  Application.CreateForm(TPageForm, PageForm);
   Application.Run;
 end.
 

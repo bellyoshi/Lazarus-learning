@@ -25,9 +25,6 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="Printer4Lazarus"/>
-      </Item>
-      <Item>
         <PackageName Value="LCL"/>
       </Item>
     </RequiredPackages>
@@ -40,7 +37,7 @@
       <Unit>
         <Filename Value="frmoperation.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
+        <ComponentName Value="OperationForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmOperation"/>
@@ -48,7 +45,7 @@
       <Unit>
         <Filename Value="frmviewer.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form2"/>
+        <ComponentName Value="ViewerForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmViewer"/>
@@ -59,11 +56,6 @@
         <UnitName Value="PdfImageCreator"/>
       </Unit>
       <Unit>
-        <Filename Value="pdfimagerepository.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="ViewerModel"/>
-      </Unit>
-      <Unit>
         <Filename Value="ViewerModel.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -71,6 +63,13 @@
         <Filename Value="controlfitter.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ControlFitter"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pageformunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form3"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PageFormUnit"/>
       </Unit>
     </Units>
   </ProjectOptions>

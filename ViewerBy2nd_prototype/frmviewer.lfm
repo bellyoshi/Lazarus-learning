@@ -1,4 +1,4 @@
-object Form2: TForm2
+object ViewerForm: TViewerForm
   Left = 316
   Height = 240
   Top = 155

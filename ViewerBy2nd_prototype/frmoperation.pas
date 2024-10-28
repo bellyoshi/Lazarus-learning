@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm1 }
+  { TOperationForm }
 
-  TForm1 = class(TForm)
+  TOperationForm = class(TForm)
     Button1: TButton;
     Button2: TButton;
     NextButton: TButton;
@@ -36,22 +36,22 @@ type
   end;
 
 var
-  Form1: TForm1;
+  OperationForm: TOperationForm;
 
 implementation
 
 {$R *.lfm}
 
-{ TForm1 }
+{ TOperationForm }
 
-procedure TForm1.SetCtlEnabled();
+procedure TOperationForm.SetCtlEnabled();
 begin
   Button2.Enabled:=model.HasOperationDocument;
   NextButton.Enabled:= model.CanNext;
   PreviousButton.Enabled := model.CanPrevious;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TOperationForm.FormCreate(Sender: TObject);
 begin
   {$IFDEF CPUX64}
   //PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x64\V8XFA';
@@ -62,14 +62,14 @@ begin
     model := TViewerModel.Create;
 end;
 
-procedure TForm1.NextButtonClick(Sender: TObject);
+procedure TOperationForm.NextButtonClick(Sender: TObject);
 begin
   model.Next;
   SetCtlEnabled();
   StretchImage();
 end;
 
-procedure TForm1.PreviousButtonClick(Sender: TObject);
+procedure TOperationForm.PreviousButtonClick(Sender: TObject);
 begin
   model.Previous;
   SetCtlEnabled();
@@ -77,7 +77,7 @@ begin
 
 end;
 
-procedure TForm1.StretchImage;
+procedure TOperationForm.StretchImage;
 var
   Bitmap : TBitmap;
 begin
@@ -94,7 +94,7 @@ begin
 
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TOperationForm.Button1Click(Sender: TObject);
 begin
   // PDFファイルのみを選択できるようにフィルタを設定
   OpenDialog1.Filter := 'PDF Files|*.pdf';
@@ -109,15 +109,15 @@ begin
 end;
 
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TOperationForm.Button2Click(Sender: TObject);
 begin
   model.View();
   SetCtlEnabled();
-  Form2.SetPage();
-  Form2.Show();
+  ViewerForm.SetPage();
+  ViewerForm.Show();
 end;
 
-procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TOperationForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   model.Free;
 end;

@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm2 }
+  { TViewerForm }
 
-  TForm2 = class(TForm)
+  TViewerForm = class(TForm)
     Image1: TImage;
     MenuItemFullScreen: TMenuItem;
     MenuItemWindowMode: TMenuItem;
@@ -41,7 +41,7 @@ type
   end;
 
 var
-  Form2: TForm2;
+  ViewerForm: TViewerForm;
 
 implementation
 
@@ -51,7 +51,7 @@ implementation
 
 
 
-procedure TForm2.FormCreate(Sender: TObject);
+procedure TViewerForm.FormCreate(Sender: TObject);
 begin
 {todo : initialize}
 
@@ -59,7 +59,7 @@ end;
 
 
 
-procedure TForm2.StretchImage();
+procedure TViewerForm.StretchImage();
 var
   Bitmap : TBitmap;
 begin
@@ -81,12 +81,12 @@ end;
 
 
 
-procedure TForm2.FormResize(Sender: TObject);
+procedure TViewerForm.FormResize(Sender: TObject);
 begin
   StretchImage;
 end;
 
-procedure TForm2.SetIsFullScreen(Value: Boolean);
+procedure TViewerForm.SetIsFullScreen(Value: Boolean);
 begin
   if FIsFullScreen = Value then Exit; // 既にフルスクリーン状態なら何もしない
 
@@ -106,7 +106,7 @@ begin
   end;
 end;
 
-procedure TForm2.FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+procedure TViewerForm.FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
   PopupMenu1.PopUp(MousePos.X, MousePos.Y);
   Handled := True;  // イベントを処理済みにする
@@ -115,22 +115,22 @@ end;
 
 
 
-procedure TForm2.MenuItemFullScreenClick(Sender: TObject);
+procedure TViewerForm.MenuItemFullScreenClick(Sender: TObject);
 begin
   IsFullScreen := True;  // フルスクリーンに切り替える
 end;
 
-procedure TForm2.MenuItemWindowModeClick(Sender: TObject);
+procedure TViewerForm.MenuItemWindowModeClick(Sender: TObject);
 begin
   IsFullScreen := False;  // ウインドウモードに切り替える
 end;
 
-procedure TForm2.MenuItemCloseClick(Sender: TObject);
+procedure TViewerForm.MenuItemCloseClick(Sender: TObject);
 begin
   Close;  // フォームを閉じる
 end;
 
-procedure TForm2.SetPage();//too: rename LoadBitmap
+procedure TViewerForm.SetPage();//too: rename LoadBitmap
 begin
       StretchImage;
 end;

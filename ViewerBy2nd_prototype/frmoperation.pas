@@ -29,7 +29,7 @@ type
     procedure PreviousButtonClick(Sender: TObject);
 
   private
-    procedure StretchImage;
+    procedure LoadBitmap;
     procedure SetCtlEnabled();
   public
 
@@ -66,18 +66,18 @@ procedure TOperationForm.NextButtonClick(Sender: TObject);
 begin
   model.Next;
   SetCtlEnabled();
-  StretchImage();
+  LoadBitmap();
 end;
 
 procedure TOperationForm.PreviousButtonClick(Sender: TObject);
 begin
   model.Previous;
-  SetCtlEnabled();
-  StretchImage();
+  SetCtlEnabled;
+  LoadBitmap;
 
 end;
 
-procedure TOperationForm.StretchImage;
+procedure TOperationForm.LoadBitmap;
 var
   Bitmap : TBitmap;
 begin
@@ -104,7 +104,7 @@ begin
 
   model.Open(OpenDialog1.FileName);
   SetCtlEnabled();
-  StretchImage;
+  LoadBitmap;
 
 end;
 
@@ -113,7 +113,7 @@ procedure TOperationForm.Button2Click(Sender: TObject);
 begin
   model.View();
   SetCtlEnabled();
-  ViewerForm.SetPage();
+  ViewerForm.LoadBitmap();
   ViewerForm.Show();
 end;
 

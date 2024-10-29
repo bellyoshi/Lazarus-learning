@@ -32,10 +32,9 @@ type
   private
     FIsFullScreen: Boolean;
     procedure SetIsFullScreen(Value: Boolean);
-    procedure StretchImage();
 
   public
-    procedure SetPage();
+    procedure LoadBitmap();
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
 
   end;
@@ -59,7 +58,7 @@ end;
 
 
 
-procedure TViewerForm.StretchImage();
+procedure TViewerForm.LoadBitmap();
 var
   Bitmap : TBitmap;
 begin
@@ -83,7 +82,7 @@ end;
 
 procedure TViewerForm.FormResize(Sender: TObject);
 begin
-  StretchImage;
+  LoadBitmap();
 end;
 
 procedure TViewerForm.SetIsFullScreen(Value: Boolean);
@@ -130,10 +129,7 @@ begin
   Close;  // フォームを閉じる
 end;
 
-procedure TViewerForm.SetPage();//too: rename LoadBitmap
-begin
-      StretchImage;
-end;
+
 
 
 end.

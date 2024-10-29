@@ -18,7 +18,8 @@ type
     function GetHasOperationDocument: Boolean;
     function GetCanNext: Boolean;
     function GetCanPrevious: Boolean; // CanPrevious getter
-
+        function GetPageIndex: Integer  ;
+    function GetPageCount: Integer  ;
   public
         procedure Next;
     procedure Previous;
@@ -33,6 +34,8 @@ type
     property ThumbnailRatio: Double read GetThumbnailRatio;
     property CanNext: Boolean read GetCanNext;
     property CanPrevious: Boolean read GetCanPrevious; // Expose CanPrevious property
+    property PageIndex: Integer read GetPageIndex;
+    property PageCount: Integer read GetPageCount;
 
   end;
 
@@ -42,6 +45,16 @@ var
 implementation
 
 { TViewerModel }
+
+function TViewerModel.GetPageCount:Integer;
+begin
+     Result := FOperationPdfDocument.PageCount;
+end;
+
+function TViewerModel.GetPageIndex:Integer;
+begin
+     Result := FOperationPdfDocument.PageIndex;
+end;
 
 procedure TViewerModel.Previous;
 begin

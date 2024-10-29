@@ -62,6 +62,13 @@ object OperationForm: TOperationForm
     TabOrder = 4
     OnClick = PreviousButtonClick
   end
+  object PageCountLabel: TLabel
+    Left = 152
+    Height = 20
+    Top = 248
+    Width = 108
+    Caption = 'PageCountLabel'
+  end
   object OpenDialog1: TOpenDialog
     Left = 306
     Top = 344

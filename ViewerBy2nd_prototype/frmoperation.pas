@@ -15,6 +15,7 @@ type
   TOperationForm = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    PageCountLabel: TLabel;
     NextButton: TButton;
     PreviousButton: TButton;
     Image1: TImage;
@@ -49,6 +50,7 @@ begin
   Button2.Enabled:=model.HasOperationDocument;
   NextButton.Enabled:= model.CanNext;
   PreviousButton.Enabled := model.CanPrevious;
+  PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex, model.PageCount]);
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);

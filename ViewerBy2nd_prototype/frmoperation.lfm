@@ -68,6 +68,7 @@ object OperationForm: TOperationForm
     Top = 248
     Width = 108
     Caption = 'PageCountLabel'
+    OnClick = PageCountLabelClick
   end
   object OpenDialog1: TOpenDialog
     Left = 306

@@ -37,6 +37,7 @@ object PageForm: TPageForm
     Width = 94
     Caption = 'OK'
     TabOrder = 1
+    OnClick = OkButtonClick
   end
   object CancelButton: TButton
     Left = 136
@@ -45,5 +46,6 @@ object PageForm: TPageForm
     Width = 94
     Caption = 'Cancel'
     TabOrder = 2
+    OnClick = CancelButtonClick
   end
 end

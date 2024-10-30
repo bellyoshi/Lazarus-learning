@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls ,
-  PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter;
+  PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter, PageFormUnit;
 
 type
 
@@ -27,6 +27,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure NextButtonClick(Sender: TObject);
+    procedure PageCountLabelClick(Sender: TObject);
     procedure PreviousButtonClick(Sender: TObject);
 
   private
@@ -50,7 +51,7 @@ begin
   Button2.Enabled:=model.HasOperationDocument;
   NextButton.Enabled:= model.CanNext;
   PreviousButton.Enabled := model.CanPrevious;
-  PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex, model.PageCount]);
+  PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
@@ -69,6 +70,16 @@ begin
   model.Next;
   SetCtlEnabled();
   LoadBitmap();
+end;
+
+procedure TOperationForm.PageCountLabelClick(Sender: TObject);
+begin
+  if not model.HasOperationDocument then
+  begin
+    Exit;
+  end;
+  PageForm.SetPage(model.PageIndex, model.PageCount);
+  PageForm.Show;
 end;
 
 procedure TOperationForm.PreviousButtonClick(Sender: TObject);

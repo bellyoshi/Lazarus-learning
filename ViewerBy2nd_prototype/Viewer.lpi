@@ -67,7 +67,8 @@
       <Unit>
         <Filename Value="pageformunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form3"/>
+        <ComponentName Value="PageForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PageFormUnit"/>
       </Unit>

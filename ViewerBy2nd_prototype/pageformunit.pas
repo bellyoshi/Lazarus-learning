@@ -5,7 +5,8 @@ unit PageFormUnit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ViewerModel;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ViewerModel
+  ,IViewUnit;
 
 type
 
@@ -22,18 +23,25 @@ type
     PageCountLabel: TLabel;
     procedure CancelButtonClick(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
-  private
-    FPageCount : Integer;
-    FPageIndex : Integer;
-  public
-    procedure SetPage(PageIndex,PageCount : Integer);
 
+  private
+    FView : IView;
+    procedure SetView(value : IView);
+  public
+    property  View : IView write SetView;
   end;
 
 var
   PageForm: TPageForm;
 
 implementation
+
+procedure TPageForm.SetView(value: IView);
+begin
+  FView := Value;
+  PageCountLabel.Caption := IntToStr(model.PageCount);
+  PageIndexEdit.Caption:= IntToStr(model.PageIndex + 1);
+end;
 
 procedure TPageForm.OkButtonClick(Sender: TObject);
 var
@@ -47,9 +55,10 @@ begin
     Exit;
   end;
 
-  model.PageIndex := i;
+  model.PageIndex := i - 1;
+  FView.UpdateView;
   Close;
-  //todo update main forms
+
 
 end;
 
@@ -58,13 +67,7 @@ begin
   Close;
 end;
 
-procedure TPageForm.SetPage(PageIndex, PageCount : Integer);
-begin
-  FPageIndex:= PageIndex;
-  FPageCount:= PageCount;
-  PageCountLabel.Caption := IntToStr(PageCount);
-  PageIndexEdit.Caption:= IntToStr(PageIndex);
-end;
+
 
 {$R *.lfm}
 

@@ -72,6 +72,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PageFormUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="iviewunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="IViewUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

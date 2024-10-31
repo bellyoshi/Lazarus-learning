@@ -6,13 +6,13 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls ,
-  PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter, PageFormUnit;
+  PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter, PageFormUnit, IViewUnit;
 
 type
 
   { TOperationForm }
 
-  TOperationForm = class(TForm)
+  TOperationForm = class(TForm, IView)
     Button1: TButton;
     Button2: TButton;
     PageCountLabel: TLabel;
@@ -29,6 +29,7 @@ type
     procedure NextButtonClick(Sender: TObject);
     procedure PageCountLabelClick(Sender: TObject);
     procedure PreviousButtonClick(Sender: TObject);
+    procedure UpdateView;
 
   private
     procedure LoadBitmap;
@@ -65,11 +66,16 @@ begin
     model := TViewerModel.Create;
 end;
 
+procedure TOperationForm.UpdateView();
+begin
+  SetCtlEnabled();
+  LoadBitmap();
+end;
+
 procedure TOperationForm.NextButtonClick(Sender: TObject);
 begin
   model.Next;
-  SetCtlEnabled();
-  LoadBitmap();
+  UpdateView;
 end;
 
 procedure TOperationForm.PageCountLabelClick(Sender: TObject);
@@ -78,15 +84,14 @@ begin
   begin
     Exit;
   end;
-  PageForm.SetPage(model.PageIndex, model.PageCount);
+  PageForm.View := Self;
   PageForm.Show;
 end;
 
 procedure TOperationForm.PreviousButtonClick(Sender: TObject);
 begin
   model.Previous;
-  SetCtlEnabled;
-  LoadBitmap;
+  UpdateView
 
 end;
 
@@ -116,8 +121,7 @@ begin
 
 
   model.Open(OpenDialog1.FileName);
-  SetCtlEnabled();
-  LoadBitmap;
+  UpdateView
 
 end;
 

@@ -15,7 +15,15 @@ type
 
   TOperationForm = class(TForm, IView)
     Button1: TButton;
+    BackGroundDisplayButton: TButton;
+    AutoUpdateCheckBox: TCheckBox;
     Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    FileInfoLabel: TLabel;
+    ViewerDisplayButton: TButton;
+    ViewerCloseButton: TButton;
+    ViewerGroupBox: TGroupBox;
     Label1: TLabel;
     ListBox1: TListBox;
     MainMenu: TMainMenu;
@@ -56,7 +64,7 @@ type
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure ViewerDisplayButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FileMenuClick(Sender: TObject);
@@ -85,7 +93,7 @@ implementation
 
 procedure TOperationForm.SetCtlEnabled();
 begin
-  Button2.Enabled:=model.HasOperationDocument;
+  ViewerDisplayButton.Enabled:=model.HasOperationDocument;
   NextButton.Enabled:= model.CanNext;
   PreviousButton.Enabled := model.CanPrevious;
   PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
@@ -171,7 +179,7 @@ begin
 end;
 
 
-procedure TOperationForm.Button2Click(Sender: TObject);
+procedure TOperationForm.ViewerDisplayButtonClick(Sender: TObject);
 begin
   model.View();
   SetCtlEnabled();

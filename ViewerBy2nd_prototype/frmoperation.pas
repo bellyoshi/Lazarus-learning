@@ -5,8 +5,9 @@ unit frmOperation;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls ,
-  PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter, PageFormUnit, IViewUnit;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
+  Menus, PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter,
+  PageFormUnit, IViewUnit;
 
 type
 
@@ -15,18 +16,53 @@ type
   TOperationForm = class(TForm, IView)
     Button1: TButton;
     Button2: TButton;
+    Label1: TLabel;
+    ListBox1: TListBox;
+    MainMenu: TMainMenu;
+    FileMenu: TMenuItem;
+    ListMenu: TMenuItem;
+    DisplayMenu: TMenuItem;
+    BackgroundDisplayMenu: TMenuItem;
+    FirstPageMenu: TMenuItem;
+    LastPageMenu: TMenuItem;
+    HelpMenu: TMenuItem;
+    AboutMenu: TMenuItem;
+    DisplaySettingMenu: TMenuItem;
+    AutoUpdateSettingMenu: TMenuItem;
+    DefaultSizeMenu: TMenuItem;
+    MinimumSizeMenu: TMenuItem;
+    SlimSizeMenu: TMenuItem;
+    OperationFormSizeMenu: TMenuItem;
+    SettingMenu: TMenuItem;
+    PageIndexMenu: TMenuItem;
+    PreviousPageMenu: TMenuItem;
+    NextPageMenu: TMenuItem;
+    Rotate270Menu: TMenuItem;
+    Rotate180Menu: TMenuItem;
+    Rotate090Menu: TMenuItem;
+    Rotate000Menu: TMenuItem;
+    ViewerCloseMenu: TMenuItem;
+    ViewerDisplayMenu: TMenuItem;
+    ViewerMenu: TMenuItem;
+    VideoPlayMenu: TMenuItem;
+    ZoomMenu: TMenuItem;
+    PageNavigationMenu: TMenuItem;
+    RotateMenu: TMenuItem;
+    OpenMenu: TMenuItem;
     PageCountLabel: TLabel;
     NextButton: TButton;
     PreviousButton: TButton;
     Image1: TImage;
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
-    SaveDialog1: TSaveDialog;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FileMenuClick(Sender: TObject);
+    procedure Label1Click(Sender: TObject);
     procedure NextButtonClick(Sender: TObject);
+    procedure ListMenuClick(Sender: TObject);
     procedure PageCountLabelClick(Sender: TObject);
     procedure PreviousButtonClick(Sender: TObject);
     procedure UpdateView;
@@ -66,6 +102,16 @@ begin
     model := TViewerModel.Create;
 end;
 
+procedure TOperationForm.FileMenuClick(Sender: TObject);
+begin
+
+end;
+
+procedure TOperationForm.Label1Click(Sender: TObject);
+begin
+
+end;
+
 procedure TOperationForm.UpdateView();
 begin
   SetCtlEnabled();
@@ -76,6 +122,11 @@ procedure TOperationForm.NextButtonClick(Sender: TObject);
 begin
   model.Next;
   UpdateView;
+end;
+
+procedure TOperationForm.ListMenuClick(Sender: TObject);
+begin
+
 end;
 
 procedure TOperationForm.PageCountLabelClick(Sender: TObject);

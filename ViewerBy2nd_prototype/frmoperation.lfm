@@ -1,17 +1,18 @@
 object OperationForm: TOperationForm
-  Left = 988
-  Height = 440
-  Top = 192
-  Width = 539
+  Left = 817
+  Height = 505
+  Top = 162
+  Width = 681
   Caption = 'Form1'
-  ClientHeight = 440
-  ClientWidth = 539
+  ClientHeight = 505
+  ClientWidth = 681
   DesignTimePPI = 120
+  Menu = MainMenu
   OnClose = FormClose
   OnCreate = FormCreate
   LCLVersion = '3.6.0.0'
   object Button1: TButton
-    Left = 392
+    Left = 552
     Height = 31
     Top = 40
     Width = 94
@@ -20,32 +21,32 @@ object OperationForm: TOperationForm
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 354
+    Left = 536
     Height = 31
-    Top = 120
+    Top = 112
     Width = 132
     Caption = 'スクリーンに表示'
     TabOrder = 1
     OnClick = Button2Click
   end
   object Panel1: TPanel
-    Left = 24
+    Left = 208
     Height = 207
-    Top = 24
+    Top = 48
     Width = 300
     Caption = 'Panel1'
     ClientHeight = 207
     ClientWidth = 300
     TabOrder = 2
     object Image1: TImage
-      Left = 56
+      Left = 64
       Height = 184
       Top = 8
       Width = 188
     end
   end
   object NextButton: TButton
-    Left = 320
+    Left = 488
     Height = 31
     Top = 248
     Width = 94
@@ -54,7 +55,7 @@ object OperationForm: TOperationForm
     OnClick = NextButtonClick
   end
   object PreviousButton: TButton
-    Left = 432
+    Left = 587
     Height = 31
     Top = 248
     Width = 94
@@ -63,19 +64,127 @@ object OperationForm: TOperationForm
     OnClick = PreviousButtonClick
   end
   object PageCountLabel: TLabel
-    Left = 152
+    Left = 344
     Height = 20
-    Top = 248
+    Top = 256
     Width = 108
     Caption = 'PageCountLabel'
     OnClick = PageCountLabelClick
   end
-  object OpenDialog1: TOpenDialog
-    Left = 306
-    Top = 344
+  object ListBox1: TListBox
+    Left = 24
+    Height = 369
+    Top = 26
+    Width = 157
+    ItemHeight = 0
+    TabOrder = 5
   end
-  object SaveDialog1: TSaveDialog
-    Left = 216
-    Top = 349
+  object Label1: TLabel
+    Left = 277
+    Height = 20
+    Top = 20
+    Width = 81
+    Caption = '表示プレビュー'
+    OnClick = Label1Click
+  end
+  object OpenDialog1: TOpenDialog
+    Left = 112
+    Top = 432
+  end
+  object MainMenu: TMainMenu
+    Left = 40
+    Top = 432
+    object FileMenu: TMenuItem
+      Caption = 'FileMenu'
+      OnClick = FileMenuClick
+      object ListMenu: TMenuItem
+        Caption = 'ListMenu'
+        OnClick = ListMenuClick
+      end
+      object OpenMenu: TMenuItem
+        Caption = 'OpenMenu'
+      end
+    end
+    object DisplayMenu: TMenuItem
+      Caption = 'DisplayMenu'
+      object RotateMenu: TMenuItem
+        Caption = 'RotateMenu'
+        object Rotate000Menu: TMenuItem
+          Caption = 'Rotate000Menu'
+        end
+        object Rotate090Menu: TMenuItem
+          Caption = 'Rotate090Menu'
+        end
+        object Rotate180Menu: TMenuItem
+          Caption = 'Rotate180Menu'
+        end
+        object Rotate270Menu: TMenuItem
+          Caption = 'Rotate270Menu'
+        end
+      end
+      object PageNavigationMenu: TMenuItem
+        Caption = 'PageNavigationMenu'
+        object FirstPageMenu: TMenuItem
+          Caption = 'FirstPageMenu'
+        end
+        object NextPageMenu: TMenuItem
+          Caption = 'NextPageMenu'
+        end
+        object PreviousPageMenu: TMenuItem
+          Caption = 'PreviousPageMenu'
+        end
+        object LastPageMenu: TMenuItem
+          Caption = 'LastPageMenu'
+        end
+        object PageIndexMenu: TMenuItem
+          Caption = 'PageIndexMenu'
+        end
+      end
+      object ZoomMenu: TMenuItem
+        Caption = 'ZoomMenu'
+      end
+      object VideoPlayMenu: TMenuItem
+        Caption = 'VideoPlayMenu'
+      end
+      object ViewerMenu: TMenuItem
+        Caption = 'ViewerMenu'
+        object ViewerDisplayMenu: TMenuItem
+          Caption = 'ViewerDisplayMenu'
+        end
+        object ViewerCloseMenu: TMenuItem
+          Caption = 'ViewerCloseMenu'
+        end
+        object BackgroundDisplayMenu: TMenuItem
+          Caption = 'BackgroundDisplayMenu'
+        end
+      end
+    end
+    object SettingMenu: TMenuItem
+      Caption = 'SettingMenu'
+      object DisplaySettingMenu: TMenuItem
+        Caption = 'DisplaySettingMenu'
+      end
+      object AutoUpdateSettingMenu: TMenuItem
+        Caption = 'AutoUpdateSettingMenu'
+      end
+      object OperationFormSizeMenu: TMenuItem
+        Caption = 'OperationFormSizeMenu'
+        object DefaultSizeMenu: TMenuItem
+          Caption = 'DefaultSizeMenu'
+        end
+        object SlimSizeMenu: TMenuItem
+          Caption = 'SlimSizeMenu'
+        end
+        object MinimumSizeMenu: TMenuItem
+          Caption = 'MinimumSizeMenu'
+        end
+      end
+    end
+    object HelpMenu: TMenuItem
+      Caption = 'HelpMenu'
+      object AboutMenu: TMenuItem
+        Caption = 'AboutMenu'
+      end
+    end
   end
 end

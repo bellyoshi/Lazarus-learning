@@ -77,6 +77,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="IViewUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="settingformunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SettingForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="SettingFormUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -16,7 +16,6 @@ type
     FPdfDocument: TPdfDocument;
     FPageIndex: Integer;
     function GetPageCount : Integer;
-
   public
     constructor Create(const Filename: string; PageIndex: Integer = 0);  // コンストラクタ
     destructor Destroy; override;  // デストラクタ
@@ -27,6 +26,8 @@ type
     property Ratio : Double read GetRatio;
     property PageCount : Integer read GetPageCount;
   end;
+
+
 
 
 
@@ -90,16 +91,6 @@ end;
 constructor TPdfImageCreator.Create(const Filename: string; PageIndex: Integer = 0);
 begin
   inherited Create;
-
-  {initialize}
-    {$IFDEF CPUX64}
-  //PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x64\V8XFA';
-  PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x64';
-  {$ELSE}
-  PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x86';
-  {$ENDIF CPUX64}
-  {initialize end}
-
 
   // PDF ドキュメントをロード
   FPdfDocument := TPdfDocument.Create;

@@ -1,0 +1,65 @@
+object Form1: TForm1
+  Left = 682
+  Height = 521
+  Top = 222
+  Width = 660
+  Caption = 'Form1'
+  ClientHeight = 521
+  ClientWidth = 660
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  OnDropFiles = FormDropFiles
+  LCLVersion = '3.6.0.0'
+  object DestFileNameEdit: TEdit
+    Left = 75
+    Height = 28
+    Top = 72
+    Width = 364
+    TabOrder = 0
+    Text = 'DestFileNameEdit'
+  end
+  object RenameButton: TButton
+    Left = 448
+    Height = 31
+    Top = 72
+    Width = 134
+    Caption = 'RenameButton'
+    TabOrder = 1
+    OnClick = RenameButtonClick
+  end
+  object SrcFileNameLabel: TLabel
+    Left = 77
+    Height = 20
+    Top = 37
+    Width = 119
+    Caption = 'SrcFileNameLabel'
+  end
+  object OpenButton: TButton
+    Left = 40
+    Height = 31
+    Top = 0
+    Width = 94
+    Caption = 'OpenButton'
+    TabOrder = 2
+    OnClick = OpenButtonClick
+  end
+  object Panel1: TPanel
+    Left = 27
+    Height = 359
+    Top = 111
+    Width = 584
+    Caption = 'Panel1'
+    ClientHeight = 359
+    ClientWidth = 584
+    TabOrder = 3
+    object Image1: TImage
+      Left = 72
+      Height = 315
+      Top = 24
+      Width = 481
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    Left = 616
+  end
+end

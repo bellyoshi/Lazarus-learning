@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, PdfiumCore, PdfiumLib, frmViewer, ViewerModel, ControlFitter,
+  Menus, frmViewer, ViewerModel, ControlFitter,
   PageFormUnit, IViewUnit;
 
 type
@@ -93,12 +93,6 @@ end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
 begin
-  {$IFDEF CPUX64}
-  //PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x64\V8XFA';
-  PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x64';
-  {$ELSE}
-  PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x86';
-  {$ENDIF CPUX64}
     model := TViewerModel.Create;
 end;
 

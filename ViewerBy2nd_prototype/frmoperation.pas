@@ -20,6 +20,8 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    LastPageButton: TButton;
+    FirstPageButton: TButton;
     FileInfoLabel: TLabel;
     ViewerDisplayButton: TButton;
     ViewerCloseButton: TButton;
@@ -64,6 +66,8 @@ type
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
+    procedure LastPageButtonClick(Sender: TObject);
+    procedure FirstPageButtonClick(Sender: TObject);
     procedure ViewerDisplayButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -96,12 +100,15 @@ begin
   ViewerDisplayButton.Enabled:=model.HasOperationDocument;
   NextButton.Enabled:= model.CanNext;
   PreviousButton.Enabled := model.CanPrevious;
+  LastPageButton.Enabled:=model.CanLast;
+  FirstPageButton.Enabled := model.CanFirst;
   PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
 begin
     model := TViewerModel.Create;
+    UpdateView;
 end;
 
 procedure TOperationForm.FileMenuClick(Sender: TObject);
@@ -176,6 +183,18 @@ begin
   model.Open(OpenDialog1.FileName);
   UpdateView
 
+end;
+
+procedure TOperationForm.LastPageButtonClick(Sender: TObject);
+begin
+  model.LastPage();
+  UpdateView;
+end;
+
+procedure TOperationForm.FirstPageButtonClick(Sender: TObject);
+begin
+  model.FirstPage();
+  UpdateView;
 end;
 
 

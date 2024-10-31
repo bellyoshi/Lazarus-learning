@@ -18,6 +18,8 @@ type
     function GetHasOperationDocument: Boolean;
     function GetCanNext: Boolean;
     function GetCanPrevious: Boolean; // CanPrevious getter
+    function GetCanLast: Boolean;
+    function GetCanFirst: Boolean;
     function GetPageIndex: Integer  ;
 
     function GetPageCount: Integer  ;
@@ -37,8 +39,12 @@ type
     property ThumbnailRatio: Double read GetThumbnailRatio;
     property CanNext: Boolean read GetCanNext;
     property CanPrevious: Boolean read GetCanPrevious; // Expose CanPrevious property
+    property CanLast: Boolean read GetCanLast;
+    property CanFirst: Boolean read GetCanFirst;
     property PageIndex: Integer read GetPageIndex write SetPageIndex;
     property PageCount: Integer read GetPageCount;
+    procedure LastPage();
+    procedure FirstPage();
 
   end;
 
@@ -49,8 +55,22 @@ implementation
 
 { TViewerModel }
 
+procedure TViewerModel.LastPage();
+begin
+  PageIndex:=PageCount - 1;
+end;
+
+procedure TViewerModel.FirstPage();
+begin
+  PageIndex:=0;
+end;
+
 procedure TViewerModel.SetPageIndex(value :  Integer);
 begin
+  if not Assigned(FOperationPdfDocument) then
+  begin
+    Exit
+  end;
   if value < 0 then
   begin
     value := 0;
@@ -65,11 +85,21 @@ end;
 
 function TViewerModel.GetPageCount:Integer;
 begin
+    if not Assigned(FOperationPdfDocument) then
+    begin
+    Result := 0;
+    Exit;
+    end;
      Result := FOperationPdfDocument.PageCount;
 end;
 
 function TViewerModel.GetPageIndex:Integer;
 begin
+        if not Assigned(FOperationPdfDocument) then
+    begin
+    Result := 0;
+    Exit;
+    end;
      Result := FOperationPdfDocument.PageIndex;
 end;
 
@@ -81,6 +111,10 @@ end;
 
 procedure TViewerModel.Next;
 begin
+  if not Assigned(FOperationPdfDocument) then
+    begin
+    Exit;
+    end;
   FOperationPdfDocument.PageIndex := FOperationPdfDocument.PageIndex + 1;
 end;
 
@@ -181,6 +215,26 @@ begin
     Exit;
   end;
   Result := FOperationPdfDocument.PageIndex > 0;
+end;
+
+function TViewerModel.GetCanLast: Boolean;
+begin
+  if not Assigned(FOperationPdfDocument) then
+  begin
+    Result := False;
+    Exit;
+  end;
+  Result := PageIndex <> PageCount -1
+end;
+
+function TViewerModel.GetCanFirst: Boolean;
+begin
+  if not Assigned(FOperationPdfDocument) then
+  begin
+    Result := False;
+    Exit;
+  end;
+  Result := PageIndex <> 0;
 end;
 
 end.

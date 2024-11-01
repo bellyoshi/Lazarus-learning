@@ -85,6 +85,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SettingFormUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="formsizecustomizerunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FormSizeCustomizerUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

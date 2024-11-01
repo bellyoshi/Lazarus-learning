@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, frmViewer, ViewerModel, ControlFitter,
-  PageFormUnit, SettingFormUnit, IViewUnit;
+  PageFormUnit, SettingFormUnit, IViewUnit, FormSizeCustomizerUnit;
 
 type
 
@@ -111,6 +111,8 @@ procedure TOperationForm.FormCreate(Sender: TObject);
 begin
     model := TViewerModel.Create;
     UpdateView;
+
+
 end;
 
 procedure TOperationForm.FileMenuClick(Sender: TObject);

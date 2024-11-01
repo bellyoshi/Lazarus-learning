@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-   ViewerModel, ControlFitter;
+   ViewerModel, ControlFitter, FormSizeCustomizerUnit;
 
 type
 
@@ -52,7 +52,8 @@ implementation
 
 procedure TViewerForm.FormCreate(Sender: TObject);
 begin
-{todo : initialize}
+  FormSizeCustomizer := TFormSizeCustomizer.Create;
+  FormSizeCustomizer.RegistForm(ViewerForm);
 
 end;
 
@@ -87,22 +88,7 @@ end;
 
 procedure TViewerForm.SetIsFullScreen(Value: Boolean);
 begin
-  if FIsFullScreen = Value then Exit; // 既にフルスクリーン状態なら何もしない
-
-  FIsFullScreen := Value;
-
-  if FIsFullScreen then
-  begin
-    // フルスクリーンモードに切り替える
-    BorderStyle := bsNone;
-    WindowState := wsMaximized;
-  end
-  else
-  begin
-    // ウィンドウモードに戻す
-    BorderStyle := bsSizeable;
-    WindowState := wsNormal;
-  end;
+     FormSizeCustomizer.IsFullScreen:=Value;
 end;
 
 procedure TViewerForm.FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);

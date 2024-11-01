@@ -5,7 +5,7 @@ unit SettingFormUnit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, frmViewer;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, FormSizeCustomizerUnit;
 
 type
 
@@ -56,14 +56,8 @@ var
   display : TMonitor;
 begin
   i := ComboBox1.ItemIndex;
-  if (0 <= i) and (i < Screen.MonitorCount) then
-  begin
-    display := Screen.Monitors[i];
-    ViewerForm.Top := display.Top;
-    ViewerForm.Left:= display.Left;
-    ViewerForm.Width:=display.Width;
-    ViewerForm.Height:=display.Height;
-  end;
+  FormSizeCustomizer.ScreenIndex:=i;
+  FormSizeCustomizer.IsFullScreen := True;
 end;
 
 procedure TSettingForm.OkButtonClick(Sender: TObject);

@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, frmViewer, ViewerModel, ControlFitter,
-  PageFormUnit, IViewUnit;
+  PageFormUnit, SettingFormUnit, IViewUnit;
 
 type
 
@@ -66,8 +66,10 @@ type
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
+    procedure DisplaySettingMenuClick(Sender: TObject);
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
+    procedure ViewerCloseButtonClick(Sender: TObject);
     procedure ViewerDisplayButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -185,6 +187,11 @@ begin
 
 end;
 
+procedure TOperationForm.DisplaySettingMenuClick(Sender: TObject);
+begin
+  SettingForm.Show();
+end;
+
 procedure TOperationForm.LastPageButtonClick(Sender: TObject);
 begin
   model.LastPage();
@@ -195,6 +202,11 @@ procedure TOperationForm.FirstPageButtonClick(Sender: TObject);
 begin
   model.FirstPage();
   UpdateView;
+end;
+
+procedure TOperationForm.ViewerCloseButtonClick(Sender: TObject);
+begin
+  ViewerForm.Close();
 end;
 
 

@@ -5,7 +5,7 @@ unit SettingFormUnit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, frmViewer;
 
 type
 
@@ -14,7 +14,9 @@ type
   TSettingForm = class(TForm)
     OkButton: TButton;
     ComboBox1: TComboBox;
+    procedure ComboBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure OkButtonClick(Sender: TObject);
   private
 
   public
@@ -46,6 +48,27 @@ end;
 procedure TSettingForm.FormCreate(Sender: TObject);
 begin
   PopulateScreenList(ComboBox1); // フォーム作成時にスクリーン一覧を表示
+end;
+
+procedure TSettingForm.ComboBox1Change(Sender: TObject);
+var
+  i : Integer;
+  display : TMonitor;
+begin
+  i := ComboBox1.ItemIndex;
+  if (0 <= i) and (i < Screen.MonitorCount) then
+  begin
+    display := Screen.Monitors[i];
+    ViewerForm.Top := display.Top;
+    ViewerForm.Left:= display.Left;
+    ViewerForm.Width:=display.Width;
+    ViewerForm.Height:=display.Height;
+  end;
+end;
+
+procedure TSettingForm.OkButtonClick(Sender: TObject);
+begin
+  Close();
 end;
 
 end.

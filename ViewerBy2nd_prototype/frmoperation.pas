@@ -140,18 +140,20 @@ end;
 procedure TOperationForm.LoadList();
 var
   fileList: TStringList;
+  repogitory: TRepogitory;
 begin
+  repogitory := model.Repogitory;
   FFilesListBoxLoaded := True;
   FilesListBox.Items.Clear; // Clear any existing items
-  fileList := model.GetFileNames; // Get the filenames from the model
+  fileList := repogitory.GetFileNames; // Get the filenames from the model
   try
     FilesListBox.Items.Assign(fileList); // Assign the list to ListBox
   finally
     fileList.Free; // Free the TStringList
   end;
 
-  if (model.SelectIndex >= 0) and (model.SelectIndex < FilesListBox.Items.Count) then
-    FilesListBox.Selected[model.SelectIndex] := True;
+  if (repogitory.SelectIndex >= 0) and (repogitory.SelectIndex < FilesListBox.Items.Count) then
+    FilesListBox.Selected[repogitory.SelectIndex] := True;
   FFilesListBoxLoaded := False;
 end;
 
@@ -229,7 +231,7 @@ begin
   for i:= 0 to FilesListBox.Count - 1 do
   begin
        if FilesListBox.Selected[i] then
-          model.Select(i);
+          model.Repogitory.Select(i);
   end;
   UpdateView;
 

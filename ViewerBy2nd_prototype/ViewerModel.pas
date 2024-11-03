@@ -12,16 +12,30 @@ type
 
   TFilesParam = record
     Filename: string;
+//    Selected: Boolean;
     Index: Integer;
+  end;
+
+  TRepogitory = class
+  private
+    FFilesList: array of TFilesParam;
+    FPdfImageCreatorList : array of TPdfImageCreator;
+    FSelectIndex : Integer;
+    FViewPdfDocument: TPdfImageCreator;
+    FOperationPdfDocument: TPdfImageCreator;
+  public
+    procedure AddFile(filename: String);
+    property OperationFile : TPdfImageCreator read FOperationPdfDocument write FOperationPdfDocument;
+    property ViewFile : TPdfImageCreator read FViewPdfDocument write FViewPdfDocument;
+    function GetFileNames: TStringList;
+    procedure Select(Index: Integer);
+    property SelectIndex : Integer read FSelectIndex;
+    constructor Create;
   end;
 
   TViewerModel = class
   private
-    FViewPdfDocument: TPdfImageCreator;
-    FOperationPdfDocument: TPdfImageCreator;
-    FFilesList: array of TFilesParam;
-    FPdfImageCreatorList : array of TPdfImageCreator;
-    FSelectIndex : Integer;
+    FRepogitory : TRepogitory;
 
     function GetViewRatio: Double;
     function GetThumbnailRatio: Double;
@@ -54,14 +68,14 @@ type
     property CanFirst: Boolean read GetCanFirst;
     property PageIndex: Integer read GetPageIndex write SetPageIndex;
     property PageCount: Integer read GetPageCount;
+    property Repogitory : TRepogitory read FRepogitory;
 
     procedure LastPage();
     procedure FirstPage();
 
-    function GetFileNames: TStringList;
 
-    procedure Select(Index: Integer);
-    property SelectIndex : Integer read FSelectIndex;
+
+
   end;
 
 var
@@ -69,11 +83,42 @@ var
 
 implementation
 
+{ TRepogitory }
+constructor TRepogitory.Create();
+begin
+  inherited Create;
+  FSelectIndex := -1;
+end;
 
+procedure TRepogitory.Select(Index: Integer);
+begin
+  FOperationPdfDocument := FPdfImageCreatorList[index];
+  FSelectIndex := index;
+end;
 
+procedure TRepogitory.AddFile(filename :String);
+var
+    newFileParam: TFilesParam;
+  pdfDocument : TPdfImageCreator;
+begin
+
+    pdfDocument := TPdfImageCreator.Create(Filename);
+    FOperationPdfDocument := pdfDocument;
+
+    // Add pdfDocument to FPdfImageCreatorList
+    SetLength(FPdfImageCreatorList, Length(FPdfImageCreatorList) + 1);
+    FPdfImageCreatorList[High(FPdfImageCreatorList)] := pdfDocument;
+
+    // Add filename to FFilesList
+    newFileParam.Filename := Filename;
+    newFileParam.Index := High(FPdfImageCreatorList);
+    SetLength(FFilesList, Length(FFilesList) + 1);
+    FFilesList[High(FFilesList)] := newFileParam;
+    FSelectIndex := newFileParam.Index;
+end;
 
 { TViewerModel }
-function TViewerModel.GetFileNames: TStringList;
+function TRepogitory.GetFileNames: TStringList;
 var
   i: Integer;
   fileList: TStringList;
@@ -102,7 +147,8 @@ end;
 
 procedure TViewerModel.SetPageIndex(value: Integer);
 begin
-  if not Assigned(FOperationPdfDocument) then
+
+  if not Assigned(Repogitory.OperationFile) then
     Exit;
 
   if value < 0 then
@@ -111,82 +157,66 @@ begin
   if value > PageCount - 1 then
     value := PageCount - 1;
 
-  FOperationPdfDocument.PageIndex := value;
+  Repogitory.OperationFile.PageIndex := value;
 end;
 
 function TViewerModel.GetPageCount: Integer;
 begin
-  if not Assigned(FOperationPdfDocument) then
+  if not Assigned(Repogitory.OperationFile) then
     Result := 0
   else
-    Result := FOperationPdfDocument.PageCount;
+    Result := Repogitory.OperationFile.PageCount;
 end;
 
 function TViewerModel.GetPageIndex: Integer;
 begin
-  if not Assigned(FOperationPdfDocument) then
+  if not Assigned(Repogitory.OperationFile) then
     Result := 0
   else
-    Result := FOperationPdfDocument.PageIndex;
+    Result := Repogitory.OperationFile.PageIndex;
 end;
 
 procedure TViewerModel.Previous;
 begin
-  if Assigned(FOperationPdfDocument) then
-    FOperationPdfDocument.PageIndex := FOperationPdfDocument.PageIndex - 1;
+  if Assigned(Repogitory.OperationFile) then
+    Repogitory.OperationFile.PageIndex := Repogitory.OperationFile.PageIndex - 1;
 end;
 
 procedure TViewerModel.Next;
 begin
-  if Assigned(FOperationPdfDocument) then
-    FOperationPdfDocument.PageIndex := FOperationPdfDocument.PageIndex + 1;
+  if Assigned(Repogitory.OperationFile) then
+    Repogitory.OperationFile.PageIndex := Repogitory.OperationFile.PageIndex + 1;
 end;
 
 function TViewerModel.GetHasOperationDocument: Boolean;
 begin
-  Result := Assigned(FOperationPdfDocument);
+  Result := Assigned(Repogitory.OperationFile);
 end;
 
 function TViewerModel.GetHasViewDocument: Boolean;
 begin
-  Result := Assigned(FViewPdfDocument);
+  Result := Assigned(Repogitory.ViewFile);
 end;
 
 constructor TViewerModel.Create;
 begin
   inherited Create;
-  FSelectIndex := -1;
+  FRepogitory := TRepogitory.Create;
+
 end;
 
 destructor TViewerModel.Destroy;
 begin
-  if Assigned(FOperationPdfDocument) and (FOperationPdfDocument <> FViewPdfDocument) then
-    FOperationPdfDocument.Free;
-
-  if Assigned(FViewPdfDocument) then
-    FViewPdfDocument.Free;
+  Repogitory.Destroy;
 
   inherited Destroy;
 end;
 function TViewerModel.Open(const Filename: string): Boolean;
-var
-  pdfDocument: TPdfImageCreator;
-  newFileParam: TFilesParam;
+
+
 begin
   try
-    pdfDocument := TPdfImageCreator.Create(Filename);
-    FOperationPdfDocument := pdfDocument;
-
-    // Add pdfDocument to FPdfImageCreatorList
-    SetLength(FPdfImageCreatorList, Length(FPdfImageCreatorList) + 1);
-    FPdfImageCreatorList[High(FPdfImageCreatorList)] := pdfDocument;
-
-    // Add filename to FFilesList
-    newFileParam.Filename := Filename;
-    newFileParam.Index := High(FPdfImageCreatorList);
-    SetLength(FFilesList, Length(FFilesList) + 1);
-    FFilesList[High(FFilesList)] := newFileParam;
-    FSelectIndex := newFileParam.Index;
+    Repogitory.AddFile(FileName);
 
     Result := True;
   except
@@ -197,68 +227,64 @@ end;
 
 procedure TViewerModel.View;
 begin
-  FViewPdfDocument := FOperationPdfDocument;
+  Repogitory.ViewFile := Repogitory.OperationFile;
 end;
 
 function TViewerModel.GetViewBitmap(Width, Height: Integer): TBitmap;
 begin
-  if Assigned(FViewPdfDocument) then
-    Result := FViewPdfDocument.GetBitmap(Width, Height)
+  if Assigned(Repogitory.ViewFile) then
+    Result := Repogitory.ViewFile.GetBitmap(Width, Height)
   else
     Result := nil;
 end;
 
 function TViewerModel.GetThumbnailBitmap(Width, Height: Integer): TBitmap;
 begin
-  if Assigned(FOperationPdfDocument) then
-    Result := FOperationPdfDocument.GetBitmap(Width, Height)
+  if Assigned(Repogitory.OperationFile) then
+    Result := Repogitory.OperationFile.GetBitmap(Width, Height)
   else
     Result := nil;
 end;
 
 function TViewerModel.GetViewRatio: Double;
 begin
-  if Assigned(FViewPdfDocument) then
-    Result := FViewPdfDocument.Ratio
+  if Assigned(Repogitory.ViewFile) then
+    Result := Repogitory.ViewFile.Ratio
   else
     Result := 1;
 end;
 
 function TViewerModel.GetThumbnailRatio: Double;
 begin
-  if Assigned(FOperationPdfDocument) then
-    Result := FOperationPdfDocument.Ratio
+  if Assigned(Repogitory.OperationFile) then
+    Result := Repogitory.OperationFile.Ratio
   else
     Result := 1;
 end;
 
 function TViewerModel.GetCanNext: Boolean;
 begin
-  Result := Assigned(FOperationPdfDocument) and (FOperationPdfDocument.PageIndex < FOperationPdfDocument.PageCount - 1);
+  Result := Assigned(Repogitory.OperationFile) and (Repogitory.OperationFile.PageIndex < Repogitory.OperationFile.PageCount - 1);
 end;
 
 function TViewerModel.GetCanPrevious: Boolean;
 begin
-  Result := Assigned(FOperationPdfDocument) and (FOperationPdfDocument.PageIndex > 0);
+  Result := Assigned(Repogitory.OperationFile) and (Repogitory.OperationFile.PageIndex > 0);
 end;
 
 function TViewerModel.GetCanLast: Boolean;
 begin
-  Result := Assigned(FOperationPdfDocument) and (PageIndex <> PageCount - 1);
+  Result := Assigned(Repogitory.OperationFile) and (PageIndex <> PageCount - 1);
 end;
 
 function TViewerModel.GetCanFirst: Boolean;
 begin
-  Result := Assigned(FOperationPdfDocument) and (PageIndex <> 0);
+  Result := Assigned(Repogitory.OperationFile) and (PageIndex <> 0);
 end;
 
 
 
-procedure TViewerModel.Select(Index: Integer);
-begin
-  FOperationPdfDocument := FPdfImageCreatorList[index];
-  FSelectIndex := index;
-end;
+
 
 end.
 

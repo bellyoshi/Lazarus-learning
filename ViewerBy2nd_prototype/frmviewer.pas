@@ -19,8 +19,6 @@ type
     MenuItemClose: TMenuItem;
     PopupMenu1: TPopupMenu;
 
-
-
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
 
@@ -29,6 +27,7 @@ type
     procedure MenuItemCloseClick(Sender: TObject);
     procedure MenuItemFullScreenClick(Sender: TObject);
     procedure MenuItemWindowModeClick(Sender: TObject);
+
   private
     FIsFullScreen: Boolean;
     procedure SetIsFullScreen(Value: Boolean);
@@ -36,7 +35,6 @@ type
   public
     procedure LoadBitmap();
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
-
   end;
 
 var
@@ -49,22 +47,20 @@ implementation
 
 
 
-
 procedure TViewerForm.FormCreate(Sender: TObject);
 begin
   FormSizeCustomizer := TFormSizeCustomizer.Create;
   FormSizeCustomizer.RegistForm(ViewerForm);
-
 end;
+
 
 
 
 procedure TViewerForm.LoadBitmap();
 var
-  Bitmap : TBitmap;
+  Bitmap: TBitmap;
 begin
   if not model.HasViewDocument then Exit;
-
 
   FitImageSize(Image1, ClientWidth, ClientHeight, model.ViewRatio);
 
@@ -75,11 +71,7 @@ begin
   finally
     Bitmap.Free;
   end;
-
 end;
-
-
-
 
 procedure TViewerForm.FormResize(Sender: TObject);
 begin
@@ -88,7 +80,7 @@ end;
 
 procedure TViewerForm.SetIsFullScreen(Value: Boolean);
 begin
-     FormSizeCustomizer.IsFullScreen:=Value;
+  FormSizeCustomizer.IsFullScreen := Value;
 end;
 
 procedure TViewerForm.FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
@@ -96,9 +88,6 @@ begin
   PopupMenu1.PopUp(MousePos.X, MousePos.Y);
   Handled := True;  // イベントを処理済みにする
 end;
-
-
-
 
 procedure TViewerForm.MenuItemFullScreenClick(Sender: TObject);
 begin
@@ -110,13 +99,12 @@ begin
   IsFullScreen := False;  // ウインドウモードに切り替える
 end;
 
+
+
 procedure TViewerForm.MenuItemCloseClick(Sender: TObject);
 begin
   Close;  // フォームを閉じる
 end;
-
-
-
 
 end.
 

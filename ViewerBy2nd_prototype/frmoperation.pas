@@ -20,6 +20,8 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
     LastPageButton: TButton;
     FirstPageButton: TButton;
     FileInfoLabel: TLabel;
@@ -27,7 +29,7 @@ type
     ViewerCloseButton: TButton;
     ViewerGroupBox: TGroupBox;
     Label1: TLabel;
-    ListBox1: TListBox;
+    FilesListBox: TListBox;
     MainMenu: TMainMenu;
     FileMenu: TMenuItem;
     ListMenu: TMenuItem;
@@ -67,6 +69,7 @@ type
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
     procedure DisplaySettingMenuClick(Sender: TObject);
+    procedure FilesListBoxSelectionChange(Sender: TObject; User: boolean);
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
@@ -82,8 +85,10 @@ type
     procedure UpdateView;
 
   private
+    FFilesListBoxLoaded : Boolean;
     procedure LoadBitmap;
     procedure SetCtlEnabled();
+    procedure LoadList();
   public
 
   end;
@@ -128,7 +133,26 @@ end;
 procedure TOperationForm.UpdateView();
 begin
   SetCtlEnabled();
+  LoadList();
   LoadBitmap();
+end;
+
+procedure TOperationForm.LoadList();
+var
+  fileList: TStringList;
+begin
+  FFilesListBoxLoaded := True;
+  FilesListBox.Items.Clear; // Clear any existing items
+  fileList := model.GetFileNames; // Get the filenames from the model
+  try
+    FilesListBox.Items.Assign(fileList); // Assign the list to ListBox
+  finally
+    fileList.Free; // Free the TStringList
+  end;
+
+  if (model.SelectIndex >= 0) and (model.SelectIndex < FilesListBox.Items.Count) then
+    FilesListBox.Selected[model.SelectIndex] := True;
+  FFilesListBoxLoaded := False;
 end;
 
 procedure TOperationForm.NextButtonClick(Sender: TObject);
@@ -192,6 +216,23 @@ end;
 procedure TOperationForm.DisplaySettingMenuClick(Sender: TObject);
 begin
   SettingForm.Show();
+end;
+
+procedure TOperationForm.FilesListBoxSelectionChange(Sender: TObject;
+  User: boolean);
+var
+  i : Integer;
+begin
+  If FFilesListBoxLoaded Then
+     Exit;
+
+  for i:= 0 to FilesListBox.Count - 1 do
+  begin
+       if FilesListBox.Selected[i] then
+          model.Select(i);
+  end;
+  UpdateView;
+
 end;
 
 procedure TOperationForm.LastPageButtonClick(Sender: TObject);

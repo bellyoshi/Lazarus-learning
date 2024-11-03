@@ -1,183 +1,200 @@
 object OperationForm: TOperationForm
-  Left = 1188
-  Height = 756
-  Top = 387
-  Width = 1168
+  Left = 848
+  Height = 630
+  Top = 247
+  Width = 973
   Caption = 'Form1'
-  ClientHeight = 756
-  ClientWidth = 1168
-  DesignTimePPI = 144
+  ClientHeight = 630
+  ClientWidth = 973
+  DesignTimePPI = 120
   Menu = MainMenu
   OnClose = FormClose
   OnCreate = FormCreate
   LCLVersion = '3.6.0.0'
   object Button1: TButton
-    Left = 220
-    Height = 37
-    Top = 499
-    Width = 84
+    Left = 183
+    Height = 31
+    Top = 416
+    Width = 70
     Caption = '開く'
     TabOrder = 0
     OnClick = Button1Click
   end
   object Panel1: TPanel
-    Left = 653
-    Height = 248
-    Top = 96
-    Width = 360
+    Left = 544
+    Height = 207
+    Top = 80
+    Width = 300
     Caption = 'Panel1'
-    ClientHeight = 248
-    ClientWidth = 360
+    ClientHeight = 207
+    ClientWidth = 300
     TabOrder = 1
     object Image1: TImage
-      Left = 77
-      Height = 221
-      Top = 10
-      Width = 226
+      Left = 64
+      Height = 184
+      Top = 8
+      Width = 188
     end
   end
   object NextButton: TButton
-    Left = 492
-    Height = 37
-    Top = 269
-    Width = 65
+    Left = 410
+    Height = 31
+    Top = 224
+    Width = 54
     Caption = '次へ'
     TabOrder = 2
     OnClick = NextButtonClick
   end
   object PreviousButton: TButton
-    Left = 413
-    Height = 37
-    Top = 269
-    Width = 73
+    Left = 344
+    Height = 31
+    Top = 224
+    Width = 61
     Caption = '前へ'
     TabOrder = 3
     OnClick = PreviousButtonClick
   end
   object PageCountLabel: TLabel
-    Left = 787
-    Height = 32
-    Top = 360
-    Width = 173
+    Left = 656
+    Height = 20
+    Top = 300
+    Width = 108
     Caption = 'PageCountLabel'
     OnClick = PageCountLabelClick
   end
-  object ListBox1: TListBox
-    Left = 38
-    Height = 443
-    Top = 31
-    Width = 265
+  object FilesListBox: TListBox
+    Left = 32
+    Height = 369
+    Top = 26
+    Width = 221
     ItemHeight = 0
     TabOrder = 4
+    OnSelectionChange = FilesListBoxSelectionChange
   end
   object Label1: TLabel
-    Left = 778
-    Height = 32
-    Top = 48
-    Width = 129
+    Left = 648
+    Height = 20
+    Top = 40
+    Width = 81
     Caption = '表示プレビュー'
     OnClick = Label1Click
   end
   object ViewerGroupBox: TGroupBox
-    Left = 317
-    Height = 157
-    Top = 442
-    Width = 810
+    Left = 264
+    Height = 131
+    Top = 368
+    Width = 675
     Caption = 'セカンドモニター操作'
-    ClientHeight = 120
-    ClientWidth = 806
+    ClientHeight = 106
+    ClientWidth = 671
     TabOrder = 5
     object ViewerDisplayButton: TButton
       Left = 1
-      Height = 37
+      Height = 31
       Top = 1
-      Width = 158
+      Width = 132
       Caption = 'スクリーンに表示'
       TabOrder = 0
       OnClick = ViewerDisplayButtonClick
     end
     object ViewerCloseButton: TButton
-      Left = 197
-      Height = 37
-      Top = 22
-      Width = 113
+      Left = 164
+      Height = 31
+      Top = 18
+      Width = 94
       Caption = '表示終了'
       TabOrder = 1
       OnClick = ViewerCloseButtonClick
     end
     object BackGroundDisplayButton: TButton
-      Left = 389
-      Height = 37
-      Top = 32
-      Width = 113
+      Left = 324
+      Height = 31
+      Top = 27
+      Width = 94
       Caption = 'BackGroundDisplayButton'
       TabOrder = 2
     end
     object AutoUpdateCheckBox: TCheckBox
-      Left = 538
-      Height = 36
-      Top = 41
-      Width = 257
+      Left = 448
+      Height = 24
+      Top = 34
+      Width = 166
       Caption = 'AutoUpdateCheckBox'
       TabOrder = 3
     end
   end
   object Button2: TButton
-    Left = 29
-    Height = 37
-    Top = 499
-    Width = 113
+    Left = 24
+    Height = 31
+    Top = 416
+    Width = 94
     Caption = 'Button2'
     TabOrder = 6
   end
   object Button3: TButton
-    Left = 29
-    Height = 37
-    Top = 547
-    Width = 113
+    Left = 24
+    Height = 31
+    Top = 456
+    Width = 94
     Caption = 'Button3'
     TabOrder = 7
   end
   object Button4: TButton
-    Left = 144
-    Height = 37
-    Top = 499
-    Width = 67
+    Left = 120
+    Height = 31
+    Top = 416
+    Width = 56
     Caption = 'Button4'
     TabOrder = 8
   end
   object FileInfoLabel: TLabel
-    Left = 502
-    Height = 32
-    Top = 37
-    Width = 135
+    Left = 418
+    Height = 20
+    Top = 31
+    Width = 85
     Caption = 'FileInfoLabel'
   end
   object LastPageButton: TButton
-    Left = 557
-    Height = 37
-    Top = 269
-    Width = 85
+    Left = 464
+    Height = 31
+    Top = 224
+    Width = 71
     Caption = '最後'
     TabOrder = 9
     OnClick = LastPageButtonClick
   end
   object FirstPageButton: TButton
-    Left = 326
-    Height = 37
-    Top = 269
-    Width = 77
+    Left = 272
+    Height = 31
+    Top = 224
+    Width = 64
     Caption = '最初'
     TabOrder = 10
     OnClick = FirstPageButtonClick
   end
+  object Button5: TButton
+    Left = 297
+    Height = 31
+    Top = 160
+    Width = 94
+    Caption = 'Button5'
+    TabOrder = 11
+  end
+  object Button6: TButton
+    Left = 424
+    Height = 31
+    Top = 160
+    Width = 94
+    Caption = 'Button6'
+    TabOrder = 12
+  end
   object OpenDialog1: TOpenDialog
-    Left = 499
-    Top = 682
+    Left = 416
+    Top = 568
   end
   object MainMenu: TMainMenu
-    Left = 413
-    Top = 682
+    Left = 344
+    Top = 568
     object FileMenu: TMenuItem
       Caption = 'File'
       OnClick = FileMenuClick

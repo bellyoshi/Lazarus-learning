@@ -117,9 +117,9 @@ object OperationForm: TOperationForm
     object AutoUpdateCheckBox: TCheckBox
       Left = 448
       Height = 24
-      Top = 34
-      Width = 166
-      Caption = 'AutoUpdateCheckBox'
+      Top = 8
+      Width = 138
+      Caption = '操作中に自動表示'
       TabOrder = 3
     end
   end

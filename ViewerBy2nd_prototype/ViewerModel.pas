@@ -47,6 +47,8 @@ type
     function GetCanFirst: Boolean;
     function GetPageIndex: Integer;
     function GetPageCount: Integer;
+    function GetOperationFile : TPdfImageCreator;
+          property OperationFile : TPdfImageCreator read GetOperationFile;
 
   public
     procedure Next;
@@ -70,6 +72,7 @@ type
     property PageCount: Integer read GetPageCount;
     property Repogitory : TRepogitory read FRepogitory;
 
+
     procedure LastPage();
     procedure FirstPage();
 
@@ -84,6 +87,7 @@ var
 implementation
 
 { TRepogitory }
+
 constructor TRepogitory.Create();
 begin
   inherited Create;
@@ -118,6 +122,11 @@ begin
 end;
 
 { TViewerModel }
+function TViewerModel.GetOperationFile : TPdfImageCreator;
+begin
+  Result := Repogitory.OperationFile;
+end;
+
 function TRepogitory.GetFileNames: TStringList;
 var
   i: Integer;
@@ -157,7 +166,7 @@ begin
   if value > PageCount - 1 then
     value := PageCount - 1;
 
-  Repogitory.OperationFile.PageIndex := value;
+  OperationFile.PageIndex := value;
 end;
 
 function TViewerModel.GetPageCount: Integer;
@@ -165,7 +174,7 @@ begin
   if not Assigned(Repogitory.OperationFile) then
     Result := 0
   else
-    Result := Repogitory.OperationFile.PageCount;
+    Result := OperationFile.PageCount;
 end;
 
 function TViewerModel.GetPageIndex: Integer;
@@ -173,24 +182,24 @@ begin
   if not Assigned(Repogitory.OperationFile) then
     Result := 0
   else
-    Result := Repogitory.OperationFile.PageIndex;
+    Result := OperationFile.PageIndex;
 end;
 
 procedure TViewerModel.Previous;
 begin
   if Assigned(Repogitory.OperationFile) then
-    Repogitory.OperationFile.PageIndex := Repogitory.OperationFile.PageIndex - 1;
+    OperationFile.PageIndex := OperationFile.PageIndex - 1;
 end;
 
 procedure TViewerModel.Next;
 begin
   if Assigned(Repogitory.OperationFile) then
-    Repogitory.OperationFile.PageIndex := Repogitory.OperationFile.PageIndex + 1;
+    OperationFile.PageIndex := OperationFile.PageIndex + 1;
 end;
 
 function TViewerModel.GetHasOperationDocument: Boolean;
 begin
-  Result := Assigned(Repogitory.OperationFile);
+  Result := Assigned(OperationFile);
 end;
 
 function TViewerModel.GetHasViewDocument: Boolean;
@@ -227,7 +236,7 @@ end;
 
 procedure TViewerModel.View;
 begin
-  Repogitory.ViewFile := Repogitory.OperationFile;
+  Repogitory.ViewFile := OperationFile;
 end;
 
 function TViewerModel.GetViewBitmap(Width, Height: Integer): TBitmap;
@@ -240,8 +249,8 @@ end;
 
 function TViewerModel.GetThumbnailBitmap(Width, Height: Integer): TBitmap;
 begin
-  if Assigned(Repogitory.OperationFile) then
-    Result := Repogitory.OperationFile.GetBitmap(Width, Height)
+  if Assigned(OperationFile) then
+    Result := OperationFile.GetBitmap(Width, Height)
   else
     Result := nil;
 end;
@@ -256,30 +265,30 @@ end;
 
 function TViewerModel.GetThumbnailRatio: Double;
 begin
-  if Assigned(Repogitory.OperationFile) then
-    Result := Repogitory.OperationFile.Ratio
+  if Assigned(OperationFile) then
+    Result := OperationFile.Ratio
   else
     Result := 1;
 end;
 
 function TViewerModel.GetCanNext: Boolean;
 begin
-  Result := Assigned(Repogitory.OperationFile) and (Repogitory.OperationFile.PageIndex < Repogitory.OperationFile.PageCount - 1);
+  Result := Assigned(OperationFile) and (OperationFile.PageIndex < OperationFile.PageCount - 1);
 end;
 
 function TViewerModel.GetCanPrevious: Boolean;
 begin
-  Result := Assigned(Repogitory.OperationFile) and (Repogitory.OperationFile.PageIndex > 0);
+  Result := Assigned(OperationFile) and (OperationFile.PageIndex > 0);
 end;
 
 function TViewerModel.GetCanLast: Boolean;
 begin
-  Result := Assigned(Repogitory.OperationFile) and (PageIndex <> PageCount - 1);
+  Result := Assigned(OperationFile) and (PageIndex <> PageCount - 1);
 end;
 
 function TViewerModel.GetCanFirst: Boolean;
 begin
-  Result := Assigned(Repogitory.OperationFile) and (PageIndex <> 0);
+  Result := Assigned(OperationFile) and (PageIndex <> 0);
 end;
 
 

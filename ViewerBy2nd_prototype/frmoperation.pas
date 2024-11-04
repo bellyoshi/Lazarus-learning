@@ -135,6 +135,13 @@ begin
   SetCtlEnabled();
   LoadList();
   LoadBitmap();
+  if AutoUpdateCheckBox.Checked then
+  begin
+    model.View();
+    SetCtlEnabled();
+    ViewerForm.LoadBitmap();
+    ViewerForm.Show();
+  end;
 end;
 
 procedure TOperationForm.LoadList();

@@ -137,10 +137,7 @@ begin
   LoadBitmap();
   if AutoUpdateCheckBox.Checked then
   begin
-    model.View();
-    SetCtlEnabled();
-    ViewerForm.LoadBitmap();
-    ViewerForm.Show();
+    ViewerForm.ShowDocument()
   end;
 end;
 
@@ -264,10 +261,7 @@ end;
 
 procedure TOperationForm.ViewerDisplayButtonClick(Sender: TObject);
 begin
-  model.View();
-  SetCtlEnabled();
-  ViewerForm.LoadBitmap();
-  ViewerForm.Show();
+  ViewerForm.ShowDocument();
 end;
 
 procedure TOperationForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);

@@ -31,10 +31,10 @@ type
   private
     FIsFullScreen: Boolean;
     procedure SetIsFullScreen(Value: Boolean);
-
-  public
     procedure LoadBitmap();
+  public
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
+    procedure ShowDocument();
   end;
 
 var
@@ -44,7 +44,12 @@ implementation
 
 {$R *.lfm}
 
-
+procedure TViewerForm.ShowDocument();
+begin
+    model.View();
+    LoadBitmap();
+    Show();
+end;
 
 
 procedure TViewerForm.FormCreate(Sender: TObject);

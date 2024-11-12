@@ -65,7 +65,6 @@ procedure TViewerForm.LoadBitmap();
 var
   Bitmap: TBitmap;
 begin
-  if not model.HasViewDocument then Exit;
 
   FitImageSize(Image1, ClientWidth, ClientHeight, model.ViewRatio);
 

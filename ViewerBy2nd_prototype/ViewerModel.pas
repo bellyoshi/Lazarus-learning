@@ -16,6 +16,15 @@ type
     Index: Integer;
   end;
 
+type
+  TBackground = class
+  private
+    FColor: TColor;
+  public
+    constructor Create(AColor: TColor = clBlack);
+    function GetBitmap(Width, Height: Integer): TBitmap;
+  end;
+
   TRepogitory = class
   private
     FFilesList: array of TFilesParam;
@@ -24,6 +33,7 @@ type
     FViewPdfDocument: TPdfImageCreator;
     FOperationPdfDocument: TPdfImageCreator;
   public
+        procedure Disselect;
     procedure AddFile(filename: String);
     property OperationFile : TPdfImageCreator read FOperationPdfDocument write FOperationPdfDocument;
     property ViewFile : TPdfImageCreator read FViewPdfDocument write FViewPdfDocument;
@@ -36,7 +46,7 @@ type
   TViewerModel = class
   private
     FRepogitory : TRepogitory;
-
+    FBackground : TBackground;
     function GetViewRatio: Double;
     function GetThumbnailRatio: Double;
     function GetHasViewDocument: Boolean;
@@ -57,6 +67,7 @@ type
     destructor Destroy; override;
     function Open(const Filename: string): Boolean;
     procedure View;
+
     constructor Create();
     function GetViewBitmap(Width, Height: Integer): TBitmap;
     function GetThumbnailBitmap(Width, Height: Integer): TBitmap;
@@ -86,18 +97,47 @@ var
 
 implementation
 
+{TBackground}
+constructor TBackground.Create(AColor: TColor = clBlack);
+begin
+  inherited Create;
+  FColor := AColor;
+end;
+
+function TBackground.GetBitmap(Width, Height: Integer): TBitmap;
+begin
+  Result := TBitmap.Create;
+  try
+    Result.Width := Width;
+    Result.Height := Height;
+    Result.Canvas.Brush.Color := FColor;
+    Result.Canvas.FillRect(Rect(0, 0, Width, Height));
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
 { TRepogitory }
 
 constructor TRepogitory.Create();
 begin
   inherited Create;
   FSelectIndex := -1;
+  ViewFile := nil;
 end;
 
 procedure TRepogitory.Select(Index: Integer);
 begin
   FOperationPdfDocument := FPdfImageCreatorList[index];
   FSelectIndex := index;
+end;
+
+procedure TRepogitory.DisSelect;
+begin
+  FSelectIndex:= -1;
+      FViewPdfDocument := nil;
+    FOperationPdfDocument:= nil;
 end;
 
 procedure TRepogitory.AddFile(filename :String);
@@ -211,12 +251,14 @@ constructor TViewerModel.Create;
 begin
   inherited Create;
   FRepogitory := TRepogitory.Create;
+  FBackground := TBackground.Create;
 
 end;
 
 destructor TViewerModel.Destroy;
 begin
-  Repogitory.Destroy;
+  FRepogitory.Destroy;
+  FBackground.Destroy;
 
   inherited Destroy;
 end;
@@ -244,7 +286,7 @@ begin
   if Assigned(Repogitory.ViewFile) then
     Result := Repogitory.ViewFile.GetBitmap(Width, Height)
   else
-    Result := nil;
+    Result := FBackground.GetBitmap(Width, Height);
 end;
 
 function TViewerModel.GetThumbnailBitmap(Width, Height: Integer): TBitmap;
@@ -252,7 +294,7 @@ begin
   if Assigned(OperationFile) then
     Result := OperationFile.GetBitmap(Width, Height)
   else
-    Result := nil;
+    Result := FBackground.GetBitmap(Width, Height);
 end;
 
 function TViewerModel.GetViewRatio: Double;

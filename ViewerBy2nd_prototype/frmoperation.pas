@@ -67,6 +67,7 @@ type
     Image1: TImage;
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
+    procedure BackGroundDisplayButtonClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure DisplaySettingMenuClick(Sender: TObject);
     procedure FilesListBoxSelectionChange(Sender: TObject; User: boolean);
@@ -217,6 +218,13 @@ begin
   model.Open(OpenDialog1.FileName);
   UpdateView
 
+end;
+
+procedure TOperationForm.BackGroundDisplayButtonClick(Sender: TObject);
+begin
+  model.Repogitory.Disselect;
+  ViewerForm.ShowDocument() ;
+  UpdateView
 end;
 
 procedure TOperationForm.DisplaySettingMenuClick(Sender: TObject);

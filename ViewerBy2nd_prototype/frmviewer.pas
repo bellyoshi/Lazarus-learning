@@ -48,6 +48,7 @@ procedure TViewerForm.ShowDocument();
 begin
     model.View();
     LoadBitmap();
+    Self.Color:=model.Background.Color;
     Show();
 end;
 

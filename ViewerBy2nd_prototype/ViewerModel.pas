@@ -23,6 +23,7 @@ type
   public
     constructor Create(AColor: TColor = clBlack);
     function GetBitmap(Width, Height: Integer): TBitmap;
+    property Color : TColor read FColor;
   end;
 
   TRepogitory = class
@@ -58,7 +59,7 @@ type
     function GetPageIndex: Integer;
     function GetPageCount: Integer;
     function GetOperationFile : TPdfImageCreator;
-          property OperationFile : TPdfImageCreator read GetOperationFile;
+    property OperationFile : TPdfImageCreator read GetOperationFile;
 
   public
     procedure Next;
@@ -82,6 +83,7 @@ type
     property PageIndex: Integer read GetPageIndex write SetPageIndex;
     property PageCount: Integer read GetPageCount;
     property Repogitory : TRepogitory read FRepogitory;
+    property Background : TBackground read FBackground;
 
 
     procedure LastPage();

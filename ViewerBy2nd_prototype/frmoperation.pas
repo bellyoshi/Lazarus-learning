@@ -136,6 +136,7 @@ begin
   SetCtlEnabled();
   LoadList();
   LoadBitmap();
+  Panel1.Color:=model.Background.Color;
   if AutoUpdateCheckBox.Checked then
   begin
     ViewerForm.ShowDocument()

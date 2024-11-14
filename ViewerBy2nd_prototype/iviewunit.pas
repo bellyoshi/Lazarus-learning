@@ -16,7 +16,7 @@ type
   // TFormManagerクラスの定義
   TFormManager = class
   private
-    FViews: TList;
+    FViews: specialize TList<IView>;
   public
     constructor Create;
     destructor Destroy; override;
@@ -32,7 +32,7 @@ implementation
 
 constructor TFormManager.Create;
 begin
-  FViews := TList.Create;
+  FViews := specialize TList<IView>.Create;
 end;
 
 destructor TFormManager.Destroy;
@@ -43,17 +43,15 @@ end;
 
 procedure TFormManager.RegisterView(AView: IView);
 begin
-  FViews.Add(Pointer(AView));
+  FViews.Add(AView);
 end;
 
 procedure TFormManager.Update;
 var
-  i: Integer;
   View: IView;
 begin
-  for i := 0 to FViews.Count - 1 do
+  for View in FViews do
   begin
-    View := IView(FViews[i]);
     View.UpdateView; // 各フォームの UpdateView を呼び出す
   end;
 end;

@@ -1,31 +1,68 @@
 object SettingForm: TSettingForm
   Left = 764
-  Height = 288
+  Height = 240
   Top = 392
-  Width = 742
+  Width = 618
   Caption = 'SettingForm'
-  ClientHeight = 288
-  ClientWidth = 742
-  DesignTimePPI = 144
+  ClientHeight = 240
+  ClientWidth = 618
+  DesignTimePPI = 120
   OnCreate = FormCreate
   LCLVersion = '3.6.0.0'
   object ComboBox1: TComboBox
-    Left = 48
-    Height = 40
-    Top = 58
-    Width = 392
-    ItemHeight = 32
+    Left = 40
+    Height = 28
+    Top = 48
+    Width = 327
+    ItemHeight = 20
     Style = csDropDownList
     TabOrder = 0
     OnChange = ComboBox1Change
   end
   object OkButton: TButton
-    Left = 259
-    Height = 37
-    Top = 221
-    Width = 113
+    Left = 216
+    Height = 31
+    Top = 184
+    Width = 94
     Caption = 'Ok'
     TabOrder = 1
     OnClick = OkButtonClick
+  end
+  object Panel1: TPanel
+    Left = 464
+    Height = 43
+    Top = 47
+    Width = 77
+    BorderStyle = bsSingle
+    Caption = '背景色'
+    TabOrder = 2
+    OnClick = Panel1Click
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    Left = 427
+    Top = 142
   end
 end

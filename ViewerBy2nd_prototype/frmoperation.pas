@@ -180,8 +180,7 @@ begin
   begin
     Exit;
   end;
-  PageForm.View := Self;
-  PageForm.Show;
+  PageForm.Display();
 end;
 
 procedure TOperationForm.PreviousButtonClick(Sender: TObject);

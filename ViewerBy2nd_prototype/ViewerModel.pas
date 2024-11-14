@@ -23,7 +23,7 @@ type
   public
     constructor Create(AColor: TColor = clBlack);
     function GetBitmap(Width, Height: Integer): TBitmap;
-    property Color : TColor read FColor;
+    property Color : TColor read FColor write FColor;
   end;
 
   TRepogitory = class

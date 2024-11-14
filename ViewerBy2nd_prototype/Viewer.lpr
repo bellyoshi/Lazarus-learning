@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit
+  Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit, IViewUnit
 
 
   { you can add units after this };
@@ -25,6 +25,9 @@ begin
   Application.CreateForm(TViewerForm, ViewerForm);
   Application.CreateForm(TPageForm, PageForm);
   Application.CreateForm(TSettingForm, SettingForm);
+  formManager := TFormManager.Create;
+  formManager.RegisterView(ViewerForm);
+  formManager.RegisterView(OperationForm);
   Application.Run;
 end.
 

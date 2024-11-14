@@ -5,18 +5,22 @@ unit SettingFormUnit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, FormSizeCustomizerUnit;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
+  FormSizeCustomizerUnit,  IViewUnit, ViewerModel;
 
 type
 
   { TSettingForm }
 
   TSettingForm = class(TForm)
+    ColorDialog1: TColorDialog;
     OkButton: TButton;
     ComboBox1: TComboBox;
+    Panel1: TPanel;
     procedure ComboBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
+    procedure Panel1Click(Sender: TObject);
   private
 
   public
@@ -48,6 +52,7 @@ end;
 procedure TSettingForm.FormCreate(Sender: TObject);
 begin
   PopulateScreenList(ComboBox1); // フォーム作成時にスクリーン一覧を表示
+  Panel1.Color:=model.Background.Color;
 end;
 
 procedure TSettingForm.ComboBox1Change(Sender: TObject);
@@ -63,6 +68,17 @@ end;
 procedure TSettingForm.OkButtonClick(Sender: TObject);
 begin
   Close();
+end;
+
+procedure TSettingForm.Panel1Click(Sender: TObject);
+begin
+  if not ColorDialog1.Execute then
+  begin
+    exit;
+  end;
+  model.Background.Color := ColorDialog1.Color;
+  Panel1.Color:=model.Background.Color;
+  formManager.Update;
 end;
 
 end.

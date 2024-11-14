@@ -23,12 +23,8 @@ type
     PageCountLabel: TLabel;
     procedure CancelButtonClick(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
+    procedure Display();
 
-  private
-    FView : IView;
-    procedure SetView(value : IView);
-  public
-    property  View : IView write SetView;
   end;
 
 var
@@ -36,11 +32,11 @@ var
 
 implementation
 
-procedure TPageForm.SetView(value: IView);
+procedure TPageForm.Display();
 begin
-  FView := Value;
   PageCountLabel.Caption := IntToStr(model.PageCount);
   PageIndexEdit.Caption:= IntToStr(model.PageIndex + 1);
+  Show();
 end;
 
 procedure TPageForm.OkButtonClick(Sender: TObject);
@@ -56,7 +52,7 @@ begin
   end;
 
   model.PageIndex := i - 1;
-  FView.UpdateView;
+  formManager.Update;
   Close;
 
 

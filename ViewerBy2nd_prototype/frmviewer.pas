@@ -6,13 +6,13 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-   ViewerModel, ControlFitter, FormSizeCustomizerUnit;
+   ViewerModel, ControlFitter, FormSizeCustomizerUnit, IViewUnit;
 
 type
 
   { TViewerForm }
 
-  TViewerForm = class(TForm)
+  TViewerForm = class(TForm, IView)
     Image1: TImage;
     MenuItemFullScreen: TMenuItem;
     MenuItemWindowMode: TMenuItem;
@@ -35,6 +35,7 @@ type
   public
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
     procedure ShowDocument();
+    procedure UpdateView();
   end;
 
 var
@@ -47,9 +48,14 @@ implementation
 procedure TViewerForm.ShowDocument();
 begin
     model.View();
-    LoadBitmap();
-    Self.Color:=model.Background.Color;
+    UpdateView();
     Show();
+end;
+
+procedure TViewerForm.UpdateView();
+begin
+  LoadBitmap();
+  Self.Color:=model.Background.Color;
 end;
 
 

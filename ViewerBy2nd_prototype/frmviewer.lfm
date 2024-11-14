@@ -3,7 +3,6 @@ object ViewerForm: TViewerForm
   Height = 240
   Top = 214
   Width = 320
-  BorderStyle = bsNone
   Caption = 'Form2'
   ClientHeight = 240
   ClientWidth = 320

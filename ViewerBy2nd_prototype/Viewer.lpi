@@ -90,6 +90,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="FormSizeCustomizerUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="FormDragUnit.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

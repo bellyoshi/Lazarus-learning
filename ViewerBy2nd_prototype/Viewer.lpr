@@ -10,7 +10,8 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit, IViewUnit
+  Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit,
+  IViewUnit, FormDragUnit
 
 
   { you can add units after this };

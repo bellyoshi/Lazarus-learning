@@ -71,73 +71,119 @@ end;
 procedure TFormDrag.PerformResize(X, Y: Integer);
 var
   DeltaX, DeltaY: Integer;
+  Width : Integer;
+  Height : Integer;
+  Left : Integer;
+  Top : Integer;
 begin
+
   DeltaX := X - FDragStartPosX;
   DeltaY := Y - FDragStartPosY;
 
+  Width := FForm.Width;
+  Height := FForm.Height;
+  Left := FForm.Left;
+  Top := FForm.Top;
+
   case FResizeDirection of
     rdLeft:
-      if FForm.Width - DeltaX >= MIN_FORM_SIZE then
       begin
-        FForm.Left := FForm.Left + DeltaX;
-        FForm.Width := FForm.Width - DeltaX;
+      if Width - DeltaX >= MIN_FORM_SIZE then
+      begin
+        Left := Left + DeltaX;
+        Width := Width - DeltaX;
+
+      end;
+      FDragStartPosX := 0;
+      FDragStartPosY := Y;
       end;
     rdRight:
-      if FForm.Width + DeltaX >= MIN_FORM_SIZE then
-        FForm.Width := FForm.Width + DeltaX;
-    rdTop:
-      if FForm.Height - DeltaY >= MIN_FORM_SIZE then
       begin
-        FForm.Top := FForm.Top + DeltaY;
-        FForm.Height := FForm.Height - DeltaY;
+        if Width + DeltaX >= MIN_FORM_SIZE then
+          Width := Width + DeltaX;
+        FDragStartPosX := X;
+        FDragStartPosY := Y;
       end;
+    rdTop:
+      if Height - DeltaY >= MIN_FORM_SIZE then
+      begin
+        Top := Top + DeltaY;
+        Height := Height - DeltaY;
+        FDragStartPosX := X;
+        FDragStartPosY := 0;
+      end;
+
     rdBottom:
-      if FForm.Height + DeltaY >= MIN_FORM_SIZE then
-        FForm.Height := FForm.Height + DeltaY;
+      begin
+      if Height + DeltaY >= MIN_FORM_SIZE then
+        Height := Height + DeltaY;
+        FDragStartPosX := X;
+        FDragStartPosY := Y
+      end;
     rdTopLeft:
       begin
-        if FForm.Width - DeltaX >= MIN_FORM_SIZE then
+        if Width - DeltaX >= MIN_FORM_SIZE then
         begin
-          FForm.Left := FForm.Left + DeltaX;
-          FForm.Width := FForm.Width - DeltaX;
+          Left := Left + DeltaX;
+          Width := Width - DeltaX;
         end;
-        if FForm.Height - DeltaY >= MIN_FORM_SIZE then
+        if Height - DeltaY >= MIN_FORM_SIZE then
         begin
-          FForm.Top := FForm.Top + DeltaY;
-          FForm.Height := FForm.Height - DeltaY;
+          Top := Top + DeltaY;
+          Height := Height - DeltaY;
         end;
+          FDragStartPosX := 0;
+          FDragStartPosY := 0;
       end;
+
     rdTopRight:
       begin
-        if FForm.Width + DeltaX >= MIN_FORM_SIZE then
-          FForm.Width := FForm.Width + DeltaX;
-        if FForm.Height - DeltaY >= MIN_FORM_SIZE then
+        if Width + DeltaX >= MIN_FORM_SIZE then
+          Width := Width + DeltaX;
+        if Height - DeltaY >= MIN_FORM_SIZE then
         begin
-          FForm.Top := FForm.Top + DeltaY;
-          FForm.Height := FForm.Height - DeltaY;
+          Top := Top + DeltaY;
+          Height := Height - DeltaY;
         end;
+          FDragStartPosX := Width;
+          FDragStartPosY := 0;
       end;
+
     rdBottomLeft:
       begin
-        if FForm.Width - DeltaX >= MIN_FORM_SIZE then
+        if Width - DeltaX >= MIN_FORM_SIZE then
         begin
-          FForm.Left := FForm.Left + DeltaX;
-          FForm.Width := FForm.Width - DeltaX;
+          Left := Left + DeltaX;
+          Width := Width - DeltaX;
         end;
-        if FForm.Height + DeltaY >= MIN_FORM_SIZE then
-          FForm.Height := FForm.Height + DeltaY;
+        if Height + DeltaY >= MIN_FORM_SIZE then
+          Height := Height + DeltaY;
+        FDragStartPosX := 0;
+        FDragStartPosY := Height;
       end;
+
     rdBottomRight:
       begin
-        if FForm.Width + DeltaX >= MIN_FORM_SIZE then
-          FForm.Width := FForm.Width + DeltaX;
-        if FForm.Height + DeltaY >= MIN_FORM_SIZE then
-          FForm.Height := FForm.Height + DeltaY;
+        if Width + DeltaX >= MIN_FORM_SIZE then
+          Width := Width + DeltaX;
+        if Height + DeltaY >= MIN_FORM_SIZE then
+          Height := Height + DeltaY;
+        FDragStartPosX := Width;
+        FDragStartPosY := Height;
       end;
-  end;
+    else
+      begin
+              FDragStartPosX := X;
+      FDragStartPosY := Y;
+      end;
 
-  FDragStartPosX := X;
-  FDragStartPosY := Y;
+  end;
+  
+  FForm.Width := Width;
+  FForm.Height := Height;
+  FForm.Left := Left;
+  FForm.Top := Top;
+
 end;
 
 procedure TFormDrag.FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

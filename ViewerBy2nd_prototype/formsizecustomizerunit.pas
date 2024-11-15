@@ -21,6 +21,7 @@ type
     procedure SetIsFullScreen(AValue: Boolean);
     procedure SetScreenIndex(AValue: Integer);
     procedure DoSizer();
+    procedure BackupOriginal();
   public
     procedure RegistForm(AForm: TForm);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
@@ -35,14 +36,19 @@ implementation
 
 { TFormSizeCustomizer }
 
+procedure TFormSizeCustomizer.BackupOriginal();
+begin
+  // 初期値として、元のサイズと位置を保存
+  FOriginalTop := FRegisteredForm.Top;
+  FOriginalLeft := FRegisteredForm.Left;
+  FOriginalWidth := FRegisteredForm.Width;
+  FOriginalHeight := FRegisteredForm.Height;
+end;
+
 procedure TFormSizeCustomizer.RegistForm(AForm: TForm);
 begin
   FRegisteredForm := AForm;
-  // 初期値として、元のサイズと位置を保存
-  FOriginalTop := AForm.Top;
-  FOriginalLeft := AForm.Left;
-  FOriginalWidth := AForm.Width;
-  FOriginalHeight := AForm.Height;
+  BackupOriginal();
   FIsFullScreen := False;
   FScreenIndex := 0;  // デフォルトでプライマリモニタ
   TFormDrag.Create(AForm);
@@ -75,14 +81,17 @@ begin
       FRegisteredForm.Left := FOriginalLeft;
       FRegisteredForm.Width := FOriginalWidth;
       FRegisteredForm.Height := FOriginalHeight;
-      FRegisteredForm.BorderStyle := bsSizeable;
+      FRegisteredForm.BorderStyle := bsNone;
     end;
 end;
 
 procedure TFormSizeCustomizer.SetIsFullScreen(AValue: Boolean);
 begin
-  if FIsFullScreen = AValue then Exit;
-      FIsFullScreen := AValue;
+  if FIsFullScreen = AValue then
+     Exit;
+  if AValue And not FIsFullScreen then
+     BackupOriginal();
+  FIsFullScreen := AValue;
   DoSizer();
 end;
 

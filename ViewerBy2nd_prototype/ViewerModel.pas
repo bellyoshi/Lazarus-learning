@@ -12,7 +12,7 @@ type
 
   TFilesParam = record
     Filename: string;
-//    Selected: Boolean;
+    Selected: Boolean;
     Index: Integer;
   end;
 
@@ -30,17 +30,21 @@ type
   private
     FFilesList: array of TFilesParam;
     FPdfImageCreatorList : array of TPdfImageCreator;
-    FSelectIndex : Integer;
+    FSelected : array of Boolean;
     FViewPdfDocument: TPdfImageCreator;
     FOperationPdfDocument: TPdfImageCreator;
+    function GetSelected(I : Integer): Boolean;
+    procedure SetSelected(I: Integer; Value : Boolean);
+    procedure RecalcSingleSelect();
   public
-        procedure Disselect;
+    procedure Disselect;
+    procedure SelectAll();
+    procedure Delete();
     procedure AddFile(filename: String);
     property OperationFile : TPdfImageCreator read FOperationPdfDocument write FOperationPdfDocument;
     property ViewFile : TPdfImageCreator read FViewPdfDocument write FViewPdfDocument;
+    property Selected [i : Longint] : Boolean Read GetSelected write SetSelected;
     function GetFileNames: TStringList;
-    procedure Select(Index: Integer);
-    property SelectIndex : Integer read FSelectIndex;
     constructor Create;
   end;
 
@@ -125,27 +129,82 @@ end;
 constructor TRepogitory.Create();
 begin
   inherited Create;
-  FSelectIndex := -1;
   ViewFile := nil;
 end;
 
-procedure TRepogitory.Select(Index: Integer);
+procedure TRepogitory.Delete();
+var
+  i : Integer;
 begin
-  FOperationPdfDocument := FPdfImageCreatorList[index];
-  FSelectIndex := index;
+  // create copy
+  for i := 0 to High(FSelected) do
+  begin
+    //todo delete
+  end;
 end;
 
-procedure TRepogitory.DisSelect;
+procedure TRepogitory.SelectAll();
+var
+  i : Integer;
 begin
-  FSelectIndex:= -1;
-      FViewPdfDocument := nil;
-    FOperationPdfDocument:= nil;
+  for i := 0 to High(FSelected) do
+  begin
+    FSelected[i] := True;
+  end;
+  RecalcSingleSelect();
+end;
+
+procedure TRepogitory.RecalcSingleSelect();
+var
+  index : Integer;
+  i : Integer;
+begin
+  index := -1;
+  for i := 0 to High(FSelected) do
+  begin
+       if FSelected[i] then begin
+         if index = -1 then begin
+            index := i;
+         end else
+         begin
+           index := -1;
+           break;
+         end;
+       end;
+  end;
+  if index <> -1 then
+  begin
+      FOperationPdfDocument := FPdfImageCreatorList[index];
+  end;
+end;
+
+
+procedure TRepogitory.SetSelected(I: Integer; Value : Boolean);
+begin
+  FSelected[i] := Value;
+  RecalcSingleSelect();
+end;
+function TRepogitory.GetSelected(I: Integer): Boolean;
+begin
+  Result := FSelected[i]
+end;
+procedure TRepogitory.DisSelect;
+var
+  i : LongInt;
+begin
+  for i := 0 to High(FSelected) do
+  begin
+    FSelected[i] := False;
+  end;
+  FViewPdfDocument := nil;
+  FOperationPdfDocument:= nil;
 end;
 
 procedure TRepogitory.AddFile(filename :String);
 var
-    newFileParam: TFilesParam;
+  newFileParam: TFilesParam;
   pdfDocument : TPdfImageCreator;
+  i : Integer;
 begin
 
     pdfDocument := TPdfImageCreator.Create(Filename);
@@ -160,7 +219,12 @@ begin
     newFileParam.Index := High(FPdfImageCreatorList);
     SetLength(FFilesList, Length(FFilesList) + 1);
     FFilesList[High(FFilesList)] := newFileParam;
-    FSelectIndex := newFileParam.Index;
+    for i := 0 to High(FSelected) - 1 do
+    begin
+      FSelected[i] := False;
+    end;
+    FSelected[High(FSelected)] := True;
+
 end;
 
 { TViewerModel }

@@ -17,9 +17,9 @@ type
     Button1: TButton;
     BackGroundDisplayButton: TButton;
     AutoUpdateCheckBox: TCheckBox;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
+    SelectAllButton: TButton;
+    DelteButton: TButton;
+    DeselectButton: TButton;
     Button5: TButton;
     Button6: TButton;
     LastPageButton: TButton;
@@ -69,10 +69,13 @@ type
     Panel1: TPanel;
     procedure BackGroundDisplayButtonClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure DelteButtonClick(Sender: TObject);
+    procedure DeselectButtonClick(Sender: TObject);
     procedure DisplaySettingMenuClick(Sender: TObject);
     procedure FilesListBoxSelectionChange(Sender: TObject; User: boolean);
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
+    procedure SelectAllButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
     procedure ViewerDisplayButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -147,6 +150,7 @@ procedure TOperationForm.LoadList();
 var
   fileList: TStringList;
   repogitory: TRepogitory;
+  i : Integer;
 begin
   repogitory := model.Repogitory;
   FFilesListBoxLoaded := True;
@@ -158,8 +162,11 @@ begin
     fileList.Free; // Free the TStringList
   end;
 
-  if (repogitory.SelectIndex >= 0) and (repogitory.SelectIndex < FilesListBox.Items.Count) then
-    FilesListBox.Selected[repogitory.SelectIndex] := True;
+  for i := 0 to FilesListBox.Items.Count - 1 do
+  begin
+       FilesListBox.Selected[i] := repogitory.Selected[i];
+  end;
+
   FFilesListBoxLoaded := False;
 end;
 
@@ -220,11 +227,23 @@ begin
 
 end;
 
+procedure TOperationForm.DelteButtonClick(Sender: TObject);
+begin
+  model.Repogitory.Delete;
+  UpdateView();
+end;
+
+procedure TOperationForm.DeselectButtonClick(Sender: TObject);
+begin
+  model.Repogitory.Disselect;
+  UpdateView();
+end;
+
 procedure TOperationForm.BackGroundDisplayButtonClick(Sender: TObject);
 begin
   model.Repogitory.Disselect;
   ViewerForm.ShowDocument() ;
-  UpdateView
+  UpdateView();
 end;
 
 procedure TOperationForm.DisplaySettingMenuClick(Sender: TObject);
@@ -242,8 +261,7 @@ begin
 
   for i:= 0 to FilesListBox.Count - 1 do
   begin
-       if FilesListBox.Selected[i] then
-          model.Repogitory.Select(i);
+       model.Repogitory.Selected[i] := FilesListBox.Selected[i];
   end;
   UpdateView;
 
@@ -259,6 +277,12 @@ procedure TOperationForm.FirstPageButtonClick(Sender: TObject);
 begin
   model.FirstPage();
   UpdateView;
+end;
+
+procedure TOperationForm.SelectAllButtonClick(Sender: TObject);
+begin
+  model.Repogitory.SelectAll;
+  UpdateView();
 end;
 
 procedure TOperationForm.ViewerCloseButtonClick(Sender: TObject);

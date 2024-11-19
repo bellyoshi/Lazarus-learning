@@ -30,7 +30,6 @@ type
   private
     FFilesList: array of TFilesParam;
     FPdfImageCreatorList : array of TPdfImageCreator;
-    FSelected : array of Boolean;
     FViewPdfDocument: TPdfImageCreator;
     FOperationPdfDocument: TPdfImageCreator;
     function GetSelected(I : Integer): Boolean;
@@ -137,7 +136,7 @@ var
   i : Integer;
 begin
   // create copy
-  for i := 0 to High(FSelected) do
+  for i := 0 to High(FFilesList) do
   begin
     //todo delete
   end;
@@ -147,9 +146,9 @@ procedure TRepogitory.SelectAll();
 var
   i : Integer;
 begin
-  for i := 0 to High(FSelected) do
+  for i := 0 to High(FFilesList) do
   begin
-    FSelected[i] := True;
+    FFilesList[i].Selected := True;
   end;
   RecalcSingleSelect();
 end;
@@ -160,9 +159,9 @@ var
   i : Integer;
 begin
   index := -1;
-  for i := 0 to High(FSelected) do
+  for i := 0 to High(FFilesList) do
   begin
-       if FSelected[i] then begin
+       if FFilesList[i].Selected then begin
          if index = -1 then begin
             index := i;
          end else
@@ -181,20 +180,20 @@ end;
 
 procedure TRepogitory.SetSelected(I: Integer; Value : Boolean);
 begin
-  FSelected[i] := Value;
+  FFilesList[i].Selected := Value;
   RecalcSingleSelect();
 end;
 function TRepogitory.GetSelected(I: Integer): Boolean;
 begin
-  Result := FSelected[i]
+  Result := FFilesList[i].Selected;
 end;
 procedure TRepogitory.DisSelect;
 var
   i : LongInt;
 begin
-  for i := 0 to High(FSelected) do
+  for i := 0 to High(FFilesList) do
   begin
-    FSelected[i] := False;
+    FFilesList[i].Selected := False;
   end;
   FViewPdfDocument := nil;
   FOperationPdfDocument:= nil;
@@ -219,11 +218,11 @@ begin
     newFileParam.Index := High(FPdfImageCreatorList);
     SetLength(FFilesList, Length(FFilesList) + 1);
     FFilesList[High(FFilesList)] := newFileParam;
-    for i := 0 to High(FSelected) - 1 do
+    for i := 0 to High(FFilesList) - 1 do
     begin
-      FSelected[i] := False;
+      FFilesList[i].Selected := False;
     end;
-    FSelected[High(FSelected)] := True;
+    FFilesList[High(FFilesList)].Selected := True;
 
 end;
 

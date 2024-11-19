@@ -5,15 +5,16 @@ unit ViewerModel;
 interface
 
 uses
-  Classes, SysUtils, Graphics, PdfImageCreator;
+  Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections;
 
 
 type
 
-  TFilesParam = record
+  TFilesParam = class
+  public
     Filename: string;
     Selected: Boolean;
-    Index: Integer;
+    ImageCreator : TPdfImageCreator;
   end;
 
 type
@@ -28,8 +29,8 @@ type
 
   TRepogitory = class
   private
-    FFilesList: array of TFilesParam;
-    FPdfImageCreatorList : array of TPdfImageCreator;
+    FFilesList: specialize TList<TFilesParam>;
+
     FViewPdfDocument: TPdfImageCreator;
     FOperationPdfDocument: TPdfImageCreator;
     function GetSelected(I : Integer): Boolean;
@@ -128,27 +129,38 @@ end;
 constructor TRepogitory.Create();
 begin
   inherited Create;
+  FFilesList := specialize TList<TFilesParam>.Create();
   ViewFile := nil;
 end;
 
 procedure TRepogitory.Delete();
 var
-  i : Integer;
+  rList : specialize TList<TFilesParam> ;
+  item : TFilesParam;
 begin
-  // create copy
-  for i := 0 to High(FFilesList) do
+  rList := specialize TList<TFilesParam>.Create();
+  for item in FFilesList do
   begin
-    //todo delete
+    if item.Selected then
+    begin
+      rList.Add(item);
+    end;
   end;
+  for item in rList do
+  begin
+    FFilesList.Remove(item);
+    item.Free;
+  end;
+  rList.Free;
 end;
 
 procedure TRepogitory.SelectAll();
 var
   i : Integer;
 begin
-  for i := 0 to High(FFilesList) do
+  for i := 0 to FFilesList.Count - 1 do
   begin
-    FFilesList[i].Selected := True;
+    FFilesList.Items[i].Selected := True;
   end;
   RecalcSingleSelect();
 end;
@@ -159,9 +171,9 @@ var
   i : Integer;
 begin
   index := -1;
-  for i := 0 to High(FFilesList) do
+  for i := 0 to FFilesList.Count - 1 do
   begin
-       if FFilesList[i].Selected then begin
+       if FFilesList.Items[i].Selected then begin
          if index = -1 then begin
             index := i;
          end else
@@ -171,16 +183,18 @@ begin
          end;
        end;
   end;
-  if index <> -1 then
+  if index = -1 then
   begin
-      FOperationPdfDocument := FPdfImageCreatorList[index];
+      FOperationPdfDocument := nil;
+  end else begin
+      FOperationPdfDocument := FFilesList[index].ImageCreator;
   end;
 end;
 
 
 procedure TRepogitory.SetSelected(I: Integer; Value : Boolean);
 begin
-  FFilesList[i].Selected := Value;
+  FFilesList.Items[i].Selected := Value;
   RecalcSingleSelect();
 end;
 function TRepogitory.GetSelected(I: Integer): Boolean;
@@ -191,9 +205,9 @@ procedure TRepogitory.DisSelect;
 var
   i : LongInt;
 begin
-  for i := 0 to High(FFilesList) do
+  for i := 0 to FFilesList.Count - 1 do
   begin
-    FFilesList[i].Selected := False;
+    FFilesList.Items[i].Selected := False;
   end;
   FViewPdfDocument := nil;
   FOperationPdfDocument:= nil;
@@ -202,27 +216,23 @@ end;
 procedure TRepogitory.AddFile(filename :String);
 var
   newFileParam: TFilesParam;
-  pdfDocument : TPdfImageCreator;
+  pdfImageCreator : TPdfImageCreator;
   i : Integer;
 begin
 
-    pdfDocument := TPdfImageCreator.Create(Filename);
-    FOperationPdfDocument := pdfDocument;
+    pdfImageCreator := TPdfImageCreator.Create(Filename);
+    FOperationPdfDocument := pdfImageCreator;
 
-    // Add pdfDocument to FPdfImageCreatorList
-    SetLength(FPdfImageCreatorList, Length(FPdfImageCreatorList) + 1);
-    FPdfImageCreatorList[High(FPdfImageCreatorList)] := pdfDocument;
-
-    // Add filename to FFilesList
+    newFileParam := TFilesParam.Create();
     newFileParam.Filename := Filename;
-    newFileParam.Index := High(FPdfImageCreatorList);
-    SetLength(FFilesList, Length(FFilesList) + 1);
-    FFilesList[High(FFilesList)] := newFileParam;
-    for i := 0 to High(FFilesList) - 1 do
+    newFileParam.ImageCreator := pdfImageCreator;
+    FFilesList.Add(newFileParam);
+
+    for i := 0 to FFilesList.Count - 1 do
     begin
-      FFilesList[i].Selected := False;
+      FFilesList.Items[i].Selected := False;
     end;
-    FFilesList[High(FFilesList)].Selected := True;
+    newFileParam.Selected := True;
 
 end;
 
@@ -239,7 +249,7 @@ var
 begin
   fileList := TStringList.Create;
   try
-    for i := 0 to High(FFilesList) do
+    for i := 0 to FFilesList.Count -1 do
       fileList.Add(FFilesList[i].Filename);
     Result := fileList;
   except

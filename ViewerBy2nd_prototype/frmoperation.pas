@@ -1,5 +1,10 @@
 unit frmOperation;
 
+// ToDo: Zoom %
+// Todo: fitWindow
+// Todo: mouse scrool
+// Todo: open image
+
 
 
 interface

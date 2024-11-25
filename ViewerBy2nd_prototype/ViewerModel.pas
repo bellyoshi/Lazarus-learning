@@ -17,7 +17,13 @@ type
     ImageCreator : TPdfImageCreator;
   end;
 
-type
+  TZoom = class
+  private
+    FRate : Double;
+  public
+    property Rate : Double read FRate write FRate;
+  end;
+
   TBackground = class
   private
     FColor: TColor;

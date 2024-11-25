@@ -177,21 +177,28 @@ object OperationForm: TOperationForm
     TabOrder = 10
     OnClick = FirstPageButtonClick
   end
-  object Button5: TButton
+  object ZoomInButton: TButton
     Left = 297
     Height = 31
     Top = 160
     Width = 94
-    Caption = 'Button5'
+    Caption = 'ZoomInButton'
     TabOrder = 11
   end
-  object Button6: TButton
+  object ZoomOutButton: TButton
     Left = 424
     Height = 31
     Top = 160
     Width = 94
-    Caption = 'Button6'
+    Caption = 'ZoomOutButton'
     TabOrder = 12
+  end
+  object ZoomRateLabel: TLabel
+    Left = 378
+    Height = 20
+    Top = 115
+    Width = 24
+    Caption = '100'
   end
   object OpenDialog1: TOpenDialog
     Left = 416

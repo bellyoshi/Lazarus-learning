@@ -4,6 +4,8 @@ unit frmOperation;
 // Todo: fitWindow
 // Todo: mouse scrool
 // Todo: open image
+// Todo: movie
+// Todo: slim normal window size
 
 
 
@@ -22,11 +24,12 @@ type
     Button1: TButton;
     BackGroundDisplayButton: TButton;
     AutoUpdateCheckBox: TCheckBox;
+    ZoomRateLabel: TLabel;
     SelectAllButton: TButton;
     DelteButton: TButton;
     DeselectButton: TButton;
-    Button5: TButton;
-    Button6: TButton;
+    ZoomInButton: TButton;
+    ZoomOutButton: TButton;
     LastPageButton: TButton;
     FirstPageButton: TButton;
     FileInfoLabel: TLabel;

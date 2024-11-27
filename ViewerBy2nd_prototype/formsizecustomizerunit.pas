@@ -5,12 +5,11 @@ unit FormSizeCustomizerUnit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics,  ExtCtrls, FormDragUnit;
+  Classes, SysUtils, Forms, Controls, Graphics,  ExtCtrls;
 
 type
   TFormSizeCustomizer = class(TObject)
   private
-    FFormDrag: TFormDrag;
     FRegisteredForm: TForm;
     FIsFullScreen: Boolean;
     FScreenIndex: Integer;
@@ -51,8 +50,7 @@ begin
   BackupOriginal();
   FIsFullScreen := False;
   FScreenIndex := 0;  // デフォルトでプライマリモニタ
-  TFormDrag.Create(AForm);
-  AForm.BorderStyle:=bsNone;
+  AForm.BorderStyle:=bsSizeable;
 end;
 
 procedure TFormSizeCustomizer.DoSizer()     ;
@@ -81,7 +79,7 @@ begin
       FRegisteredForm.Left := FOriginalLeft;
       FRegisteredForm.Width := FOriginalWidth;
       FRegisteredForm.Height := FOriginalHeight;
-      FRegisteredForm.BorderStyle := bsNone;
+      FRegisteredForm.BorderStyle := bsSizeable;
     end;
 end;
 

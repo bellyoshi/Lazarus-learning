@@ -90,6 +90,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="FormSizeCustomizerUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="imagecreatorunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ImageCreatorUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

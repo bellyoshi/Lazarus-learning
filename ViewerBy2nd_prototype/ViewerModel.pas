@@ -10,19 +10,26 @@ uses
 
 type
 
+  TZoom = class
+  private
+    FRate : Double;
+  public
+    constructor Create(ImageCreator: TImageCreator);
+    property Rate : Double read FRate write FRate;
+    procedure ZoomIn();
+    procedure ZoomOut();
+    procedure GetImage(Width, Height: Integer): TBitmap;
+  end;
+
   TFilesParam = class
   public
     Filename: string;
     Selected: Boolean;
     ImageCreator : TPdfImageCreator;
+    Zoom: TZoom;
   end;
 
-  TZoom = class
-  private
-    FRate : Double;
-  public
-    property Rate : Double read FRate write FRate;
-  end;
+
 
   TBackground = class
   private

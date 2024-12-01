@@ -13,11 +13,13 @@ type
 
 
   TFilesParam = class
-  public
     Filename: string;
     Selected: Boolean;
     ImageCreator : TPdfImageCreator;
     Zoom: TZoom;
+  public
+    constructor Create(AFileName : string; ASelected : Boolean);
+
   end;
 
 
@@ -34,20 +36,19 @@ type
   TRepogitory = class
   private
     FFilesList: specialize TList<TFilesParam>;
-
-    FViewPdfDocument: TPdfImageCreator;
-    FOperationPdfDocument: TPdfImageCreator;
+    FViewFile: TFilesParam;
+    function GetSelectedIndex : Integer;
     function GetSelected(I : Integer): Boolean;
     procedure SetSelected(I: Integer; Value : Boolean);
-    procedure RecalcSingleSelect();
+
   public
     procedure Disselect;
     procedure SelectAll();
     procedure Delete();
     procedure AddFile(filename: String);
-    property OperationFile : TPdfImageCreator read FOperationPdfDocument write FOperationPdfDocument;
-    property ViewFile : TPdfImageCreator read FViewPdfDocument write FViewPdfDocument;
+    property ViewFile : TFilesParam read FViewFile write FViewFile;
     property Selected [i : Longint] : Boolean Read GetSelected write SetSelected;
+    function GetSelectedFile : TFilesParam;
     function GetFileNames: TStringList;
     constructor Create;
   end;
@@ -66,9 +67,9 @@ type
     function GetCanFirst: Boolean;
     function GetPageIndex: Integer;
     function GetPageCount: Integer;
-    function GetOperationFile : TPdfImageCreator;
-    property OperationFile : TPdfImageCreator read GetOperationFile;
-
+    function GetOperationFile : TFilesParam;
+    property OperationFile : TFilesParam read GetOperationFile;
+    function GetZoom : TZoom;
   public
     procedure Next;
     procedure SetPageIndex(value: Integer);
@@ -92,6 +93,7 @@ type
     property PageCount: Integer read GetPageCount;
     property Repogitory : TRepogitory read FRepogitory;
     property Background : TBackground read FBackground;
+    property Zoom : TZoom read GetZoom;
 
 
     procedure LastPage();
@@ -106,6 +108,17 @@ var
   model: TViewerModel;
 
 implementation
+
+{TFilesParam}
+
+constructor TFilesParam.Create(AFileName : string; ASelected : Boolean);
+begin
+  inherited Create;
+  ImageCreator := TPdfImageCreator.Create(AFileName);
+  Zoom := TZoom.Create(ImageCreator);
+  Filename := AFileName;
+  Selected := ASelected;
+end;
 
 {TBackground}
 constructor TBackground.Create(AColor: TColor = clBlack);
@@ -134,7 +147,7 @@ constructor TRepogitory.Create();
 begin
   inherited Create;
   FFilesList := specialize TList<TFilesParam>.Create();
-  ViewFile := nil;
+  FViewFile := nil;
 end;
 
 procedure TRepogitory.Delete();
@@ -166,10 +179,9 @@ begin
   begin
     FFilesList.Items[i].Selected := True;
   end;
-  RecalcSingleSelect();
 end;
 
-procedure TRepogitory.RecalcSingleSelect();
+function TRepogitory.GetSelectedIndex : Integer;
 var
   index : Integer;
   i : Integer;
@@ -187,6 +199,31 @@ begin
          end;
        end;
   end;
+  Result := index;
+end;
+
+function TRepogitory.GetSelectedFile() : TFilesParam;
+var
+  index : Integer;
+begin
+  index := GetSelectedIndex();
+  if index = -1 then
+  begin
+    Result := nil;
+  end
+  else
+  begin
+    Result := FFilesList.Items[index];
+  end;
+
+end;
+
+{
+procedure TRepogitory.RecalcSingleSelect();
+var
+  index : Integer;
+begin
+  index := GetSelectedIndex();
   if index = -1 then
   begin
       FOperationPdfDocument := nil;
@@ -194,12 +231,12 @@ begin
       FOperationPdfDocument := FFilesList[index].ImageCreator;
   end;
 end;
-
+}
 
 procedure TRepogitory.SetSelected(I: Integer; Value : Boolean);
 begin
   FFilesList.Items[i].Selected := Value;
-  RecalcSingleSelect();
+//  RecalcSingleSelect();
 end;
 function TRepogitory.GetSelected(I: Integer): Boolean;
 begin
@@ -213,8 +250,8 @@ begin
   begin
     FFilesList.Items[i].Selected := False;
   end;
-  FViewPdfDocument := nil;
-  FOperationPdfDocument:= nil;
+  FViewFile := nil;
+//  FOperationPdfDocument:= nil;
 end;
 
 procedure TRepogitory.AddFile(filename :String);
@@ -223,27 +260,28 @@ var
   pdfImageCreator : TPdfImageCreator;
   i : Integer;
 begin
+  for i := 0 to FFilesList.Count - 1 do
+  begin
+    FFilesList.Items[i].Selected := False;
+  end;
+  newFileParam := TFilesParam.Create(Filename, true);
+  FFilesList.Add(newFileParam);
 
-    pdfImageCreator := TPdfImageCreator.Create(Filename);
-    FOperationPdfDocument := pdfImageCreator;
 
-    newFileParam := TFilesParam.Create();
-    newFileParam.Filename := Filename;
-    newFileParam.ImageCreator := pdfImageCreator;
-    FFilesList.Add(newFileParam);
-
-    for i := 0 to FFilesList.Count - 1 do
-    begin
-      FFilesList.Items[i].Selected := False;
-    end;
-    newFileParam.Selected := True;
 
 end;
 
 { TViewerModel }
-function TViewerModel.GetOperationFile : TPdfImageCreator;
+function TViewerModel.GetZoom : TZoom;
 begin
-  Result := Repogitory.OperationFile;
+  if Assigned( Repogitory.GetSelectedFile) then
+  Result := Repogitory.GetSelectedFile.Zoom;
+end;
+
+function TViewerModel.GetOperationFile : TFilesParam;
+begin
+      Result :=  Repogitory.GetSelectedFile;
+
 end;
 
 function TRepogitory.GetFileNames: TStringList;
@@ -276,7 +314,7 @@ end;
 procedure TViewerModel.SetPageIndex(value: Integer);
 begin
 
-  if not Assigned(Repogitory.OperationFile) then
+  if Repogitory.GetSelectedIndex = -1 then
     Exit;
 
   if value < 0 then
@@ -285,35 +323,35 @@ begin
   if value > PageCount - 1 then
     value := PageCount - 1;
 
-  OperationFile.PageIndex := value;
+  OperationFile.ImageCreator.PageIndex := value;
 end;
 
 function TViewerModel.GetPageCount: Integer;
 begin
-  if not Assigned(Repogitory.OperationFile) then
+  if Repogitory.GetSelectedIndex = -1 then
     Result := 0
   else
-    Result := OperationFile.PageCount;
+    Result := OperationFile.ImageCreator.PageCount;
 end;
 
 function TViewerModel.GetPageIndex: Integer;
 begin
-  if not Assigned(Repogitory.OperationFile) then
+  if Repogitory.GetSelectedIndex = -1 then
     Result := 0
   else
-    Result := OperationFile.PageIndex;
+    Result := OperationFile.ImageCreator.PageIndex;
 end;
 
 procedure TViewerModel.Previous;
 begin
-  if Assigned(Repogitory.OperationFile) then
-    OperationFile.PageIndex := OperationFile.PageIndex - 1;
+  if 0 <= Repogitory.GetSelectedIndex then
+    OperationFile.ImageCreator.PageIndex := OperationFile.ImageCreator.PageIndex - 1;
 end;
 
 procedure TViewerModel.Next;
 begin
-  if Assigned(Repogitory.OperationFile) then
-    OperationFile.PageIndex := OperationFile.PageIndex + 1;
+  if 0 <= Repogitory.GetSelectedIndex then
+    OperationFile.ImageCreator.PageIndex := OperationFile.ImageCreator.PageIndex + 1;
 end;
 
 function TViewerModel.GetHasOperationDocument: Boolean;
@@ -363,7 +401,7 @@ end;
 function TViewerModel.GetViewBitmap(Width, Height: Integer): TBitmap;
 begin
   if Assigned(Repogitory.ViewFile) then
-    Result := Repogitory.ViewFile.GetBitmap(Width, Height)
+    Result := Repogitory.ViewFile.Zoom.GetBitmap(Width, Height)
   else
     Result := FBackground.GetBitmap(Width, Height);
 end;
@@ -371,7 +409,7 @@ end;
 function TViewerModel.GetThumbnailBitmap(Width, Height: Integer): TBitmap;
 begin
   if Assigned(OperationFile) then
-    Result := OperationFile.GetBitmap(Width, Height)
+    Result := OperationFile.Zoom.GetBitmap(Width, Height)
   else
     Result := FBackground.GetBitmap(Width, Height);
 end;
@@ -379,7 +417,7 @@ end;
 function TViewerModel.GetViewRatio: Double;
 begin
   if Assigned(Repogitory.ViewFile) then
-    Result := Repogitory.ViewFile.Ratio
+    Result := Repogitory.ViewFile.ImageCreator.Ratio
   else
     Result := 1;
 end;
@@ -387,19 +425,19 @@ end;
 function TViewerModel.GetThumbnailRatio: Double;
 begin
   if Assigned(OperationFile) then
-    Result := OperationFile.Ratio
+    Result := OperationFile.ImageCreator.Ratio
   else
     Result := 1;
 end;
 
 function TViewerModel.GetCanNext: Boolean;
 begin
-  Result := Assigned(OperationFile) and (OperationFile.PageIndex < OperationFile.PageCount - 1);
+  Result := Assigned(OperationFile) and (OperationFile.ImageCreator.PageIndex < OperationFile.ImageCreator.PageCount - 1);
 end;
 
 function TViewerModel.GetCanPrevious: Boolean;
 begin
-  Result := Assigned(OperationFile) and (OperationFile.PageIndex > 0);
+  Result := Assigned(OperationFile) and (OperationFile.ImageCreator.PageIndex > 0);
 end;
 
 function TViewerModel.GetCanLast: Boolean;

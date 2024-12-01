@@ -184,6 +184,7 @@ object OperationForm: TOperationForm
     Width = 94
     Caption = 'ZoomInButton'
     TabOrder = 11
+    OnClick = ZoomInButtonClick
   end
   object ZoomOutButton: TButton
     Left = 424
@@ -192,6 +193,7 @@ object OperationForm: TOperationForm
     Width = 94
     Caption = 'ZoomOutButton'
     TabOrder = 12
+    OnClick = ZoomOutButtonClick
   end
   object ZoomRateLabel: TLabel
     Left = 378

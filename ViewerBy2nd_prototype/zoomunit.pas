@@ -19,7 +19,7 @@ type
     property Rate: Double read FRate write SetRate;
     procedure ZoomIn();
     procedure ZoomOut();
-    function GetImage(Width, Height: Integer): TBitmap;
+    function GetBitmap(Width, Height: Integer): TBitmap;
   end;
 
 implementation
@@ -78,7 +78,7 @@ begin
   Rate := GetNextZoom(False);
 end;
 
-function TZoom.GetImage(Width, Height: Integer): TBitmap;
+function TZoom.GetBitmap(Width, Height: Integer): TBitmap;
 var
   ZoomedWidth, ZoomedHeight: Integer;
   SourceImage: TBitmap;

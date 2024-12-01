@@ -14,7 +14,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, frmViewer, ViewerModel, ControlFitter,
-  PageFormUnit, SettingFormUnit, IViewUnit, FormSizeCustomizerUnit;
+  PageFormUnit, SettingFormUnit, IViewUnit, FormSizeCustomizerUnit, ZoomUnit;
 
 type
 
@@ -95,6 +95,8 @@ type
     procedure PageCountLabelClick(Sender: TObject);
     procedure PreviousButtonClick(Sender: TObject);
     procedure UpdateView;
+    procedure ZoomInButtonClick(Sender: TObject);
+    procedure ZoomOutButtonClick(Sender: TObject);
 
   private
     FFilesListBoxLoaded : Boolean;
@@ -148,10 +150,37 @@ begin
   LoadList();
   LoadBitmap();
   Panel1.Color:=model.Background.Color;
+  if Assigned(model.Zoom) then
+  begin
+    ZoomRateLabel.Caption:= FloatToStr(model.Zoom.Rate * 100);
+  end
+  else
+  begin
+    ZoomRateLabel.Caption:= '';
+  end;
   if AutoUpdateCheckBox.Checked then
   begin
     ViewerForm.ShowDocument()
   end;
+end;
+
+procedure TOperationForm.ZoomInButtonClick(Sender: TObject);
+var
+  zoom : TZoom;
+begin
+  zoom := model.Zoom;
+  zoom.ZoomIn();
+  UpdateView;
+end;
+
+procedure TOperationForm.ZoomOutButtonClick(Sender: TObject);
+var
+  zoom : TZoom;
+begin
+  zoom := model.Zoom;
+  zoom.ZoomOut();
+  UpdateView;
+
 end;
 
 procedure TOperationForm.LoadList();

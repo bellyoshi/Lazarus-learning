@@ -4,7 +4,7 @@ unit PdfImageCreator;
 
 interface
 uses
-  Classes, SysUtils, PdfiumCore, Graphics;
+  Classes, SysUtils, PdfiumCore, Graphics, ImageCreatorUnit;
 
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
 
@@ -12,6 +12,7 @@ type
 
 
   TPdfImageCreator = class
+
   private
     FPdfDocument: TPdfDocument;
     FPageIndex: Integer;
@@ -20,7 +21,6 @@ type
   public
     constructor Create(const Filename: string; PageIndex: Integer = 0);  // コンストラクタ
     destructor Destroy; override;  // デストラクタ
-
     function GetBitmap(Width, Height: Integer): TBitmap;  // ビットマップ取得
     function GetRatio(): Double;
     property PageIndex: Integer read FPageIndex write FPageIndex;  // ページのインデックス

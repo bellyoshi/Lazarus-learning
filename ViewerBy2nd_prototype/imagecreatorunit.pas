@@ -5,12 +5,14 @@ unit ImageCreatorUnit;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, Graphics;
 
-type
-  TImageCreator
-    GetImage(Width, Height: Integer): TBitmap;
+{type
+  IImageCreator = interface
 
+    function GetBitmap(Width, Height: Integer): TBitmap;
+  end;
+ }
 implementation
 
 end.

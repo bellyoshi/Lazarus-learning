@@ -5,21 +5,12 @@ unit ViewerModel;
 interface
 
 uses
-  Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections;
+  Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections
+  ,ZoomUnit;
 
 
 type
 
-  TZoom = class
-  private
-    FRate : Double;
-  public
-    constructor Create(ImageCreator: TImageCreator);
-    property Rate : Double read FRate write FRate;
-    procedure ZoomIn();
-    procedure ZoomOut();
-    procedure GetImage(Width, Height: Integer): TBitmap;
-  end;
 
   TFilesParam = class
   public

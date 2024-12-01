@@ -95,6 +95,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImageCreatorUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="zoomunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ZoomUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-   ViewerModel, ControlFitter, FormSizeCustomizerUnit, IViewUnit;
+   ViewerModel, FormSizeCustomizerUnit, IViewUnit;
 
 type
 
@@ -73,11 +73,15 @@ var
   Bitmap: TBitmap;
 begin
 
-  FitImageSize(Image1, ClientWidth, ClientHeight, model.ViewRatio);
 
   try
     // PDFium ページを Delphi ビットマップに描画
-    Bitmap := model.GetViewBitmap(Image1.Width, Image1.Height);
+    Bitmap := model.GetViewBitmap(ClientWidth, ClientHeight);
+    Image1.Width := Bitmap.Width;
+    Image1.Height := Bitmap.Height;
+    Image1.Left := (ClientWidth - Bitmap.Width) div 2;
+    Image1.Top := (ClientHeight - Bitmap.Height) div 2;
+
     Image1.Picture.Bitmap.Assign(Bitmap);
   finally
     Bitmap.Free;

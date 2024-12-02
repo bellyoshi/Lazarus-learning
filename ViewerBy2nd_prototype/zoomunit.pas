@@ -19,10 +19,22 @@ type
     property Rate: Double read FRate write SetRate;
     procedure ZoomIn();
     procedure ZoomOut();
-    function GetBitmap(Width, Height: Integer): TBitmap;
+    function GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
   end;
 
 implementation
+function RoundToStep(Value: Integer; Step: Integer): Integer;
+begin
+  Result := Round(Value / Step) * Step;
+end;
+
+function RoundWidthToStep(Value: Integer) : Integer;
+const
+  PIXEL_STEP = 8;  // widthを8の倍数にしなければLinux環境ですじがでる。
+begin
+  Result := RoundToStep(Value, PIXEL_STEP);
+end;
+
 
 constructor TZoom.Create(ImageCreator: TPdfImageCreator);
 begin
@@ -78,12 +90,31 @@ begin
   Rate := GetNextZoom(False);
 end;
 
-function TZoom.GetBitmap(Width, Height: Integer): TBitmap;
+function TZoom.GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
 var
+  Height, Width : Integer;
+  formRatio: Double;
+  Ratio : Double;
   ZoomedWidth, ZoomedHeight: Integer;
   SourceImage: TBitmap;
   Rect: TRect;
 begin
+  formRatio := WindowWidth / WindowHeight;
+  Ratio := FImageCreator.Ratio;
+
+  if formRatio > Ratio then
+  begin
+    // 縦が基準
+    Height := WindowHeight;
+    Width := RoundWidthToStep(Round(Height * Ratio));
+  end
+  else
+  begin
+    // 横が基準
+    Width := RoundWidthToStep(WindowWidth);
+    Height := Round(Width / Ratio);
+  end;
+
   ZoomedWidth := Round(Width * FRate);
   ZoomedHeight := Round(Height * FRate);
 

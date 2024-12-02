@@ -239,11 +239,16 @@ var
   Bitmap : TBitmap;
 begin
 
-  FitImageSize(Image1, Panel1.Width, Panel1.Height, model.ThumbnailRatio);
+  //FitImageSize(Image1, Panel1.Width, Panel1.Height, model.ThumbnailRatio);
 
   try
     // PDFium ページを Delphi ビットマップに描画
-    Bitmap := model.GetThumbnailBitmap(Image1.Width, Image1.Height);
+    Bitmap := model.GetThumbnailBitmap(Panel1.Width, Panel1.Height);
+    Image1.Width := Bitmap.Width;
+    Image1.Height := Bitmap.Height;
+    Image1.Left := (Panel1.Width - Bitmap.Width) div 2;
+    Image1.Top := (Panel1.Height - Bitmap.Height) div 2;
+
     Image1.Picture.Bitmap.Assign(Bitmap);
   finally
     Bitmap.Free;

@@ -5,7 +5,7 @@ unit ZoomUnit;
 interface
 
 uses
-  Classes, SysUtils, PdfImageCreator, Graphics;
+  Classes, SysUtils, PdfImageCreator, Graphics, Math;
 
 type
   TZoom = class
@@ -23,12 +23,12 @@ type
   end;
 
 implementation
-function RoundToStep(Value: Integer; Step: Integer): Integer;
+function RoundToStep(Value: Double; Step: Integer): Integer;
 begin
   Result := Round(Value / Step) * Step;
 end;
 
-function RoundWidthToStep(Value: Integer) : Integer;
+function RoundToStep(Value: Double) : Integer;
 const
   PIXEL_STEP = 8;  // widthを8の倍数にしなければLinux環境ですじがでる。
 begin
@@ -92,7 +92,8 @@ end;
 
 function TZoom.GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
 var
-  Height, Width : Integer;
+  normalHeight, normalWidth : Integer;
+  dispHeight, dispWidth : Integer;
   formRatio: Double;
   Ratio : Double;
   ZoomedWidth, ZoomedHeight: Integer;
@@ -105,28 +106,34 @@ begin
   if formRatio > Ratio then
   begin
     // 縦が基準
-    Height := WindowHeight;
-    Width := RoundWidthToStep(Round(Height * Ratio));
+    normalHeight := WindowHeight;
+    normalWidth := RoundToStep(normalHeight * Ratio);
   end
   else
   begin
     // 横が基準
-    Width := RoundWidthToStep(WindowWidth);
-    Height := Round(Width / Ratio);
+    normalWidth := RoundToStep(WindowWidth);
+    normalHeight := Round(normalWidth / Ratio);
   end;
 
-  ZoomedWidth := Round(Width * FRate);
-  ZoomedHeight := Round(Height * FRate);
+  ZoomedWidth := Round(normalWidth * FRate);
+  ZoomedHeight := Round(normalHeight * FRate);
 
   // ImageCreatorから拡大した画像を取得
   SourceImage := FImageCreator.GetBitmap(ZoomedWidth, ZoomedHeight);
 
+
+  dispHeight:=Min(ZoomedHeight,WindowHeight);
+  dispWidth:=Min(ZoomedWidth,WindowWidth);
+
+
+
   // 切り取り範囲を指定
-  Rect := TRect.Create(0, 0, Width, Height);
+  Rect := TRect.Create(0, 0, dispWidth, dispHeight);
 
   // 結果用の画像を作成
   Result := TBitmap.Create;
-  Result.SetSize(Width, Height);
+  Result.SetSize(dispWidth, dispHeight);
 
   // SourceImageの左上部分をResultに描画
   Result.Canvas.CopyRect(Rect, SourceImage.Canvas, Rect);

@@ -13,7 +13,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, frmViewer, ViewerModel, ControlFitter,
+  Menus, frmViewer, ViewerModel,
   PageFormUnit, SettingFormUnit, IViewUnit, FormSizeCustomizerUnit, ZoomUnit;
 
 type
@@ -124,6 +124,8 @@ begin
   LastPageButton.Enabled:=model.CanLast;
   FirstPageButton.Enabled := model.CanFirst;
   PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
+  ZoomInButton.Enabled:= model.CanZoomIn;
+  ZoomOutButton.Enabled:=model.CanZoomOut;
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);

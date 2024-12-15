@@ -11,14 +11,14 @@ object OperationForm: TOperationForm
   OnClose = FormClose
   OnCreate = FormCreate
   LCLVersion = '3.6.0.0'
-  object Button1: TButton
+  object OpenButton: TButton
     Left = 183
     Height = 31
     Top = 416
     Width = 70
     Caption = '開く'
     TabOrder = 0
-    OnClick = Button1Click
+    OnClick = OpenButtonClick
   end
   object Panel1: TPanel
     Left = 544
@@ -153,9 +153,9 @@ object OperationForm: TOperationForm
     OnClick = DeselectButtonClick
   end
   object FileInfoLabel: TLabel
-    Left = 418
+    Left = 464
     Height = 20
-    Top = 31
+    Top = 8
     Width = 85
     Caption = 'FileInfoLabel'
   end
@@ -180,27 +180,44 @@ object OperationForm: TOperationForm
   object ZoomInButton: TButton
     Left = 297
     Height = 31
-    Top = 160
+    Top = 176
     Width = 94
-    Caption = 'ZoomInButton'
+    Caption = '拡大'
     TabOrder = 11
     OnClick = ZoomInButtonClick
   end
   object ZoomOutButton: TButton
     Left = 424
     Height = 31
-    Top = 160
+    Top = 176
     Width = 94
-    Caption = 'ZoomOutButton'
+    Caption = '縮小'
     TabOrder = 12
     OnClick = ZoomOutButtonClick
   end
   object ZoomRateLabel: TLabel
     Left = 378
     Height = 20
-    Top = 115
+    Top = 136
     Width = 24
     Caption = '100'
+  end
+  object FitWindowButton: TButton
+    Left = 312
+    Height = 31
+    Top = 104
+    Width = 150
+    Caption = 'FitWindowButton'
+    TabOrder = 13
+  end
+  object ViewAllButton: TButton
+    Left = 312
+    Height = 31
+    Top = 72
+    Width = 150
+    Caption = '全体を表示'
+    TabOrder = 14
+    OnClick = ViewAllButtonClick
   end
   object OpenDialog1: TOpenDialog
     Left = 416

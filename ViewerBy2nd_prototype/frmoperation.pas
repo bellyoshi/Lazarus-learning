@@ -21,9 +21,11 @@ type
   { TOperationForm }
 
   TOperationForm = class(TForm, IView)
-    Button1: TButton;
+    OpenButton: TButton;
     BackGroundDisplayButton: TButton;
     AutoUpdateCheckBox: TCheckBox;
+    FitWindowButton: TButton;
+    ViewAllButton: TButton;
     ZoomRateLabel: TLabel;
     SelectAllButton: TButton;
     DelteButton: TButton;
@@ -76,7 +78,7 @@ type
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     procedure BackGroundDisplayButtonClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure OpenButtonClick(Sender: TObject);
     procedure DelteButtonClick(Sender: TObject);
     procedure DeselectButtonClick(Sender: TObject);
     procedure DisplaySettingMenuClick(Sender: TObject);
@@ -84,6 +86,7 @@ type
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
     procedure SelectAllButtonClick(Sender: TObject);
+    procedure ViewAllButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
     procedure ViewerDisplayButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -126,6 +129,8 @@ begin
   PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
   ZoomInButton.Enabled:= model.CanZoomIn;
   ZoomOutButton.Enabled:=model.CanZoomOut;
+  FitWindowButton.Enabled:=model.CanZoom;
+  ViewAllButton.Enabled:=model.CanZoom;
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
@@ -258,7 +263,7 @@ begin
 
 end;
 
-procedure TOperationForm.Button1Click(Sender: TObject);
+procedure TOperationForm.OpenButtonClick(Sender: TObject);
 begin
   // PDFファイルのみを選択できるようにフィルタを設定
   OpenDialog1.Filter := 'PDF Files|*.pdf';
@@ -326,6 +331,12 @@ end;
 procedure TOperationForm.SelectAllButtonClick(Sender: TObject);
 begin
   model.Repogitory.SelectAll;
+  UpdateView();
+end;
+
+procedure TOperationForm.ViewAllButtonClick(Sender: TObject);
+begin
+  model.Zoom.Rate:=1.0;
   UpdateView();
 end;
 

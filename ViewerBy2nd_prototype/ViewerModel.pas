@@ -69,6 +69,7 @@ type
     function GetPageCount: Integer;
     function GetCanZoomOut : Boolean;
     function GetCanZoomIn : Boolean;
+    function GetCanZoom : Boolean;
     function GetOperationFile : TFilesParam;
     property OperationFile : TFilesParam read GetOperationFile;
     function GetZoom : TZoom;
@@ -93,6 +94,7 @@ type
     property CanFirst: Boolean read GetCanFirst;
     property CanZoomIn: Boolean read GetCanZoomIn;
     property CanZoomOut: Boolean read GetCanZoomOut;
+    property CanZoom : Boolean read GetCanZoom;
     property PageIndex: Integer read GetPageIndex write SetPageIndex;
     property PageCount: Integer read GetPageCount;
     property Repogitory : TRepogitory read FRepogitory;
@@ -282,10 +284,18 @@ begin
   Result := Repogitory.GetSelectedFile.Zoom;
 end;
 
-function TViewerModel.GetCanZoomIn : Boolean;
+function TViewerModel.GetCanZoom : Boolean;
 begin
   Result := False;
   if not Assigned( Repogitory.GetSelectedFile) then
+    Exit;
+  Result := True;
+end;
+
+function TViewerModel.GetCanZoomIn : Boolean;
+begin
+  Result := False;
+  if not GetCanZoom then
     Exit;
   If 10.0 <= Repogitory.GetSelectedFile.Zoom.Rate then
     Exit;
@@ -295,7 +305,7 @@ end;
 function TViewerModel.GetCanZoomOut : Boolean;
 begin
   Result := False;
-  if not Assigned( Repogitory.GetSelectedFile) then
+  if not GetCanZoom then
     Exit;
   If Repogitory.GetSelectedFile.Zoom.Rate <= 1.0 then
     Exit;

@@ -160,7 +160,7 @@ begin
   Panel1.Color:=model.Background.Color;
   if Assigned(model.Zoom) then
   begin
-    ZoomRateLabel.Caption:= FloatToStr(model.Zoom.Rate * 100);
+    ZoomRateLabel.Caption:= FloatToStr(model.Zoom.Rate * 100) + '%';
   end
   else
   begin

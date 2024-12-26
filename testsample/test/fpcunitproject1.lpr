@@ -3,7 +3,7 @@ program fpcunitproject1;
 {$mode objfpc}{$H+}
 
 uses
-  Interfaces, Forms, GuiTestRunner, TestCaseExample;
+  Interfaces, Forms, GuiTestRunner, testcase1;
 
 {$R *.res}
 

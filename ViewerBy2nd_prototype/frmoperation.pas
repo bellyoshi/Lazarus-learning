@@ -1,12 +1,13 @@
 unit frmOperation;
 
-// ToDo: Zoom %
 // Todo: fitWindow
 // Todo: mouse scrool
 // Todo: open image
 // Todo: movie
 // Todo: slim normal window size
 
+// Todo: 開くで複数のファイルを一括で登録できるようにする
+// Todo: ドラッグ＆ドロップでファイルを登録できるようにする。
 
 
 interface

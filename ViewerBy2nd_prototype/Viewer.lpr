@@ -15,6 +15,10 @@ uses
 
 {$R *.res}
 
+//TODO: 設定ファイルの読み込み
+//TODO: 設定の初期化
+//TODO: ファイルリストの読み込み
+//TODO: ファイルリストの書き込み
 begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;

@@ -6,7 +6,6 @@ unit frmOperation;
 // Todo: movie
 // Todo: slim normal window size
 
-// Todo: 開くで複数のファイルを一括で登録できるようにする
 // Todo: ドラッグ＆ドロップでファイルを登録できるようにする。
 
 
@@ -265,14 +264,21 @@ begin
 end;
 
 procedure TOperationForm.OpenButtonClick(Sender: TObject);
+var
+  i : Integer;
 begin
   // PDFファイルのみを選択できるようにフィルタを設定
   OpenDialog1.Filter := 'PDF Files|*.pdf';
+  OpenDialog1.Options:=OpenDialog1.Options+[ofAllowMultiSelect];
 
   if not OpenDialog1.Execute then Exit;
 
+    for i:=0 to OpenDialog1.Files.Count-1 do
+      begin
+           model.Open(OpenDialog1.Files[i]);
+      end;
 
-  model.Open(OpenDialog1.FileName);
+
   UpdateView
 
 end;

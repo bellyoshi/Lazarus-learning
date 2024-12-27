@@ -21,6 +21,7 @@ type
   { TOperationForm }
 
   TOperationForm = class(TForm, IView)
+
     OpenButton: TButton;
     BackGroundDisplayButton: TButton;
     AutoUpdateCheckBox: TCheckBox;
@@ -78,6 +79,13 @@ type
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     procedure BackGroundDisplayButtonClick(Sender: TObject);
+    procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Image1MouseLeave(Sender: TObject);
+    procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer
+      );
+    procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure OpenButtonClick(Sender: TObject);
     procedure DelteButtonClick(Sender: TObject);
     procedure DeselectButtonClick(Sender: TObject);
@@ -103,6 +111,7 @@ type
 
   private
     FFilesListBoxLoaded : Boolean;
+        IsMouseDown : Boolean;
     procedure LoadBitmap;
     procedure SetCtlEnabled();
     procedure LoadList();
@@ -300,6 +309,41 @@ begin
   model.Repogitory.Disselect;
   ViewerForm.ShowDocument() ;
   UpdateView();
+end;
+
+procedure TOperationForm.Image1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button = TMouseButton.mbLeft then
+  begin
+    IsMouseDown := True;
+    model.Zoom.MouseDown(X, Y);
+  end;
+end;
+
+procedure TOperationForm.Image1MouseLeave(Sender: TObject);
+begin
+
+end;
+
+procedure TOperationForm.Image1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+begin
+  if IsMouseDown Then
+  begin
+   model.Zoom.MouseMove(X,Y);
+   UpdateView;
+  end;
+
+end;
+
+procedure TOperationForm.Image1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if IsMouseDown And (Button = TMouseButton.mbLeft) then
+  begin
+   IsMouseDown := False;
+  end;
 end;
 
 procedure TOperationForm.DisplaySettingMenuClick(Sender: TObject);

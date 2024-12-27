@@ -34,6 +34,10 @@ object OperationForm: TOperationForm
       Height = 184
       Top = 8
       Width = 188
+      OnMouseDown = Image1MouseDown
+      OnMouseLeave = Image1MouseLeave
+      OnMouseMove = Image1MouseMove
+      OnMouseUp = Image1MouseUp
     end
   end
   object NextButton: TButton

@@ -10,16 +10,21 @@ uses
 type
   TZoom = class
   private
+    CenterX: Integer;
+    CenterY: Integer;
     FRate: Double;
     FImageCreator: TPdfImageCreator;
     procedure SetRate(Value: Double);
     function GetNextZoom(ZoomIn: Boolean): Double;
+    function CreateRect(dispWidth, dispHeight: Integer):TRect;
   public
     constructor Create(ImageCreator: TPdfImageCreator);
     property Rate: Double read FRate write SetRate;
     procedure ZoomIn();
     procedure ZoomOut();
     function GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
+    procedure MouseDown(X,Y:Integer);
+    procedure MouseMove(X,Y:Integer);
   end;
 
 implementation
@@ -89,6 +94,26 @@ procedure TZoom.ZoomOut();
 begin
   Rate := GetNextZoom(False);
 end;
+procedure TZoom.MouseDown(X,Y:Integer);
+begin
+
+end;
+
+procedure TZoom.MouseMove(X,Y:Integer);
+begin
+
+end;
+
+function TZoom.CreateRect(dispWidth, dispHeight: Integer):TRect;
+var
+  X: Integer;
+  Y: Integer;
+begin
+  X := Math.Max(0, CenterX - dispWidth div 2);
+  Y := Math.Max(0, CenterY - dispHeight div 2);
+
+  Result := TRect.Create(X, Y, X + dispWidth, Y + dispHeight);
+end;
 
 function TZoom.GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
 var
@@ -98,7 +123,7 @@ var
   Ratio : Double;
   ZoomedWidth, ZoomedHeight: Integer;
   SourceImage: TBitmap;
-  Rect: TRect;
+  sorceRect, destRect: TRect;
 begin
   formRatio := WindowWidth / WindowHeight;
   Ratio := FImageCreator.Ratio;
@@ -129,14 +154,17 @@ begin
 
 
   // 切り取り範囲を指定
-  Rect := TRect.Create(0, 0, dispWidth, dispHeight);
+  CenterX := ZoomedWidth div 2;
+  CenterY := ZoomedHeight div 2;
 
+  sorceRect := CreateRect(dispWidth, dispHeight);
+  destRect := TRect.Create(0,0, dispWidth,dispHeight);
   // 結果用の画像を作成
   Result := TBitmap.Create;
   Result.SetSize(dispWidth, dispHeight);
 
   // SourceImageの左上部分をResultに描画
-  Result.Canvas.CopyRect(Rect, SourceImage.Canvas, Rect);
+  Result.Canvas.CopyRect(destRect, SourceImage.Canvas, sorceRect);
 
   // 解放
   SourceImage.Free;

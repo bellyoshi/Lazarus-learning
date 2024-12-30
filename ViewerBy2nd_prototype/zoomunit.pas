@@ -10,6 +10,8 @@ uses
 type
   TZoom = class
   private
+    MouseX: Integer;
+    MouseY: Integer;
     CenterX: Integer;
     CenterY: Integer;
     FRate: Double;
@@ -46,6 +48,7 @@ begin
   inherited Create;
   FImageCreator := ImageCreator;
   FRate := 1.0; // 初期倍率
+  CenterX := -1;
 end;
 
 procedure TZoom.SetRate(Value: Double);
@@ -94,13 +97,26 @@ procedure TZoom.ZoomOut();
 begin
   Rate := GetNextZoom(False);
 end;
+
 procedure TZoom.MouseDown(X,Y:Integer);
 begin
-
+  MouseX := X;
+  MouseY := Y;
 end;
 
 procedure TZoom.MouseMove(X,Y:Integer);
+var
+  deltaX, deltaY: Integer;
 begin
+  deltaX :=  MouseX - X;
+  deltaY := MouseY - Y;
+
+  CenterX := CenterX + deltaX;
+  CenterY := CenterY + deltaY;
+
+  MouseX := X;
+  MouseY := Y;
+
 
 end;
 
@@ -154,8 +170,11 @@ begin
 
 
   // 切り取り範囲を指定
-  CenterX := ZoomedWidth div 2;
-  CenterY := ZoomedHeight div 2;
+  if CenterX = -1 Then
+  begin
+       CenterX := ZoomedWidth div 2;
+       CenterY := ZoomedHeight div 2;
+  end;
 
   sorceRect := CreateRect(dispWidth, dispHeight);
   destRect := TRect.Create(0,0, dispWidth,dispHeight);

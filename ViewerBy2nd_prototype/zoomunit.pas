@@ -10,6 +10,8 @@ uses
 type
   TZoom = class
   private
+    SourceImage : TBitmap;
+    SourceImageRate : Double;
     MouseX: Integer;
     MouseY: Integer;
     CenterX: Integer;
@@ -59,6 +61,7 @@ begin
     FRate := 10.0
   else
     FRate := Value;
+
 end;
 
 function TZoom.GetNextZoom(ZoomIn: Boolean): Double;
@@ -91,11 +94,14 @@ end;
 procedure TZoom.ZoomIn();
 begin
   Rate := GetNextZoom(True);
+
+
 end;
 
 procedure TZoom.ZoomOut();
 begin
   Rate := GetNextZoom(False);
+
 end;
 
 procedure TZoom.MouseDown(X,Y:Integer);
@@ -138,7 +144,6 @@ var
   formRatio: Double;
   Ratio : Double;
   ZoomedWidth, ZoomedHeight: Integer;
-  SourceImage: TBitmap;
   sorceRect, destRect: TRect;
 begin
   formRatio := WindowWidth / WindowHeight;
@@ -161,8 +166,15 @@ begin
   ZoomedHeight := Round(normalHeight * FRate);
 
   // ImageCreatorから拡大した画像を取得
-  SourceImage := FImageCreator.GetBitmap(ZoomedWidth, ZoomedHeight);
-
+  if SourceImageRate <> FRate then
+  begin
+    SourceImageRate := FRate;
+    If Assigned(SourceImage) then
+    begin
+      SourceImage.Free;
+    end;
+    SourceImage := FImageCreator.GetBitmap(ZoomedWidth, ZoomedHeight);
+  end;
 
   dispHeight:=Min(ZoomedHeight,WindowHeight);
   dispWidth:=Min(ZoomedWidth,WindowWidth);
@@ -185,8 +197,6 @@ begin
   // SourceImageの左上部分をResultに描画
   Result.Canvas.CopyRect(destRect, SourceImage.Canvas, sorceRect);
 
-  // 解放
-  SourceImage.Free;
 end;
 
 

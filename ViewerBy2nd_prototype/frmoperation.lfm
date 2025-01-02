@@ -211,7 +211,7 @@ object OperationForm: TOperationForm
     Height = 31
     Top = 104
     Width = 150
-    Caption = 'FitWindowButton'
+    Caption = 'ウインドウ幅に合わせる'
     TabOrder = 13
     OnClick = FitWindowButtonClick
   end

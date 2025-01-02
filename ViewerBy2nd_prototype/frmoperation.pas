@@ -79,6 +79,7 @@ type
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     procedure BackGroundDisplayButtonClick(Sender: TObject);
+    procedure FitWindowButtonClick(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Image1MouseLeave(Sender: TObject);
@@ -309,6 +310,12 @@ begin
   model.Repogitory.Disselect;
   ViewerForm.ShowDocument() ;
   UpdateView();
+end;
+
+procedure TOperationForm.FitWindowButtonClick(Sender: TObject);
+begin
+    model.Zoom.fitWindow(Panel1.Width, Panel1.Height);
+    UpdateView;
 end;
 
 procedure TOperationForm.Image1MouseDown(Sender: TObject; Button: TMouseButton;

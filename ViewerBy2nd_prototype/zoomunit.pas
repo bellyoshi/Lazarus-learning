@@ -5,19 +5,20 @@ unit ZoomUnit;
 interface
 
 uses
-  Classes, SysUtils, PdfImageCreator, Graphics, Math;
+  Classes, SysUtils, PdfImageCreator, Graphics, Math, ZoomCacheUnit;
 
+const
+  ZoomLevels: array[0..7] of Double = (1.0, 1.25, 1.5, 2.0, 3.0, 5.0, 7.5, 10.0);
 type
   TZoom = class
   private
-    SourceImage : TBitmap;
-    SourceImageRate : Double;
+    FImageCreator : TPdfImageCreator;
     MouseX: Integer;
     MouseY: Integer;
     CenterX: Integer;
     CenterY: Integer;
     FRate: Double;
-    FImageCreator: TPdfImageCreator;
+    FZoomCache : TZoomCache;
     procedure SetRate(Value: Double);
     function GetNextZoom(ZoomIn: Boolean): Double;
     function CreateRect(dispWidth, dispHeight: Integer):TRect;
@@ -26,6 +27,7 @@ type
     property Rate: Double read FRate write SetRate;
     procedure ZoomIn();
     procedure ZoomOut();
+    procedure fitWindow(WindowWidth, WindowHeight: Integer);
     function GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
     procedure MouseDown(X,Y:Integer);
     procedure MouseMove(X,Y:Integer);
@@ -48,6 +50,7 @@ end;
 constructor TZoom.Create(ImageCreator: TPdfImageCreator);
 begin
   inherited Create;
+  FZoomCache := TZoomCache.Create(ImageCreator);
   FImageCreator := ImageCreator;
   FRate := 1.0; // 初期倍率
   CenterX := -1;
@@ -65,8 +68,7 @@ begin
 end;
 
 function TZoom.GetNextZoom(ZoomIn: Boolean): Double;
-const
-  ZoomLevels: array[0..7] of Double = (1.0, 1.25, 1.5, 2.0, 3.0, 5.0, 7.5, 10.0);
+
 var
   I: Integer;
 begin
@@ -137,14 +139,11 @@ begin
   Result := TRect.Create(X, Y, X + dispWidth, Y + dispHeight);
 end;
 
-function TZoom.GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
+procedure TZoom.fitWindow(WindowWidth, WindowHeight: Integer);
 var
   normalHeight, normalWidth : Integer;
-  dispHeight, dispWidth : Integer;
   formRatio: Double;
   Ratio : Double;
-  ZoomedWidth, ZoomedHeight: Integer;
-  sorceRect, destRect: TRect;
 begin
   formRatio := WindowWidth / WindowHeight;
   Ratio := FImageCreator.Ratio;
@@ -152,6 +151,38 @@ begin
   if formRatio > Ratio then
   begin
     // 縦が基準
+
+    normalHeight := WindowHeight;
+        normalWidth := RoundToStep(normalHeight * Ratio);
+  end
+  else
+  begin
+    // 横が基準
+    normalWidth := RoundToStep(WindowWidth);
+    normalHeight := Round(normalWidth / Ratio);
+  end;
+
+
+  FRate:= WindowWidth / normalWidth;
+end;
+
+function TZoom.GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
+var
+  normalHeight, normalWidth : Integer;
+  dispHeight, dispWidth : Integer;
+  formRatio: Double;
+  Ratio : Double;
+  ZoomedWidth, ZoomedHeight: Integer;
+  sourceRect, destRect: TRect;
+  SourceImage : TBitmap;
+begin
+  formRatio := WindowWidth / WindowHeight;
+  Ratio := FImageCreator.Ratio;
+
+  if formRatio > Ratio then
+  begin
+    // 縦が基準
+
     normalHeight := WindowHeight;
     normalWidth := RoundToStep(normalHeight * Ratio);
   end
@@ -166,36 +197,27 @@ begin
   ZoomedHeight := Round(normalHeight * FRate);
 
   // ImageCreatorから拡大した画像を取得
-  if SourceImageRate <> FRate then
-  begin
-    SourceImageRate := FRate;
-    If Assigned(SourceImage) then
-    begin
-      SourceImage.Free;
-    end;
-    SourceImage := FImageCreator.GetBitmap(ZoomedWidth, ZoomedHeight);
-  end;
-
-  dispHeight:=Min(ZoomedHeight,WindowHeight);
-  dispWidth:=Min(ZoomedWidth,WindowWidth);
+  SourceImage := FZoomCache.GetBitmap(ZoomedWidth, ZoomedHeight);
 
 
 
-  // 切り取り範囲を指定
   if CenterX = -1 Then
   begin
        CenterX := ZoomedWidth div 2;
        CenterY := ZoomedHeight div 2;
   end;
 
-  sorceRect := CreateRect(dispWidth, dispHeight);
+  // 切り取り範囲を指定
+  dispHeight:=Min(ZoomedHeight,WindowHeight);
+  dispWidth:=Min(ZoomedWidth,WindowWidth);
+  sourceRect := CreateRect(dispWidth, dispHeight);
   destRect := TRect.Create(0,0, dispWidth,dispHeight);
   // 結果用の画像を作成
   Result := TBitmap.Create;
   Result.SetSize(dispWidth, dispHeight);
 
   // SourceImageの左上部分をResultに描画
-  Result.Canvas.CopyRect(destRect, SourceImage.Canvas, sorceRect);
+  Result.Canvas.CopyRect(destRect, SourceImage.Canvas, sourceRect);
 
 end;
 

@@ -95,6 +95,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ZoomUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="zoomcacheunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ZoomCacheUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

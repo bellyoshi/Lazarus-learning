@@ -213,6 +213,7 @@ object OperationForm: TOperationForm
     Width = 150
     Caption = 'FitWindowButton'
     TabOrder = 13
+    OnClick = FitWindowButtonClick
   end
   object ViewAllButton: TButton
     Left = 312

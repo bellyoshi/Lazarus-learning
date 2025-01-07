@@ -21,6 +21,10 @@ type
   { TOperationForm }
 
   TOperationForm = class(TForm, IView)
+    Rotata0Button: TButton;
+    Rotate90Button: TButton;
+    Rotate180Button: TButton;
+    Rotate270Button: TButton;
 
     OpenButton: TButton;
     BackGroundDisplayButton: TButton;

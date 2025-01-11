@@ -227,21 +227,6 @@ begin
 
 end;
 
-{
-procedure TRepogitory.RecalcSingleSelect();
-var
-  index : Integer;
-begin
-  index := GetSelectedIndex();
-  if index = -1 then
-  begin
-      FOperationPdfDocument := nil;
-  end else begin
-      FOperationPdfDocument := FFilesList[index].ImageCreator;
-  end;
-end;
-}
-
 procedure TRepogitory.SetSelected(I: Integer; Value : Boolean);
 begin
   FFilesList.Items[i].Selected := Value;
@@ -460,7 +445,7 @@ function TViewerModel.GetViewRatio: Double;
 begin
   if Assigned(Repogitory.ViewFile) then
   begin
-    Result := Repogitory.ViewFile.ImageCreator.GetRatio();
+    Result := Repogitory.ViewFile.RotateImageCreator.GetRatio();
   end
   else
   begin
@@ -472,7 +457,7 @@ function TViewerModel.GetThumbnailRatio: Double;
 begin
   if Assigned(OperationFile) then
   begin
-    Result := OperationFile.ImageCreator.GetRatio();
+    Result := OperationFile.RotateImageCreator.GetRatio();
   end
   else
   begin

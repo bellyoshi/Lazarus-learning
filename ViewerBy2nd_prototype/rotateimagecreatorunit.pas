@@ -12,6 +12,7 @@ type
   private
     FImageCreator: IImageCreator;
     FAngle: Integer;
+    FRatio: Double;
   public
     constructor Create(AImageCreator: IImageCreator);
     procedure Rotate(Angle: Integer);
@@ -109,6 +110,7 @@ begin
     raise Exception.Create('ImageCreator cannot be nil');
   FImageCreator := AImageCreator;
   FAngle := 0; // 初期角度は 0 度
+  FRatio := 1;
 end;
 
 procedure TRotateImageCreator.Rotate(Angle: Integer);
@@ -128,20 +130,14 @@ begin
     270:
       Rotate270(Result);
       end;
+   FRatio := Result.Width / Result.Height;
 end;
 
 
 
 function TRotateImageCreator.GetRatio(): double;
 begin
-  if (FAngle = 0) or (FAngle = 180)  then
-  begin
-    Result := FImageCreator.GetRatio();
-  end
-  else
-  begin
-    Result := 1/ FImageCreator.GetRatio();
-  end;
+  Result := FRatio;
 
 end;
 

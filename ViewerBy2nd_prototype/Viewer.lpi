@@ -100,6 +100,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ZoomCacheUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="rotateimagecreatorunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="RotateImageCreatorUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

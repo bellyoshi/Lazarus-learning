@@ -5,7 +5,7 @@ unit ZoomCacheUnit;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Generics.Collections, PdfImageCreator;
+  Classes, SysUtils, Graphics, Generics.Collections, ImageCreatorUnit;
 
 type
   TZoomCacheItem = record
@@ -16,20 +16,20 @@ type
 
   TZoomCache = class
   private
-    FImageCreator: TPdfImageCreator;
+    FImageCreator: IImageCreator;
     FCache: specialize TList<TZoomCacheItem>;
     FMaxCacheSize: Integer;
     function FindInCache(Width, Height: Integer): TBitmap;
     procedure AddToCache(Width, Height: Integer; Bitmap: TBitmap);
   public
-    constructor Create(AImageCreator: TPdfImageCreator; AMaxCacheSize: Integer = 10);
+    constructor Create(AImageCreator: IImageCreator; AMaxCacheSize: Integer = 10);
     destructor Destroy; override;
     function GetBitmap(Width, Height: Integer): TBitmap;
   end;
 
 implementation
 
-constructor TZoomCache.Create(AImageCreator: TPdfImageCreator; AMaxCacheSize: Integer);
+constructor TZoomCache.Create(AImageCreator: IImageCreator; AMaxCacheSize: Integer);
 begin
   inherited Create;
   FImageCreator := AImageCreator;
@@ -79,10 +79,11 @@ function TZoomCache.GetBitmap(Width, Height: Integer): TBitmap;
 var
   CachedBitmap: TBitmap;
 begin
+  { todo : width , height だけでなくPageIndexを気にする必要あり。
   CachedBitmap := FindInCache(Width, Height);
   if Assigned(CachedBitmap) then
     Exit(CachedBitmap);
-
+   }
   Result := FImageCreator.GetBitmap(Width, Height);
   AddToCache(Width, Height, Result);
 end;

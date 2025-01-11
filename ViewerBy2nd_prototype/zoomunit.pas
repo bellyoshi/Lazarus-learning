@@ -5,14 +5,14 @@ unit ZoomUnit;
 interface
 
 uses
-  Classes, SysUtils, PdfImageCreator, Graphics, Math, ZoomCacheUnit;
+  Classes, SysUtils, ImageCreatorUnit, Graphics, Math, ZoomCacheUnit;
 
 const
   ZoomLevels: array[0..7] of Double = (1.0, 1.25, 1.5, 2.0, 3.0, 5.0, 7.5, 10.0);
 type
   TZoom = class
   private
-    FImageCreator : TPdfImageCreator;
+    FImageCreator : IImageCreator;
     MouseX: Integer;
     MouseY: Integer;
     CenterX: Integer;
@@ -23,7 +23,7 @@ type
     function GetNextZoom(ZoomIn: Boolean): Double;
     function CreateRect(dispWidth, dispHeight: Integer):TRect;
   public
-    constructor Create(ImageCreator: TPdfImageCreator);
+    constructor Create(ImageCreator: IImageCreator);
     property Rate: Double read FRate write SetRate;
     procedure ZoomIn();
     procedure ZoomOut();
@@ -47,7 +47,7 @@ begin
 end;
 
 
-constructor TZoom.Create(ImageCreator: TPdfImageCreator);
+constructor TZoom.Create(ImageCreator: IImageCreator);
 begin
   inherited Create;
   FZoomCache := TZoomCache.Create(ImageCreator);
@@ -146,7 +146,7 @@ var
   Ratio : Double;
 begin
   formRatio := WindowWidth / WindowHeight;
-  Ratio := FImageCreator.Ratio;
+  Ratio := FImageCreator.GetRatio();
 
   if formRatio > Ratio then
   begin
@@ -177,7 +177,7 @@ var
   SourceImage : TBitmap;
 begin
   formRatio := WindowWidth / WindowHeight;
-  Ratio := FImageCreator.Ratio;
+  Ratio := FImageCreator.GetRatio();
 
   if formRatio > Ratio then
   begin

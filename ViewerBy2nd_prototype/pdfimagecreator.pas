@@ -11,7 +11,7 @@ procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
 type
 
 
-  TPdfImageCreator = class
+  TPdfImageCreator  = class(TInterfacedObject, IImageCreator)
 
   private
     FPdfDocument: TPdfDocument;
@@ -24,7 +24,6 @@ type
     function GetBitmap(Width, Height: Integer): TBitmap;  // ビットマップ取得
     function GetRatio(): Double;
     property PageIndex: Integer read FPageIndex write FPageIndex;  // ページのインデックス
-    property Ratio : Double read GetRatio;
     property PageCount : Integer read GetPageCount;
   end;
 

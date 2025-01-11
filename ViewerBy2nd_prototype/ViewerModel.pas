@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections
-  ,ZoomUnit;
+  ,ZoomUnit, RotateImageCreatorUnit;
 
 
 type
@@ -16,6 +16,7 @@ type
     Filename: string;
     Selected: Boolean;
     ImageCreator : TPdfImageCreator;
+    RotateImageCreator : TRotateImageCreator;
     Zoom: TZoom;
   public
     constructor Create(AFileName : string; ASelected : Boolean);
@@ -100,6 +101,7 @@ type
     property Repogitory : TRepogitory read FRepogitory;
     property Background : TBackground read FBackground;
     property Zoom : TZoom read GetZoom;
+    procedure Rotate(Angle : Integer);
 
 
     procedure LastPage();
@@ -121,7 +123,8 @@ constructor TFilesParam.Create(AFileName : string; ASelected : Boolean);
 begin
   inherited Create;
   ImageCreator := TPdfImageCreator.Create(AFileName);
-  Zoom := TZoom.Create(ImageCreator);
+  RotateImageCreator:= TRotateImageCreator.Create(ImageCreator);
+  Zoom := TZoom.Create(RotateImageCreator);
   Filename := AFileName;
   Selected := ASelected;
 end;
@@ -278,6 +281,11 @@ begin
 end;
 
 { TViewerModel }
+procedure TViewerModel.Rotate(Angle : Integer);
+begin
+     OperationFile.RotateImageCreator.Rotate(Angle);
+end;
+
 function TViewerModel.GetZoom : TZoom;
 begin
   if Assigned( Repogitory.GetSelectedFile) then
@@ -451,17 +459,25 @@ end;
 function TViewerModel.GetViewRatio: Double;
 begin
   if Assigned(Repogitory.ViewFile) then
-    Result := Repogitory.ViewFile.ImageCreator.Ratio
+  begin
+    Result := Repogitory.ViewFile.ImageCreator.GetRatio();
+  end
   else
+  begin
     Result := 1;
+  end;
 end;
 
 function TViewerModel.GetThumbnailRatio: Double;
 begin
   if Assigned(OperationFile) then
-    Result := OperationFile.ImageCreator.Ratio
+  begin
+    Result := OperationFile.ImageCreator.GetRatio();
+  end
   else
+  begin
     Result := 1;
+  end;
 end;
 
 function TViewerModel.GetCanNext: Boolean;

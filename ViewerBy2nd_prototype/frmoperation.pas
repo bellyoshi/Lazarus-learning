@@ -98,6 +98,10 @@ type
     procedure FilesListBoxSelectionChange(Sender: TObject; User: boolean);
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
+    procedure Rotata0ButtonClick(Sender: TObject);
+    procedure Rotate180ButtonClick(Sender: TObject);
+    procedure Rotate270ButtonClick(Sender: TObject);
+    procedure Rotate90ButtonClick(Sender: TObject);
     procedure SelectAllButtonClick(Sender: TObject);
     procedure ViewAllButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
@@ -388,6 +392,27 @@ procedure TOperationForm.FirstPageButtonClick(Sender: TObject);
 begin
   model.FirstPage();
   UpdateView;
+end;
+
+procedure TOperationForm.Rotata0ButtonClick(Sender: TObject);
+begin
+  model.Rotate(0);
+    UpdateView      ;
+end;
+
+procedure TOperationForm.Rotate180ButtonClick(Sender: TObject);
+begin
+  model.Rotate(180);    UpdateView  ;
+end;
+
+procedure TOperationForm.Rotate270ButtonClick(Sender: TObject);
+begin
+  model.Rotate(270);     UpdateView   ;
+end;
+
+procedure TOperationForm.Rotate90ButtonClick(Sender: TObject);
+begin
+  model.Rotate(90);    UpdateView ;
 end;
 
 procedure TOperationForm.SelectAllButtonClick(Sender: TObject);

@@ -7,12 +7,14 @@ interface
 uses
   Classes, SysUtils, Graphics;
 
-{type
+
+type
   IImageCreator = interface
 
-    function GetBitmap(Width, Height: Integer): TBitmap;
+    function GetBitmap(Width, Height: Integer): TBitmap; // ビットマップ取得ー
+    function GetRatio(): Double;
   end;
- }
+
 implementation
 
 end.

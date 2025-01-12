@@ -31,9 +31,18 @@ type
     function GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
     procedure MouseDown(X,Y:Integer);
     procedure MouseMove(X,Y:Integer);
+    procedure CenterClear();
   end;
 
 implementation
+procedure TZoom.CenterClear();
+begin
+  CenterX:=-1;
+  CenterY:=-1;
+  //todo:Centerをクラスにする。
+  //todo:Rotateメソッドをつくる。
+end;
+
 function RoundToStep(Value: Double; Step: Integer): Integer;
 begin
   Result := Round(Value / Step) * Step;

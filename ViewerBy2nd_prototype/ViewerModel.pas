@@ -269,6 +269,7 @@ end;
 procedure TViewerModel.Rotate(Angle : Integer);
 begin
      OperationFile.RotateImageCreator.Rotate(Angle);
+     OperationFile.Zoom.CenterClear();
 end;
 
 function TViewerModel.GetZoom : TZoom;

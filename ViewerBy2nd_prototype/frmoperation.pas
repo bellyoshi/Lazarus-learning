@@ -1,7 +1,6 @@
 unit frmOperation;
 
-// Todo: fitWindow
-// Todo: mouse scrool
+
 // Todo: open image
 // Todo: movie
 // Todo: slim normal window size

@@ -18,7 +18,7 @@ type
     CenterX: Integer;
     CenterY: Integer;
     FRate: Double;
-    FZoomCache : TZoomCache;
+    //FZoomCache : TZoomCache;
     procedure SetRate(Value: Double);
     function GetNextZoom(ZoomIn: Boolean): Double;
     function CreateRect(dispWidth, dispHeight: Integer):TRect;
@@ -50,7 +50,7 @@ end;
 constructor TZoom.Create(ImageCreator: IImageCreator);
 begin
   inherited Create;
-  FZoomCache := TZoomCache.Create(ImageCreator);
+  //FZoomCache := TZoomCache.Create(ImageCreator);
   FImageCreator := ImageCreator;
   FRate := 1.0; // 初期倍率
   CenterX := -1;
@@ -197,8 +197,8 @@ begin
   ZoomedHeight := Round(normalHeight * FRate);
 
   // ImageCreatorから拡大した画像を取得
-  SourceImage := FZoomCache.GetBitmap(ZoomedWidth, ZoomedHeight);
-
+  //SourceImage := FZoomCache.GetBitmap(ZoomedWidth, ZoomedHeight);
+  SourceImage := FImageCreator.GetBitmap(ZoomedWidth, ZoomedHeight);
 
 
   if CenterX = -1 Then

@@ -71,6 +71,7 @@ type
     function GetCanZoomOut : Boolean;
     function GetCanZoomIn : Boolean;
     function GetCanZoom : Boolean;
+    function GetCanRotate: Boolean;
     function GetOperationFile : TFilesParam;
     property OperationFile : TFilesParam read GetOperationFile;
     function GetZoom : TZoom;
@@ -102,6 +103,7 @@ type
     property Background : TBackground read FBackground;
     property Zoom : TZoom read GetZoom;
     procedure Rotate(Angle : Integer);
+    property CanRotate : Boolean read GetCanRotate;
 
 
     procedure LastPage();
@@ -284,6 +286,15 @@ begin
   if not Assigned( Repogitory.GetSelectedFile) then
     Exit;
   Result := True;
+end;
+
+function TViewerModel.GetCanRotate : Boolean;
+begin
+  Result := False;
+  if not Assigned( Repogitory.GetSelectedFile) then
+    Exit;
+  Result := True;
+
 end;
 
 function TViewerModel.GetCanZoomIn : Boolean;

@@ -20,7 +20,7 @@ type
   { TOperationForm }
 
   TOperationForm = class(TForm, IView)
-    Rotata0Button: TButton;
+    Rotate0Button: TButton;
     Rotate90Button: TButton;
     Rotate180Button: TButton;
     Rotate270Button: TButton;
@@ -97,7 +97,7 @@ type
     procedure FilesListBoxSelectionChange(Sender: TObject; User: boolean);
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
-    procedure Rotata0ButtonClick(Sender: TObject);
+    procedure Rotate0ButtonClick(Sender: TObject);
     procedure Rotate180ButtonClick(Sender: TObject);
     procedure Rotate270ButtonClick(Sender: TObject);
     procedure Rotate90ButtonClick(Sender: TObject);
@@ -148,6 +148,11 @@ begin
   ZoomOutButton.Enabled:=model.CanZoomOut;
   FitWindowButton.Enabled:=model.CanZoom;
   ViewAllButton.Enabled:=model.CanZoom;
+  Rotate0Button.Enabled:=model.CanRotate;
+  Rotate180Button.Enabled:=model.CanRotate;
+  Rotate270Button.Enabled:=model.CanRotate;
+  Rotate90Button.Enabled:=model.CanRotate;
+
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
@@ -393,7 +398,7 @@ begin
   UpdateView;
 end;
 
-procedure TOperationForm.Rotata0ButtonClick(Sender: TObject);
+procedure TOperationForm.Rotate0ButtonClick(Sender: TObject);
 begin
   model.Rotate(0);
     UpdateView      ;

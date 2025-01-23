@@ -12,6 +12,7 @@ type
   private
     FRegisteredForm: TForm;
     FIsFullScreen: Boolean;
+    FTitleVisible: Boolean;
     FScreenIndex: Integer;
     FOriginalTop: Integer;
     FOriginalLeft: Integer;
@@ -19,12 +20,14 @@ type
     FOriginalHeight: Integer;
     procedure SetIsFullScreen(AValue: Boolean);
     procedure SetScreenIndex(AValue: Integer);
+    procedure SetTitleVisible(AValue: Boolean);
     procedure DoSizer();
     procedure BackupOriginal();
   public
     procedure RegistForm(AForm: TForm);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
     property ScreenIndex: Integer read FScreenIndex write SetScreenIndex;
+    property TitleVisible : Boolean read FTitleVisible write SetTitleVisible;
   end;
 
 var
@@ -49,6 +52,7 @@ begin
   FRegisteredForm := AForm;
   BackupOriginal();
   FIsFullScreen := False;
+  FTitleVisible:= True;
   FScreenIndex := 0;  // デフォルトでプライマリモニタ
   AForm.BorderStyle:=bsSizeable;
 end;
@@ -91,8 +95,25 @@ begin
      BackupOriginal();
   FIsFullScreen := AValue;
   DoSizer();
+  if FIsFullScreen then
+  begin
+    FTitleVisible := False;
+  end;
 end;
 
+procedure TFormSizeCustomizer.SetTitleVisible(AValue: Boolean);
+begin
+  if FTitleVisible = AValue then
+     Exit;
+  FTitleVisible := AValue;
+  if FTitleVisible then
+  begin
+    FIsFullScreen := False;
+    FRegisteredForm.BorderStyle := bsSizeable;
+  end else begin
+    FRegisteredForm.BorderStyle := bsNone;
+  end;
+end;
 
 procedure TFormSizeCustomizer.SetScreenIndex(AValue: Integer);
 begin

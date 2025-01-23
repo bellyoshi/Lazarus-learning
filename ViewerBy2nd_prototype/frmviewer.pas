@@ -14,6 +14,8 @@ type
 
   TViewerForm = class(TForm, IView)
     Image1: TImage;
+    MenuItemTitleVisible: TMenuItem;
+    MenuItemTitleInVisible: TMenuItem;
     MenuItemFullScreen: TMenuItem;
     MenuItemWindowMode: TMenuItem;
     MenuItemClose: TMenuItem;
@@ -23,9 +25,11 @@ type
     procedure FormResize(Sender: TObject);
 
     procedure FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure MenuItemTitleInVisibleClick(Sender: TObject);
 
     procedure MenuItemCloseClick(Sender: TObject);
     procedure MenuItemFullScreenClick(Sender: TObject);
+    procedure MenuItemTitleVisibleClick(Sender: TObject);
     procedure MenuItemWindowModeClick(Sender: TObject);
 
   private
@@ -104,9 +108,19 @@ begin
   Handled := True;  // イベントを処理済みにする
 end;
 
+procedure TViewerForm.MenuItemTitleInVisibleClick(Sender: TObject);
+begin
+  FormSizeCustomizer.TitleVisible := False;
+end;
+
 procedure TViewerForm.MenuItemFullScreenClick(Sender: TObject);
 begin
   IsFullScreen := True;  // フルスクリーンに切り替える
+end;
+
+procedure TViewerForm.MenuItemTitleVisibleClick(Sender: TObject);
+begin
+  FormSizeCustomizer.TitleVisible := True;
 end;
 
 procedure TViewerForm.MenuItemWindowModeClick(Sender: TObject);

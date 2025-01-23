@@ -9,6 +9,7 @@ object ViewerForm: TViewerForm
   DesignTimePPI = 120
   OnCreate = FormCreate
   OnResize = FormResize
+  PopupMenu = PopupMenu1
   LCLVersion = '3.6.0.0'
   object Image1: TImage
     Left = 45
@@ -31,6 +32,14 @@ object ViewerForm: TViewerForm
     object MenuItemClose: TMenuItem
       Caption = '閉じる'
       OnClick = MenuItemCloseClick
+    end
+    object MenuItemTitleInVisible: TMenuItem
+      Caption = 'タイトルバーを隠す'
+      OnClick = MenuItemTitleInVisibleClick
+    end
+    object MenuItemTitleVisible: TMenuItem
+      Caption = 'タイトルバーを表示する'
+      OnClick = MenuItemTitleVisibleClick
     end
   end
 end

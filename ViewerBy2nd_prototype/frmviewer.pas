@@ -20,6 +20,10 @@ type
     MenuItemWindowMode: TMenuItem;
     MenuItemClose: TMenuItem;
     PopupMenu1: TPopupMenu;
+    Separator1: TMenuItem;
+    Separator2: TMenuItem;
+
+    procedure ControlEnabled();
 
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -49,8 +53,17 @@ implementation
 
 {$R *.lfm}
 
+procedure TViewerForm.ControlEnabled();
+begin
+  MenuItemTitleInVisible.Enabled:=FormSizeCustomizer.CanTitleInVisible;
+  MenuItemTitleVisible.Enabled:= FormSizeCustomizer.CanTitleVisible;
+  MenuItemFullScreen.Enabled:=Not FormSizeCustomizer.IsFullScreen;
+  MenuItemWindowMode.Enabled := FormSizeCustomizer.IsFullScreen;
+end;
+
 procedure TViewerForm.ShowDocument();
 begin
+
     model.View();
     UpdateView();
     Show();
@@ -58,6 +71,7 @@ end;
 
 procedure TViewerForm.UpdateView();
 begin
+  ControlEnabled();
   LoadBitmap();
   Self.Color:=model.Background.Color;
 end;
@@ -111,21 +125,25 @@ end;
 procedure TViewerForm.MenuItemTitleInVisibleClick(Sender: TObject);
 begin
   FormSizeCustomizer.TitleVisible := False;
+  ControlEnabled();
 end;
 
 procedure TViewerForm.MenuItemFullScreenClick(Sender: TObject);
 begin
   IsFullScreen := True;  // フルスクリーンに切り替える
+    ControlEnabled();
 end;
 
 procedure TViewerForm.MenuItemTitleVisibleClick(Sender: TObject);
 begin
   FormSizeCustomizer.TitleVisible := True;
+    ControlEnabled();
 end;
 
 procedure TViewerForm.MenuItemWindowModeClick(Sender: TObject);
 begin
   IsFullScreen := False;  // ウインドウモードに切り替える
+    ControlEnabled();
 end;
 
 

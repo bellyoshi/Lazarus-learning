@@ -29,9 +29,8 @@ object ViewerForm: TViewerForm
       Caption = 'フルスクリーン'
       OnClick = MenuItemFullScreenClick
     end
-    object MenuItemClose: TMenuItem
-      Caption = '閉じる'
-      OnClick = MenuItemCloseClick
+    object Separator1: TMenuItem
+      Caption = '-'
     end
     object MenuItemTitleInVisible: TMenuItem
       Caption = 'タイトルバーを隠す'
@@ -40,6 +39,13 @@ object ViewerForm: TViewerForm
     object MenuItemTitleVisible: TMenuItem
       Caption = 'タイトルバーを表示する'
       OnClick = MenuItemTitleVisibleClick
+    end
+    object Separator2: TMenuItem
+      Caption = '-'
+    end
+    object MenuItemClose: TMenuItem
+      Caption = '閉じる'
+      OnClick = MenuItemCloseClick
     end
   end
 end

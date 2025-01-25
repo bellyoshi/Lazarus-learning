@@ -12,7 +12,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, frmViewer, ViewerModel,
+  Menus, frmViewer, ViewerModel, Repogitory,
   PageFormUnit, SettingFormUnit, IViewUnit, FormSizeCustomizerUnit, ZoomUnit;
 
 type
@@ -289,8 +289,8 @@ procedure TOperationForm.OpenButtonClick(Sender: TObject);
 var
   i : Integer;
 begin
-  // PDFファイルのみを選択できるようにフィルタを設定
-  OpenDialog1.Filter := 'PDF Files|*.pdf';
+  // PDF、画像、およびすべてのファイルを選択可能にする
+  OpenDialog1.Filter := 'PDF Files|*.pdf|Image Files|*.jpg;*.jpeg;*.png;*.bmp|All Files|*.*';
   OpenDialog1.Options:=OpenDialog1.Options+[ofAllowMultiSelect];
 
   if not OpenDialog1.Execute then Exit;

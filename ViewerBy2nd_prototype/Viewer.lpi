@@ -105,6 +105,26 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="RotateImageCreatorUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="timagecreatorunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TImageCreatorUnit"/>
+      </Unit>
+      <Unit>
+        <Filename Value="filesparam.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FilesParam"/>
+      </Unit>
+      <Unit>
+        <Filename Value="background.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Background"/>
+      </Unit>
+      <Unit>
+        <Filename Value="repogitory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Repogitory"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

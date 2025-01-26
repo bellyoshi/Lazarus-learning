@@ -11,19 +11,21 @@ procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
 type
 
 
-  TPdfImageCreator  = class(TInterfacedObject, IImageCreator)
+  TPdfImageCreator  = class(TInterfacedObject, IDocmentImageCreator)
 
   private
     FPdfDocument: TPdfDocument;
     FPageIndex: Integer;
-    function GetPageCount : Integer;
 
   public
     constructor Create(const Filename: string; PageIndex: Integer = 0);  // コンストラクタ
     destructor Destroy; override;  // デストラクタ
     function GetBitmap(Width, Height: Integer): TBitmap;  // ビットマップ取得
     function GetRatio(): Double;
-    property PageIndex: Integer read FPageIndex write FPageIndex;  // ページのインデックス
+    procedure SetPageIndex(AValue : Integer);
+    function GetPageIndex() : Integer;
+    function GetPageCount : Integer ;
+//    property PageIndex: Integer read FPageIndex write FPageIndex;  // ページのインデックス
     property PageCount : Integer read GetPageCount;
   end;
 
@@ -34,6 +36,15 @@ implementation
 
 uses
   GraphType;
+procedure TPdfImageCreator.SetPageIndex(AValue : Integer);
+begin
+   FPageIndex := AValue;
+end;
+
+function TPdfImageCreator.GetPageIndex : Integer ;
+begin
+   Result := FPageIndex;
+end;
 
 function TPdfImageCreator.GetPageCount : Integer;
 begin

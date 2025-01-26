@@ -8,23 +8,28 @@ uses
   Classes, SysUtils, Graphics,ImageCreatorUnit, FPImage, FPReadJPEG, FPReadPNG, FPReadBMP;
 
 type
-  TImageCreator = class(TInterfacedObject, IImageCreator)
+  TImageCreator = class(TInterfacedObject, IDocmentImageCreator)
   private
     FBitmap: TBitmap;
+    procedure LoadFromFile(const AFileName: string);
   public
-    constructor Create;
+    constructor Create(const AFileName: string);
     destructor Destroy; override;
     function GetBitmap(Width, Height: Integer): TBitmap;
     function GetRatio(): Double;
-    procedure LoadFromFile(const FileName: string);
+
+    function GetPageIndex: Integer ;
+    procedure SetPageIndex(AValue : Integer);
+    function GetPageCount : Integer ;
   end;
 
 implementation
 
-constructor TImageCreator.Create;
+constructor TImageCreator.Create(const AFileName : String);
 begin
   inherited Create;
   FBitmap := TBitmap.Create;
+  LoadFromFile(AFileName);
 end;
 
 destructor TImageCreator.Destroy;
@@ -61,13 +66,13 @@ begin
   Result := FBitmap.Width / FBitmap.Height;
 end;
 
-procedure TImageCreator.LoadFromFile(const FileName: string);
+procedure TImageCreator.LoadFromFile(const AFileName: string);
 var
   Ext: string;
   Image: TFPCustomImage;
   Reader: TFPCustomImageReader;
 begin
-  Ext := LowerCase(ExtractFileExt(FileName));
+  Ext := LowerCase(ExtractFileExt(AFileName));
 
   Image := TFPMemoryImage.Create(0, 0);
   try
@@ -81,7 +86,7 @@ begin
       raise Exception.Create('Unsupported file format: ' + Ext);
 
     try
-      Image.LoadFromFile(FileName, Reader);
+      Image.LoadFromFile(AFileName, Reader);
       FBitmap.Assign(Image);
     finally
       Reader.Free;
@@ -89,6 +94,20 @@ begin
   finally
     Image.Free;
   end;
+end;
+function TImageCreator.GetPageIndex: Integer ;
+begin
+  Result := 0;
+end;
+
+procedure TImageCreator.SetPageIndex(AValue : Integer);
+begin
+  //No opration
+end;
+
+function TImageCreator.GetPageCount : Integer ;
+begin
+  Result := 1;
 end;
 
 end.

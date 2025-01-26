@@ -146,7 +146,7 @@ begin
   if value > PageCount - 1 then
     value := PageCount - 1;
 
-  OperationFile.ImageCreator.PageIndex := value;
+  OperationFile.ImageCreator.SetPageIndex(value);
 end;
 
 function TViewerModel.GetPageCount: Integer;
@@ -154,7 +154,7 @@ begin
   if Repogitory.GetSelectedIndex = -1 then
     Result := 0
   else
-    Result := OperationFile.ImageCreator.PageCount;
+  Result := OperationFile.ImageCreator.GetPageCount;
 end;
 
 function TViewerModel.GetPageIndex: Integer;
@@ -162,19 +162,19 @@ begin
   if Repogitory.GetSelectedIndex = -1 then
     Result := 0
   else
-    Result := OperationFile.ImageCreator.PageIndex;
+  Result := OperationFile.ImageCreator.GetPageIndex;
 end;
 
 procedure TViewerModel.Previous;
 begin
   if 0 <= Repogitory.GetSelectedIndex then
-    OperationFile.ImageCreator.PageIndex := OperationFile.ImageCreator.PageIndex - 1;
+    PageIndex := PageIndex - 1;
 end;
 
 procedure TViewerModel.Next;
 begin
   if 0 <= Repogitory.GetSelectedIndex then
-    OperationFile.ImageCreator.PageIndex := OperationFile.ImageCreator.PageIndex + 1;
+    PageIndex := PageIndex + 1;
 end;
 
 function TViewerModel.GetHasOperationDocument: Boolean;
@@ -263,12 +263,12 @@ end;
 
 function TViewerModel.GetCanNext: Boolean;
 begin
-  Result := Assigned(OperationFile) and (OperationFile.ImageCreator.PageIndex < OperationFile.ImageCreator.PageCount - 1);
+  Result := Assigned(OperationFile) and (PageIndex < PageCount - 1);
 end;
 
 function TViewerModel.GetCanPrevious: Boolean;
 begin
-  Result := Assigned(OperationFile) and (OperationFile.ImageCreator.PageIndex > 0);
+  Result := Assigned(OperationFile) and (PageIndex > 0);
 end;
 
 function TViewerModel.GetCanLast: Boolean;

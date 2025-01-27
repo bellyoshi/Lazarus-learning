@@ -1,7 +1,5 @@
 unit frmOperation;
 
-
-// Todo: open image
 // Todo: movie
 // Todo: slim normal window size
 

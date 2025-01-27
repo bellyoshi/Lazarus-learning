@@ -25,7 +25,6 @@ type
     procedure SetPageIndex(AValue : Integer);
     function GetPageIndex() : Integer;
     function GetPageCount : Integer ;
-//    property PageIndex: Integer read FPageIndex write FPageIndex;  // ページのインデックス
     property PageCount : Integer read GetPageCount;
   end;
 

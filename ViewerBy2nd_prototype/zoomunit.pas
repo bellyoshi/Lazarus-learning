@@ -40,7 +40,7 @@ begin
   CenterX:=-1;
   CenterY:=-1;
   //todo:Centerをクラスにする。
-  //todo:Rotateメソッドをつくる。
+  //todo:Rotateメソッドをつくる。 回転しても同じ位置を表示するようにする。
 end;
 
 function RoundToStep(Value: Double; Step: Integer): Integer;

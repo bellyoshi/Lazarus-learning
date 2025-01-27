@@ -5,7 +5,7 @@ unit TImageCreatorUnit;
 interface
 
 uses
-  Classes, SysUtils, Graphics,ImageCreatorUnit, FPImage, FPReadJPEG, FPReadPNG, FPReadBMP;
+  Classes, SysUtils, Graphics,ImageCreatorUnit, FPImage, FPReadJPEG, FPReadPNG, FPReadBMP, ReSizeBilinearUnit;
 
 type
   TImageCreator = class(TInterfacedObject, IDocmentImageCreator)
@@ -39,24 +39,14 @@ begin
 end;
 
 function TImageCreator.GetBitmap(Width, Height: Integer): TBitmap;
-var
-  Ratio: Double;
-  ResizedBitmap: TBitmap;
 begin
   if (FBitmap.Width = 0) or (FBitmap.Height = 0) then
     raise Exception.Create('No image loaded.');
 
-  Ratio := GetRatio();
 
-  ResizedBitmap := TBitmap.Create;
-  try
-    ResizedBitmap.SetSize(Width, Height);
-    ResizedBitmap.Canvas.StretchDraw(Rect(0, 0, Width, Height), FBitmap);
-    Result := ResizedBitmap;
-  except
-    ResizedBitmap.Free;
-    raise;
-  end;
+
+  Result := ReSizeBilinear(FBitmap, Width, Height);
+
 end;
 
 function TImageCreator.GetRatio(): Double;

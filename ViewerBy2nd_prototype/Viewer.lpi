@@ -125,6 +125,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Repogitory"/>
       </Unit>
+      <Unit>
+        <Filename Value="resizebilinearunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ReSizeBilinearUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

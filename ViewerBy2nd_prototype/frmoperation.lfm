@@ -268,14 +268,15 @@ object OperationForm: TOperationForm
     Left = 344
     Top = 568
     object FileMenu: TMenuItem
-      Caption = 'File'
+      Caption = 'ファイル(&F)'
       OnClick = FileMenuClick
       object ListMenu: TMenuItem
-        Caption = 'List'
+        Caption = 'リスト(&L)'
         OnClick = ListMenuClick
       end
       object OpenMenu: TMenuItem
-        Caption = 'Open'
+        Caption = '開く(&O)'
+        OnClick = OpenMenuClick
       end
     end
     object DisplayMenu: TMenuItem

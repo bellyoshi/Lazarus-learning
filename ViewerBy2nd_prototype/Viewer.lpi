@@ -121,9 +121,9 @@
         <UnitName Value="Background"/>
       </Unit>
       <Unit>
-        <Filename Value="repogitory.pas"/>
+        <Filename Value="repogitoryunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Repogitory"/>
+        <UnitName Value="RepogitoryUnit"/>
       </Unit>
       <Unit>
         <Filename Value="resizebilinearunit.pas"/>

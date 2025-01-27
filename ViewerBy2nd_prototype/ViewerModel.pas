@@ -5,7 +5,7 @@ unit ViewerModel;
 interface
 
 uses
-  Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections, ZoomUnit, RotateImageCreatorUnit, FilesParam, Background, Repogitory;
+  Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections, ZoomUnit, RotateImageCreatorUnit, FilesParam, Background, RepogitoryUnit;
 
 type
   TViewerModel = class

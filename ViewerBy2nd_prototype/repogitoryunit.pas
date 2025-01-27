@@ -1,5 +1,5 @@
 // File: Repogitory.pas
-unit Repogitory;
+unit RepogitoryUnit;
 
 {$mode ObjFPC}{$H+}
 
@@ -26,6 +26,8 @@ type
     function GetFileNames: TStringList;
     property ViewFile: TFilesParam read FViewFile write FViewFile;
     property Selected[I: Integer]: Boolean read GetSelected write SetSelected;
+    function GetCount(): Integer;
+    function GetFileName(index : Integer) : String;
   end;
 
 implementation
@@ -36,6 +38,15 @@ begin
   inherited Create;
   FFilesList := specialize TList<TFilesParam>.Create();
   FViewFile := nil;
+end;
+
+function TRepogitory.GetCount(): Integer;
+begin
+     Result := FFilesList.Count;
+end;
+function TRepogitory.GetFileName(index : Integer): String;
+begin
+     Result := FFilesList.Items[index].Filename;
 end;
 
 procedure TRepogitory.Delete();

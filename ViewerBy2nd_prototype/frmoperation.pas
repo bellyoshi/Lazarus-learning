@@ -10,7 +10,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, frmViewer, ViewerModel, Repogitory,
+  Menus, frmViewer, ViewerModel, RepogitoryUnit,  Generics.Collections,
   PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit;
 
 type
@@ -95,6 +95,7 @@ type
     procedure FilesListBoxSelectionChange(Sender: TObject; User: boolean);
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
+    procedure OpenMenuClick(Sender: TObject);
     procedure Rotate0ButtonClick(Sender: TObject);
     procedure Rotate180ButtonClick(Sender: TObject);
     procedure Rotate270ButtonClick(Sender: TObject);
@@ -114,13 +115,18 @@ type
     procedure UpdateView;
     procedure ZoomInButtonClick(Sender: TObject);
     procedure ZoomOutButtonClick(Sender: TObject);
-
+    procedure ListMenuChileClick(Sender: TObject);
   private
     FFilesListBoxLoaded : Boolean;
         IsMouseDown : Boolean;
     procedure LoadBitmap;
     procedure SetCtlEnabled();
     procedure LoadList();
+    procedure PopulateFileMenu();
+    procedure LoadListBox(fileList : TStringList);
+    function GetRepository() : TRepogitory;
+    property Repos : TRepogitory read GetRepository;
+
   public
 
   end;
@@ -133,6 +139,11 @@ implementation
 {$R *.lfm}
 
 { TOperationForm }
+
+function TOperationForm.GetRepository(): TRepogitory;
+begin
+  Result := model.Repogitory;
+  end;
 
 procedure TOperationForm.SetCtlEnabled();
 begin
@@ -213,13 +224,25 @@ end;
 procedure TOperationForm.LoadList();
 var
   fileList: TStringList;
-  repogitory: TRepogitory;
+begin
+  FFilesListBoxLoaded := True;
+
+  fileList := model.repogitory.GetFileNames; // Get the filenames from the model
+  if Assigned(fileList) then
+  begin
+    LoadListBox(fileList);
+    PopulateFileMenu();
+  end;
+
+
+  FFilesListBoxLoaded := False;
+end;
+
+procedure TOperationForm.LoadListBox(fileList : TStringList);
+var
   i : Integer;
 begin
-  repogitory := model.Repogitory;
-  FFilesListBoxLoaded := True;
   FilesListBox.Items.Clear; // Clear any existing items
-  fileList := repogitory.GetFileNames; // Get the filenames from the model
   try
     FilesListBox.Items.Assign(fileList); // Assign the list to ListBox
   finally
@@ -228,10 +251,8 @@ begin
 
   for i := 0 to FilesListBox.Items.Count - 1 do
   begin
-       FilesListBox.Selected[i] := repogitory.Selected[i];
+       FilesListBox.Selected[i] := Repos.Selected[i];
   end;
-
-  FFilesListBoxLoaded := False;
 end;
 
 procedure TOperationForm.NextButtonClick(Sender: TObject);
@@ -281,6 +302,35 @@ begin
     Bitmap.Free;
   end;
 
+end;
+procedure TOperationForm.ListMenuChileClick(Sender: TObject);
+var
+  index : integer;
+begin
+  index := StrToInt(TMenuItem(Sender).Hint);
+  Repos.Disselect;
+  Repos.Selected[index] := True;
+  UpdateView;
+end;
+
+procedure TOperationForm.PopulateFileMenu();
+var
+  i: Integer;
+  MenuItem: TMenuItem;
+begin
+  // 子メニューをすべてクリア
+  ListMenu.Clear;
+
+
+  // TStringList の内容をメニュー項目として追加
+  for i := 0 to Repos.GetCount() - 1 do
+  begin
+    MenuItem := TMenuItem.Create(ListMenu);
+    MenuItem.Caption := ExtractFileName(Repos.GetFileName(i)); // 表示名はファイル名
+    MenuItem.Hint := IntToStr(i);
+    MenuItem.OnClick := @(ListMenuChileClick);
+    ListMenu.Add(MenuItem);
+  end;
 end;
 
 procedure TOperationForm.OpenButtonClick(Sender: TObject);
@@ -396,6 +446,11 @@ begin
   UpdateView;
 end;
 
+procedure TOperationForm.OpenMenuClick(Sender: TObject);
+begin
+  OpenButtonClick(Sender);
+end;
+
 procedure TOperationForm.Rotate0ButtonClick(Sender: TObject);
 begin
   model.Rotate(0);
@@ -419,7 +474,7 @@ end;
 
 procedure TOperationForm.SelectAllButtonClick(Sender: TObject);
 begin
-  model.Repogitory.SelectAll;
+  Repos.SelectAll;
   UpdateView();
 end;
 

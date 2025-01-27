@@ -5,8 +5,8 @@ unit RotateImageCreatorUnit;
 interface
 
 uses
-  Classes, SysUtils, ImageCreatorUnit,Graphics, Math ,
-  lcltype ;
+  Classes, SysUtils, ImageCreatorUnit,Graphics;
+
 type
   TRotateImageCreator = class(TInterfacedObject, IImageCreator)
   private
@@ -22,84 +22,9 @@ type
 
 implementation
 
+uses ReSizeBilinearUnit  ,lcltype ;
 
 
-
-procedure Rotate90(Bitmap: TBitmap);
-var
-  x, y: Integer;
-  TempBitmap: TBitmap;
-begin
-  // Create a temporary bitmap to store the rotated image
-  TempBitmap := TBitmap.Create;
-  try
-    // Set the size of the temporary bitmap to the rotated dimensions
-    TempBitmap.SetSize(Bitmap.Height, Bitmap.Width);
-    TempBitmap.PixelFormat := Bitmap.PixelFormat;
-
-    // Copy pixels from the original bitmap to the temporary bitmap, rotating them
-    for y := 0 to Bitmap.Height - 1 do
-      for x := 0 to Bitmap.Width - 1 do
-        TempBitmap.Canvas.Pixels[Bitmap.Height - 1 - y, x] := Bitmap.Canvas.Pixels[x, y];
-
-    // Now overwrite the original bitmap with the rotated image
-    Bitmap.Assign(TempBitmap);
-  finally
-    TempBitmap.Free;
-  end;
-end;
-
-
-
-
-
-procedure Rotate180(Bitmap: TBitmap);
-var
-  x, y: Integer;
-  TempBitmap: TBitmap;
-begin
-  // Create a temporary bitmap to store the rotated image
-  TempBitmap := TBitmap.Create;
-  try
-    // Set the size of the temporary bitmap to the rotated dimensions
-    TempBitmap.SetSize(Bitmap.Width, Bitmap.Height);
-    TempBitmap.PixelFormat := Bitmap.PixelFormat;
-
-    // Copy pixels from the original bitmap to the temporary bitmap, rotating them by 180 degrees
-    for y := 0 to Bitmap.Height - 1 do
-      for x := 0 to Bitmap.Width - 1 do
-        TempBitmap.Canvas.Pixels[Bitmap.Width - 1 - x, Bitmap.Height - 1 - y] := Bitmap.Canvas.Pixels[x, y];
-
-    // Now overwrite the original bitmap with the rotated image
-    Bitmap.Assign(TempBitmap);
-  finally
-    TempBitmap.Free;
-  end;
-end;
-
-procedure Rotate270(Bitmap: TBitmap);
-var
-  x, y: Integer;
-  TempBitmap: TBitmap;
-begin
-  // Create a temporary bitmap to store the rotated image
-  TempBitmap := TBitmap.Create;
-  try
-    // Set the size of the temporary bitmap to the rotated dimensions
-    TempBitmap.SetSize(Bitmap.Height, Bitmap.Width);
-    TempBitmap.PixelFormat := Bitmap.PixelFormat;
-
-    // Copy pixels from the original bitmap to the temporary bitmap, rotating them by 270 degrees (or -90)
-    for y := 0 to Bitmap.Height - 1 do
-      for x := 0 to Bitmap.Width - 1 do
-        TempBitmap.Canvas.Pixels[y, Bitmap.Width - 1 - x] := Bitmap.Canvas.Pixels[x, y];
-
-    // Now overwrite the original bitmap with the rotated image
-    Bitmap.Assign(TempBitmap);
-  finally
-    TempBitmap.Free;
-  end;
-end;
 
 
 
@@ -126,20 +51,17 @@ begin
       Result := FImageCreator.GetBitmap(Width, Height);
     90:
       begin
-      Result := FImageCreator.GetBitmap(Height, Width);
-      Rotate90(Result);
+      Result := Rotation90Right(FImageCreator.GetBitmap(Height, Width));
 
       end;
     180:
       begin
-      Result := FImageCreator.GetBitmap(Width, Height);
-      Rotate180(Result);
-
+            Result := Rotation180(FImageCreator.GetBitmap(Width, Height));
       end;
     270:
       begin
-      Result := FImageCreator.GetBitmap(Height, Width);
-      Rotate270(Result);
+            Result := Rotation90Left(FImageCreator.GetBitmap(Height, Width));
+
 
       end;
 

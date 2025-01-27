@@ -13,7 +13,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, frmViewer, ViewerModel, Repogitory,
-  PageFormUnit, SettingFormUnit, IViewUnit, FormSizeCustomizerUnit, ZoomUnit;
+  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit;
 
 type
 

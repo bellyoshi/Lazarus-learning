@@ -7,12 +7,14 @@ interface
 uses
   Classes,   Graphics   ;
 
-function ReSizeBilinear(var src_pic: TBitmap; wx, hy: integer): TBitmap;
-
+function ReSizeBilinear(src_pic: TBitmap; wx, hy: integer): TBitmap;
+function Rotation90Right(src_pic: TBitmap): TBitmap;
+function Rotation180(src_pic: TBitmap): TBitmap;
+function Rotation90Left(src_pic: TBitmap): TBitmap;
 implementation
 uses
    SysUtils,   LCLType, LCLProc, LCLIntf, IntfGraphics, FPImage;
-function ReSizeBilinear(var src_pic: TBitmap; wx, hy: integer): TBitmap;
+function ReSizeBilinear(src_pic: TBitmap; wx, hy: integer): TBitmap;
 var
   x, y, w, h, ix, iy, r, g, b: integer;
   nw, nh: integer;
@@ -77,6 +79,92 @@ begin
     TempImg_s.free;
   end;
   result:= ret_pic;
+end;
+// 引数src_picの画像を90度右に回転します。
+function Rotation90Right(src_pic: TBitmap): TBitmap;
+var
+                x, y, w, h: integer;
+clr: TFPColor;
+                TempImg_r, TempImg_s: TLazIntfImage;
+                ret_pic: TBitmap;
+begin
+w:= src_pic.width;
+h:= src_pic.height;
+try
+      ret_pic:= TBitmap.Create;
+
+  ret_pic.SetSize(h,w);
+     TempImg_r:= ret_pic.CreateIntfImage;
+   TempImg_s:= src_pic.CreateIntfImage;
+     for y:= 0 to h - 1 do
+  for x:= 0 to w - 1 do begin
+   clr:= TempImg_s.Colors[x,y];
+ TempImg_r.Colors[(h-1)-y,x]:= clr;
+ end;
+   ret_pic.LoadFromIntfImage(TempImg_r);
+finally
+
+TempImg_r.free;
+TempImg_s.free;
+end;
+ result:= ret_pic;
+end;
+// 引数src_picの画像を90度左に回転します。
+function Rotation90Left(src_pic: TBitmap): TBitmap;
+var
+  x, y, w, h: integer;
+  clr: TFPColor;
+  TempImg_r, TempImg_s: TLazIntfImage;
+  ret_pic: TBitmap;
+begin
+  w := src_pic.Width;
+  h := src_pic.Height;
+  try
+    ret_pic := TBitmap.Create;
+    ret_pic.SetSize(h, w);
+    TempImg_r := ret_pic.CreateIntfImage;
+    TempImg_s := src_pic.CreateIntfImage;
+    for y := 0 to h - 1 do
+      for x := 0 to w - 1 do
+      begin
+        clr := TempImg_s.Colors[x, y];
+        TempImg_r.Colors[y, (w - 1) - x] := clr;
+      end;
+    ret_pic.LoadFromIntfImage(TempImg_r);
+  finally
+    TempImg_r.Free;
+    TempImg_s.Free;
+  end;
+  Result := ret_pic;
+end;
+
+// 引数src_picの画像を180度回転します。
+function Rotation180(src_pic: TBitmap): TBitmap;
+var
+  x, y, w, h: integer;
+  clr: TFPColor;
+  TempImg_r, TempImg_s: TLazIntfImage;
+  ret_pic: TBitmap;
+begin
+  w := src_pic.Width;
+  h := src_pic.Height;
+  try
+    ret_pic := TBitmap.Create;
+    ret_pic.SetSize(w, h);
+    TempImg_r := ret_pic.CreateIntfImage;
+    TempImg_s := src_pic.CreateIntfImage;
+    for y := 0 to h - 1 do
+      for x := 0 to w - 1 do
+      begin
+        clr := TempImg_s.Colors[x, y];
+        TempImg_r.Colors[(w - 1) - x, (h - 1) - y] := clr;
+      end;
+    ret_pic.LoadFromIntfImage(TempImg_r);
+  finally
+    TempImg_r.Free;
+    TempImg_s.Free;
+  end;
+  Result := ret_pic;
 end;
 
 

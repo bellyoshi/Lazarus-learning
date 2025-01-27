@@ -11,7 +11,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, frmViewer, ViewerModel, RepogitoryUnit,  Generics.Collections,
-  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit;
+  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit, AboutUnit;
 
 type
 
@@ -79,6 +79,7 @@ type
     Image1: TImage;
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
+    procedure AboutMenuClick(Sender: TObject);
     procedure BackGroundDisplayButtonClick(Sender: TObject);
     procedure FitWindowButtonClick(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -370,6 +371,11 @@ begin
   model.Repogitory.Disselect;
   ViewerForm.ShowDocument() ;
   UpdateView();
+end;
+
+procedure TOperationForm.AboutMenuClick(Sender: TObject);
+begin
+  AboutForm.Show;
 end;
 
 procedure TOperationForm.FitWindowButtonClick(Sender: TObject);

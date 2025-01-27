@@ -1,0 +1,22 @@
+object AboutForm: TAboutForm
+  Left = 316
+  Height = 240
+  Top = 155
+  Width = 320
+  Caption = 'AboutForm'
+  ClientHeight = 240
+  ClientWidth = 320
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  LCLVersion = '3.6.0.0'
+  object Memo1: TMemo
+    Left = 40
+    Height = 113
+    Top = 32
+    Width = 188
+    Lines.Strings = (
+      'Viewer By 2nd をご利用いただきありがとうございます。'
+    )
+    TabOrder = 0
+  end
+end

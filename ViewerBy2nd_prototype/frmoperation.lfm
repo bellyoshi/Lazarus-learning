@@ -359,6 +359,7 @@ object OperationForm: TOperationForm
       Caption = 'HelpMenu'
       object AboutMenu: TMenuItem
         Caption = 'AboutMenu'
+        OnClick = AboutMenuClick
       end
     end
   end

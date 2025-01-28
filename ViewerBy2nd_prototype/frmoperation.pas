@@ -2,9 +2,8 @@ unit frmOperation;
 
 // Todo: movie
 // Todo: slim normal window size
-
 // Todo: ドラッグ＆ドロップでファイルを登録できるようにする。
-
+// Todo: Form Ratio Windows size Panel sizeで共通化
 
 interface
 

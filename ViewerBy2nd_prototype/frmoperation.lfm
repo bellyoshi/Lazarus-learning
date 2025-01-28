@@ -89,7 +89,7 @@ object OperationForm: TOperationForm
     Height = 91
     Top = 368
     Width = 544
-    Caption = 'セカンドモニター操作'
+    Caption = 'スクリーン操作'
     ClientHeight = 66
     ClientWidth = 540
     TabOrder = 5
@@ -281,9 +281,9 @@ object OperationForm: TOperationForm
       end
     end
     object DisplayMenu: TMenuItem
-      Caption = '表示'
+      Caption = '表示(&V)'
       object RotateMenu: TMenuItem
-        Caption = '回転'
+        Caption = '回転(&R)'
         object Rotate000Menu: TMenuItem
           Caption = '元の位置'
           OnClick = Rotate000MenuClick
@@ -302,44 +302,52 @@ object OperationForm: TOperationForm
         end
       end
       object PageNavigationMenu: TMenuItem
-        Caption = 'page'
+        Caption = 'ページ(&P)'
         object FirstPageMenu: TMenuItem
-          Caption = 'FirstPageMenu'
+          Caption = '最初のページ'
+          OnClick = FirstPageMenuClick
         end
         object NextPageMenu: TMenuItem
-          Caption = 'NextPageMenu'
+          Caption = '次のページ'
+          OnClick = NextPageMenuClick
         end
         object PreviousPageMenu: TMenuItem
-          Caption = 'PreviousPageMenu'
+          Caption = '前のページ'
+          OnClick = PreviousPageMenuClick
         end
         object LastPageMenu: TMenuItem
-          Caption = 'LastPageMenu'
+          Caption = '最後のページ'
+          OnClick = LastPageMenuClick
         end
         object PageIndexMenu: TMenuItem
-          Caption = 'PageIndexMenu'
+          Caption = 'ページを指定'
+          OnClick = PageIndexMenuClick
         end
       end
       object ZoomMenu: TMenuItem
-        Caption = 'zoom'
+        Caption = '拡大縮小'
       end
       object VideoPlayMenu: TMenuItem
         Caption = 'video'
       end
       object ViewerMenu: TMenuItem
-        Caption = 'viewer'
+        Caption = 'スクリーン操作'
         object ViewerDisplayMenu: TMenuItem
-          Caption = 'display'
+          Caption = 'スクリーンに表示'
+          OnClick = ViewerDisplayMenuClick
         end
         object ViewerCloseMenu: TMenuItem
-          Caption = 'close'
+          Caption = '表示終了'
+          OnClick = ViewerCloseMenuClick
         end
         object BackgroundDisplayMenu: TMenuItem
-          Caption = 'Background'
+          Caption = '背景表示'
+          OnClick = BackgroundDisplayMenuClick
         end
       end
     end
     object SettingMenu: TMenuItem
-      Caption = '設定'
+      Caption = '設定(&S)'
       object DisplaySettingMenu: TMenuItem
         Caption = 'モニターと背景画像'
         OnClick = DisplaySettingMenuClick
@@ -349,7 +357,7 @@ object OperationForm: TOperationForm
         OnClick = AutoUpdateSettingMenuClick
       end
       object OperationFormSizeMenu: TMenuItem
-        Caption = 'OperationFormSizeMenu'
+        Caption = '操作画面サイズ'
         object DefaultSizeMenu: TMenuItem
           Caption = 'DefaultSizeMenu'
         end
@@ -362,9 +370,9 @@ object OperationForm: TOperationForm
       end
     end
     object HelpMenu: TMenuItem
-      Caption = 'HelpMenu'
+      Caption = 'ヘルプ(&H)'
       object AboutMenu: TMenuItem
-        Caption = 'AboutMenu'
+        Caption = 'このアプリについて(&A)'
         OnClick = AboutMenuClick
       end
     end

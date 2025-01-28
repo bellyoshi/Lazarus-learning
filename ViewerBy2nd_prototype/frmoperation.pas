@@ -82,6 +82,8 @@ type
     procedure AutoUpdateCheckBoxChange(Sender: TObject);
     procedure AutoUpdateSettingMenuClick(Sender: TObject);
     procedure BackGroundDisplayButtonClick(Sender: TObject);
+    procedure BackgroundDisplayMenuClick(Sender: TObject);
+    procedure FirstPageMenuClick(Sender: TObject);
     procedure FitWindowButtonClick(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -90,6 +92,8 @@ type
       );
     procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure LastPageMenuClick(Sender: TObject);
+    procedure NextPageMenuClick(Sender: TObject);
     procedure OpenButtonClick(Sender: TObject);
     procedure DelteButtonClick(Sender: TObject);
     procedure DeselectButtonClick(Sender: TObject);
@@ -98,6 +102,8 @@ type
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
     procedure OpenMenuClick(Sender: TObject);
+    procedure PageIndexMenuClick(Sender: TObject);
+    procedure PreviousPageMenuClick(Sender: TObject);
     procedure Rotate000MenuClick(Sender: TObject);
     procedure Rotate090MenuClick(Sender: TObject);
     procedure Rotate0ButtonClick(Sender: TObject);
@@ -109,6 +115,7 @@ type
     procedure SelectAllButtonClick(Sender: TObject);
     procedure ViewAllButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
+    procedure ViewerCloseMenuClick(Sender: TObject);
     procedure ViewerDisplayButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -119,6 +126,7 @@ type
     procedure PageCountLabelClick(Sender: TObject);
     procedure PreviousButtonClick(Sender: TObject);
     procedure UpdateView;
+    procedure ViewerDisplayMenuClick(Sender: TObject);
     procedure ZoomInButtonClick(Sender: TObject);
     procedure ZoomOutButtonClick(Sender: TObject);
     procedure ListMenuChileClick(Sender: TObject);
@@ -155,12 +163,18 @@ begin
 procedure TOperationForm.SetCtlEnabled();
 begin
   ViewerDisplayButton.Enabled:=model.HasOperationDocument;
+  ViewerDisplayMenu.Enabled:=ViewerDisplayButton.Enabled;
   NextButton.Enabled:= model.CanNext;
+  NextPageMenu.Enabled:= NextButton.Enabled;
   PreviousButton.Enabled := model.CanPrevious;
+  PreviousPageMenu.Enabled := PreviousButton.Enabled ;
   LastPageButton.Enabled:=model.CanLast;
+  LastPageMenu.Enabled := LastPageButton.Enabled;
   FirstPageButton.Enabled := model.CanFirst;
+  FirstPageMenu.Enabled :=FirstPageButton.Enabled ;
   PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
   ZoomInButton.Enabled:= model.CanZoomIn;
+
   ZoomOutButton.Enabled:=model.CanZoomOut;
   FitWindowButton.Enabled:=model.CanZoom;
   ViewAllButton.Enabled:=model.CanZoom;
@@ -207,6 +221,11 @@ begin
   begin
     ViewerForm.ShowDocument()
   end;
+end;
+
+procedure TOperationForm.ViewerDisplayMenuClick(Sender: TObject);
+begin
+  ViewerDisplayButtonClick(Sender);
 end;
 
 procedure TOperationForm.ZoomInButtonClick(Sender: TObject);
@@ -379,6 +398,16 @@ begin
   UpdateView();
 end;
 
+procedure TOperationForm.BackgroundDisplayMenuClick(Sender: TObject);
+begin
+  BackGroundDisplayButtonClick(Sender);
+end;
+
+procedure TOperationForm.FirstPageMenuClick(Sender: TObject);
+begin
+ FirstPageButtonClick(Sender);
+end;
+
 procedure TOperationForm.AboutMenuClick(Sender: TObject);
 begin
   AboutForm.Show;
@@ -448,6 +477,16 @@ begin
   end;
 end;
 
+procedure TOperationForm.LastPageMenuClick(Sender: TObject);
+begin
+  LastPageButtonClick(Sender);
+end;
+
+procedure TOperationForm.NextPageMenuClick(Sender: TObject);
+begin
+  NextButtonClick(Sender);
+end;
+
 procedure TOperationForm.DisplaySettingMenuClick(Sender: TObject);
 begin
   SettingForm.Show();
@@ -484,6 +523,16 @@ end;
 procedure TOperationForm.OpenMenuClick(Sender: TObject);
 begin
   OpenButtonClick(Sender);
+end;
+
+procedure TOperationForm.PageIndexMenuClick(Sender: TObject);
+begin
+  PageCountLabelClick(Sender);
+end;
+
+procedure TOperationForm.PreviousPageMenuClick(Sender: TObject);
+begin
+  PreviousButtonClick(Sender);
 end;
 
 procedure TOperationForm.Rotate000MenuClick(Sender: TObject);
@@ -542,6 +591,11 @@ end;
 procedure TOperationForm.ViewerCloseButtonClick(Sender: TObject);
 begin
   ViewerForm.Close();
+end;
+
+procedure TOperationForm.ViewerCloseMenuClick(Sender: TObject);
+begin
+  ViewerCloseButtonClick(Sender);
 end;
 
 

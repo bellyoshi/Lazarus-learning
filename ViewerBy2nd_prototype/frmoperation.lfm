@@ -1,9 +1,9 @@
 object OperationForm: TOperationForm
-  Left = 848
+  Left = 759
   Height = 630
-  Top = 247
+  Top = 227
   Width = 973
-  Caption = 'Form1'
+  Caption = 'Viewer By 2nd Monitor 操作画面'
   ClientHeight = 630
   ClientWidth = 973
   DesignTimePPI = 120
@@ -192,7 +192,7 @@ object OperationForm: TOperationForm
     OnClick = ZoomInButtonClick
   end
   object ZoomOutButton: TButton
-    Left = 436
+    Left = 416
     Height = 31
     Top = 251
     Width = 94
@@ -208,7 +208,7 @@ object OperationForm: TOperationForm
     Caption = '100'
   end
   object FitWindowButton: TButton
-    Left = 436
+    Left = 368
     Height = 31
     Top = 153
     Width = 150
@@ -217,16 +217,16 @@ object OperationForm: TOperationForm
     OnClick = FitWindowButtonClick
   end
   object ViewAllButton: TButton
-    Left = 280
+    Left = 264
     Height = 31
     Top = 153
-    Width = 150
+    Width = 104
     Caption = '全体を表示'
     TabOrder = 14
     OnClick = ViewAllButtonClick
   end
   object Rotate0Button: TButton
-    Left = 378
+    Left = 362
     Height = 32
     Top = 50
     Width = 114
@@ -235,7 +235,7 @@ object OperationForm: TOperationForm
     OnClick = Rotate0ButtonClick
   end
   object Rotate90Button: TButton
-    Left = 431
+    Left = 415
     Height = 32
     Top = 83
     Width = 122
@@ -244,7 +244,7 @@ object OperationForm: TOperationForm
     OnClick = Rotate90ButtonClick
   end
   object Rotate180Button: TButton
-    Left = 357
+    Left = 341
     Height = 32
     Top = 113
     Width = 131
@@ -253,7 +253,7 @@ object OperationForm: TOperationForm
     OnClick = Rotate180ButtonClick
   end
   object Rotate270Button: TButton
-    Left = 287
+    Left = 271
     Height = 32
     Top = 83
     Width = 128

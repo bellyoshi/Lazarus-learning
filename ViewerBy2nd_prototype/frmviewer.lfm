@@ -1,26 +1,26 @@
 object ViewerForm: TViewerForm
   Left = 213
-  Height = 288
+  Height = 240
   Top = 214
-  Width = 384
-  Caption = 'Form2'
-  ClientHeight = 288
-  ClientWidth = 384
-  DesignTimePPI = 144
+  Width = 320
+  Caption = 'スクリーン Viewer By 2nd Monitor'
+  ClientHeight = 240
+  ClientWidth = 320
+  DesignTimePPI = 120
   OnCreate = FormCreate
   OnResize = FormResize
   PopupMenu = PopupMenu1
   LCLVersion = '3.6.0.0'
   object Image1: TImage
-    Left = 54
-    Height = 134
-    Top = 26
-    Width = 134
+    Left = 45
+    Height = 112
+    Top = 22
+    Width = 112
     PopupMenu = PopupMenu1
   end
   object PopupMenu1: TPopupMenu
-    Left = 227
-    Top = 28
+    Left = 189
+    Top = 23
     object MenuItemWindowMode: TMenuItem
       Caption = 'ウインドウ'
       OnClick = MenuItemWindowModeClick

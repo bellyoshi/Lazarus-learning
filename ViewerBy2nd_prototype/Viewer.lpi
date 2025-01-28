@@ -134,6 +134,7 @@
         <Filename Value="aboutunit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AboutUnit"/>
       </Unit>

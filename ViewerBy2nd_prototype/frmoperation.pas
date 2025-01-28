@@ -79,6 +79,8 @@ type
     OpenDialog1: TOpenDialog;
     Panel1: TPanel;
     procedure AboutMenuClick(Sender: TObject);
+    procedure AutoUpdateCheckBoxChange(Sender: TObject);
+    procedure AutoUpdateSettingMenuClick(Sender: TObject);
     procedure BackGroundDisplayButtonClick(Sender: TObject);
     procedure FitWindowButtonClick(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -121,6 +123,7 @@ type
     procedure ZoomOutButtonClick(Sender: TObject);
     procedure ListMenuChileClick(Sender: TObject);
   private
+    AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
         IsMouseDown : Boolean;
     procedure LoadBitmap;
@@ -379,6 +382,29 @@ end;
 procedure TOperationForm.AboutMenuClick(Sender: TObject);
 begin
   AboutForm.Show;
+end;
+
+procedure TOperationForm.AutoUpdateCheckBoxChange(Sender: TObject);
+begin
+  if AutoUpdateCheckBoxCheckedChanging then Exit;
+
+  AutoUpdateSettingMenu.Checked:=AutoUpdateCheckBox.Checked;
+  if AutoUpdateCheckBox.Checked then
+  begin
+    UpdateView;
+  end;
+end;
+
+procedure TOperationForm.AutoUpdateSettingMenuClick(Sender: TObject);
+begin
+  AutoUpdateSettingMenu.Checked:=Not AutoUpdateSettingMenu.Checked;
+  AutoUpdateCheckBoxCheckedChanging := True;
+  AutoUpdateCheckBox.Checked:= AutoUpdateSettingMenu.Checked;
+  AutoUpdateCheckBoxCheckedChanging := False;
+    if AutoUpdateSettingMenu.Checked then
+  begin
+    UpdateView;
+  end;
 end;
 
 procedure TOperationForm.FitWindowButtonClick(Sender: TObject);

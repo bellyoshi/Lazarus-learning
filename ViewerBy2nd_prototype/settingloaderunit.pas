@@ -124,19 +124,9 @@ begin
   MonitorCount := Screen.MonitorCount;
   if (FScreenIndex < 0) or (FScreenIndex >= MonitorCount) then
   begin
-    if MonitorCount > 1 then
-      FScreenIndex := 1
-    else
-    begin
-      FScreenIndex := 0;
-      FIsFullScreen := False;
-    end;
+    LoadDefaults;
   end;
 
-  if FWindowWidth > Screen.Monitors[FScreenIndex].Width then
-    FWindowWidth := Screen.Monitors[FScreenIndex].Width;
-  if FWindowHeight > Screen.Monitors[FScreenIndex].Height then
-    FWindowHeight := Screen.Monitors[FScreenIndex].Height;
 end;
 
 procedure TSettingLoader.CollectSettings;

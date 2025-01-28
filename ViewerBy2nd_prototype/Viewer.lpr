@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit,
-  IViewUnit, AboutUnit;
+  IViewUnit, AboutUnit, SettingLoaderUnit;
 
 {$R *.res}
 
@@ -23,14 +23,23 @@ begin
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   Application.Initialize;
+
+  SettingLoader := TSettingLoader.Create;
+  SettingLoader.Load;
+
   Application.CreateForm(TOperationForm, OperationForm);
   Application.CreateForm(TViewerForm, ViewerForm);
   Application.CreateForm(TPageForm, PageForm);
   Application.CreateForm(TSettingForm, SettingForm);
   Application.CreateForm(TAboutForm, AboutForm);
+
   formManager := TFormManager.Create;
   formManager.RegisterView(ViewerForm);
   formManager.RegisterView(OperationForm);
+
+  ViewerForm.Show();
+  SettingLoader.ApplySettings;
+
   Application.Run;
 end.
 

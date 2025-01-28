@@ -280,20 +280,24 @@ object OperationForm: TOperationForm
       end
     end
     object DisplayMenu: TMenuItem
-      Caption = 'Display'
+      Caption = '表示'
       object RotateMenu: TMenuItem
-        Caption = 'RotateMenu'
+        Caption = '回転'
         object Rotate000Menu: TMenuItem
-          Caption = 'Rotate000Menu'
+          Caption = '元の位置'
+          OnClick = Rotate000MenuClick
         end
         object Rotate090Menu: TMenuItem
-          Caption = 'Rotate090Menu'
+          Caption = '右へ90°'
+          OnClick = Rotate090MenuClick
         end
         object Rotate180Menu: TMenuItem
-          Caption = 'Rotate180Menu'
+          Caption = '180°'
+          OnClick = Rotate180MenuClick
         end
         object Rotate270Menu: TMenuItem
-          Caption = 'Rotate270Menu'
+          Caption = '右へ270°'
+          OnClick = Rotate270MenuClick
         end
       end
       object PageNavigationMenu: TMenuItem

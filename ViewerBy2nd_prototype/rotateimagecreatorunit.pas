@@ -50,21 +50,11 @@ begin
     0:
       Result := FImageCreator.GetBitmap(Width, Height);
     90:
-      begin
       Result := Rotation90Right(FImageCreator.GetBitmap(Height, Width));
-
-      end;
     180:
-      begin
-            Result := Rotation180(FImageCreator.GetBitmap(Width, Height));
-      end;
+      Result := Rotation180(FImageCreator.GetBitmap(Width, Height));
     270:
-      begin
-            Result := Rotation90Left(FImageCreator.GetBitmap(Height, Width));
-
-
-      end;
-
+      Result := Rotation90Left(FImageCreator.GetBitmap(Height, Width));
     end;
 end;
 
@@ -72,14 +62,12 @@ end;
 
 function TRotateImageCreator.GetRatio(): double;
 begin
-  Result := FImageCreator.GetRatio();
   case FAngle of
-    90:
+    0, 180:
+      Result := FImageCreator.GetRatio();
+    90, 270:
       Result := 1 / FImageCreator.GetRatio();
-    270:
-      Result := 1 / FImageCreator.GetRatio();
-
-      end;
+  end;
 
 end;
 

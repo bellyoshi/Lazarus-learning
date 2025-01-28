@@ -25,6 +25,7 @@ type
 
     procedure ControlEnabled();
 
+
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
 
@@ -60,6 +61,8 @@ begin
   MenuItemFullScreen.Enabled:=Not FormSizeCustomizer.IsFullScreen;
   MenuItemWindowMode.Enabled := FormSizeCustomizer.IsFullScreen;
 end;
+
+
 
 procedure TViewerForm.ShowDocument();
 begin

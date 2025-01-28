@@ -1,4 +1,5 @@
 unit ReSizeBilinearUnit;
+//Bitmapの編集をする関数群
 
 {$mode ObjFPC}{$H+}
 
@@ -11,6 +12,7 @@ function ReSizeBilinear(src_pic: TBitmap; wx, hy: integer): TBitmap;
 function Rotation90Right(src_pic: TBitmap): TBitmap;
 function Rotation180(src_pic: TBitmap): TBitmap;
 function Rotation90Left(src_pic: TBitmap): TBitmap;
+
 implementation
 uses
    SysUtils,   LCLType, LCLProc, LCLIntf, IntfGraphics, FPImage;
@@ -49,15 +51,9 @@ begin
           clrs[1]:= TempImg_s.TColors[ix+1,iy];
           clrs[2]:= TempImg_s.TColors[ix,iy+1];
           clrs[3]:= TempImg_s.TColors[ix+1,iy+1];
-          r:= round( (1-s) * (1-t) * Red(clrs[0]) + s * (1-t) * Red(clrs[1]) + (1-s) * t * Red(clrs[2])
-          + s * t * Red(clrs[3]));
-          g:= round( (1-s) * (1-t) * Green(clrs[0])  + s * (1-t) * Green(clrs[1])
-          + (1-s) * t * Green(clrs[2])
-          + s * t * Green(clrs[3]));
-          b:= round( (1-s) * (1-t) * Blue(clrs[0])
-          + s * (1-t) * Blue(clrs[1])
-          + (1-s) * t * Blue(clrs[2])
-          + s * t * Blue(clrs[3]));
+          r:= round( (1-s) * (1-t) * Red(clrs[0]) + s * (1-t) * Red(clrs[1]) + (1-s) * t * Red(clrs[2]) + s * t * Red(clrs[3]));
+          g:= round( (1-s) * (1-t) * Green(clrs[0])  + s * (1-t) * Green(clrs[1]) + (1-s) * t * Green(clrs[2]) + s * t * Green(clrs[3]));
+          b:= round( (1-s) * (1-t) * Blue(clrs[0])  + s * (1-t) * Blue(clrs[1]) + (1-s) * t * Blue(clrs[2])+ s * t * Blue(clrs[3]));
         end;
         // Red
         if r > 255 then r:= 255
@@ -83,31 +79,30 @@ end;
 // 引数src_picの画像を90度右に回転します。
 function Rotation90Right(src_pic: TBitmap): TBitmap;
 var
-                x, y, w, h: integer;
-clr: TFPColor;
-                TempImg_r, TempImg_s: TLazIntfImage;
-                ret_pic: TBitmap;
+  x, y, w, h: integer;
+  clr: TFPColor;
+  TempImg_r, TempImg_s: TLazIntfImage;
+  ret_pic: TBitmap;
 begin
-w:= src_pic.width;
-h:= src_pic.height;
-try
-      ret_pic:= TBitmap.Create;
-
-  ret_pic.SetSize(h,w);
-     TempImg_r:= ret_pic.CreateIntfImage;
-   TempImg_s:= src_pic.CreateIntfImage;
-     for y:= 0 to h - 1 do
-  for x:= 0 to w - 1 do begin
-   clr:= TempImg_s.Colors[x,y];
- TempImg_r.Colors[(h-1)-y,x]:= clr;
- end;
-   ret_pic.LoadFromIntfImage(TempImg_r);
-finally
-
-TempImg_r.free;
-TempImg_s.free;
-end;
- result:= ret_pic;
+  w:= src_pic.width;
+  h:= src_pic.height;
+  try
+    ret_pic:= TBitmap.Create;
+    ret_pic.SetSize(h,w);
+    TempImg_r:= ret_pic.CreateIntfImage;
+    TempImg_s:= src_pic.CreateIntfImage;
+    for y:= 0 to h - 1 do begin
+      for x:= 0 to w - 1 do begin
+        clr:= TempImg_s.Colors[x,y];
+        TempImg_r.Colors[(h-1)-y,x]:= clr;
+      end;
+    end;
+    ret_pic.LoadFromIntfImage(TempImg_r);
+    finally
+      TempImg_r.free;
+      TempImg_s.free;
+    end;
+    result:= ret_pic;
 end;
 // 引数src_picの画像を90度左に回転します。
 function Rotation90Left(src_pic: TBitmap): TBitmap;
@@ -124,12 +119,13 @@ begin
     ret_pic.SetSize(h, w);
     TempImg_r := ret_pic.CreateIntfImage;
     TempImg_s := src_pic.CreateIntfImage;
-    for y := 0 to h - 1 do
+    for y := 0 to h - 1 do begin
       for x := 0 to w - 1 do
       begin
         clr := TempImg_s.Colors[x, y];
         TempImg_r.Colors[y, (w - 1) - x] := clr;
       end;
+    end;
     ret_pic.LoadFromIntfImage(TempImg_r);
   finally
     TempImg_r.Free;
@@ -153,12 +149,13 @@ begin
     ret_pic.SetSize(w, h);
     TempImg_r := ret_pic.CreateIntfImage;
     TempImg_s := src_pic.CreateIntfImage;
-    for y := 0 to h - 1 do
+    for y := 0 to h - 1 do begin
       for x := 0 to w - 1 do
       begin
         clr := TempImg_s.Colors[x, y];
         TempImg_r.Colors[(w - 1) - x, (h - 1) - y] := clr;
       end;
+    end;
     ret_pic.LoadFromIntfImage(TempImg_r);
   finally
     TempImg_r.Free;

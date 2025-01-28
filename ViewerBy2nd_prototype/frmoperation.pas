@@ -10,7 +10,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, frmViewer, ViewerModel, RepogitoryUnit,  Generics.Collections,
-  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit, AboutUnit;
+  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit, AboutUnit, SettingLoaderUnit;
 
 type
 
@@ -96,9 +96,13 @@ type
     procedure LastPageButtonClick(Sender: TObject);
     procedure FirstPageButtonClick(Sender: TObject);
     procedure OpenMenuClick(Sender: TObject);
+    procedure Rotate000MenuClick(Sender: TObject);
+    procedure Rotate090MenuClick(Sender: TObject);
     procedure Rotate0ButtonClick(Sender: TObject);
     procedure Rotate180ButtonClick(Sender: TObject);
+    procedure Rotate180MenuClick(Sender: TObject);
     procedure Rotate270ButtonClick(Sender: TObject);
+    procedure Rotate270MenuClick(Sender: TObject);
     procedure Rotate90ButtonClick(Sender: TObject);
     procedure SelectAllButtonClick(Sender: TObject);
     procedure ViewAllButtonClick(Sender: TObject);
@@ -456,6 +460,16 @@ begin
   OpenButtonClick(Sender);
 end;
 
+procedure TOperationForm.Rotate000MenuClick(Sender: TObject);
+begin
+    Rotate0ButtonClick(Sender);
+end;
+
+procedure TOperationForm.Rotate090MenuClick(Sender: TObject);
+begin
+  Rotate90ButtonClick(Sender);
+end;
+
 procedure TOperationForm.Rotate0ButtonClick(Sender: TObject);
 begin
   model.Rotate(0);
@@ -467,9 +481,19 @@ begin
   model.Rotate(180);    UpdateView  ;
 end;
 
+procedure TOperationForm.Rotate180MenuClick(Sender: TObject);
+begin
+  Rotate180ButtonClick(Sender);
+end;
+
 procedure TOperationForm.Rotate270ButtonClick(Sender: TObject);
 begin
   model.Rotate(270);     UpdateView   ;
+end;
+
+procedure TOperationForm.Rotate270MenuClick(Sender: TObject);
+begin
+  Rotate270ButtonClick(Sender);
 end;
 
 procedure TOperationForm.Rotate90ButtonClick(Sender: TObject);
@@ -502,6 +526,7 @@ end;
 
 procedure TOperationForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  SettingLoader.Save;
   model.Free;
 end;
 

@@ -137,6 +137,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AboutUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="settingloaderunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="SettingLoaderUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

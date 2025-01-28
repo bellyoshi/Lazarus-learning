@@ -1,26 +1,26 @@
 object ViewerForm: TViewerForm
   Left = 213
-  Height = 240
+  Height = 288
   Top = 214
-  Width = 320
+  Width = 384
   Caption = 'Form2'
-  ClientHeight = 240
-  ClientWidth = 320
-  DesignTimePPI = 120
+  ClientHeight = 288
+  ClientWidth = 384
+  DesignTimePPI = 144
   OnCreate = FormCreate
   OnResize = FormResize
   PopupMenu = PopupMenu1
   LCLVersion = '3.6.0.0'
   object Image1: TImage
-    Left = 45
-    Height = 112
-    Top = 22
-    Width = 112
+    Left = 54
+    Height = 134
+    Top = 26
+    Width = 134
     PopupMenu = PopupMenu1
   end
   object PopupMenu1: TPopupMenu
-    Left = 189
-    Top = 23
+    Left = 227
+    Top = 28
     object MenuItemWindowMode: TMenuItem
       Caption = 'ウインドウ'
       OnClick = MenuItemWindowModeClick

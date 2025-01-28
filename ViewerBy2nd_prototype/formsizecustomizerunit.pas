@@ -17,6 +17,8 @@ type
     FOriginalLeft: Integer;
     FOriginalWidth: Integer;
     FOriginalHeight: Integer;
+    procedure FormResize(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure SetIsFullScreen(AValue: Boolean);
     procedure SetScreenIndex(AValue: Integer);
     procedure SetTitleVisible(AValue: Boolean);
@@ -24,14 +26,20 @@ type
     function GetCanTitleVisible() : Boolean;
     function GetCanTitleInVisible() : Boolean;
     procedure DoSizer();
-    procedure BackupOriginal();
   public
+
     procedure RegistForm(AForm: TForm);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
     property ScreenIndex: Integer read FScreenIndex write SetScreenIndex;
+    property WindowTop : Integer read FOriginalTop;
+    property WindowLeft: Integer read FOriginalLeft;
+    property WindowWidth: Integer read FOriginalWidth;
+    property WindowHeight : Integer read FOriginalHeight;
+    procedure SetOriginalSize(Top, Left , Width, Height: Integer);
     property TitleVisible : Boolean read GetTitleVisible write SetTitleVisible;
     property CanTitleVisible : Boolean read GetCanTitleVisible;
     property CanTitleInVisible : Boolean read GetCanTitleInVisible;
+    procedure BackupOriginal();
   end;
 
 var
@@ -41,10 +49,19 @@ var
 implementation
 
 { TFormSizeCustomizer }
+procedure TFormSizeCustomizer.SetOriginalSize(Top, Left , Width, Height: Integer);
+begin
+  FOriginalTop:= Top;
+  FOriginalLeft:= Left;
+  FOriginalWidth:= Width;
+  FOriginalHeight:= Height;
+  DoSizer();
+end;
 
 procedure TFormSizeCustomizer.BackupOriginal();
 begin
-  // 初期値として、元のサイズと位置を保存
+  If IsFullScreen then Exit;
+
   FOriginalTop := FRegisteredForm.Top;
   FOriginalLeft := FRegisteredForm.Left;
   FOriginalWidth := FRegisteredForm.Width;
@@ -54,10 +71,19 @@ end;
 procedure TFormSizeCustomizer.RegistForm(AForm: TForm);
 begin
   FRegisteredForm := AForm;
+  AForm.OnResize:=@FormResize;
+  AForm.OnClose:=@FormClose;
+  DoSizer();
+
+end;
+procedure TFormSizeCustomizer.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  BackupOriginal();   //todo : operation form を閉じたときにはViewer form の close イベント発生しない、
+end;
+
+procedure TFormSizeCustomizer.FormResize(Sender: TObject);
+begin
   BackupOriginal();
-  FIsFullScreen := False;
-  FScreenIndex := 0;  // デフォルトでプライマリモニタ
-  AForm.BorderStyle:=bsSizeable;
 end;
 
 procedure TFormSizeCustomizer.DoSizer()     ;
@@ -94,7 +120,7 @@ procedure TFormSizeCustomizer.SetIsFullScreen(AValue: Boolean);
 begin
   if FIsFullScreen = AValue then
      Exit;
-  if AValue And not FIsFullScreen then
+  if AValue then
      BackupOriginal();
   FIsFullScreen := AValue;
   DoSizer();

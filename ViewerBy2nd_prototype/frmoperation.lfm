@@ -201,11 +201,12 @@ object OperationForm: TOperationForm
     OnClick = ZoomOutButtonClick
   end
   object ZoomRateLabel: TLabel
-    Left = 390
+    Left = 392
     Height = 20
     Top = 211
     Width = 24
     Caption = '100'
+    OnClick = ZoomRateLabelClick
   end
   object FitWindowButton: TButton
     Left = 368
@@ -326,6 +327,15 @@ object OperationForm: TOperationForm
       end
       object ZoomMenu: TMenuItem
         Caption = '拡大縮小'
+        object ZoonInMenuItem: TMenuItem
+          Caption = '拡大'
+        end
+        object ZoomOutMenuItem: TMenuItem
+          Caption = '縮小'
+        end
+        object ZoomRateMenuItem: TMenuItem
+          Caption = '拡大率を指定'
+        end
       end
       object VideoPlayMenu: TMenuItem
         Caption = 'video'

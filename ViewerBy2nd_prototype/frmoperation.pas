@@ -10,13 +10,16 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, frmViewer, ViewerModel, RepogitoryUnit,  Generics.Collections,
-  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit, AboutUnit, SettingLoaderUnit;
+  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit, AboutUnit,ZoomRateFormUnit, SettingLoaderUnit;
 
 type
 
   { TOperationForm }
 
   TOperationForm = class(TForm, IView)
+    ZoomRateMenuItem: TMenuItem;
+    ZoomOutMenuItem: TMenuItem;
+    ZoonInMenuItem: TMenuItem;
     Rotate0Button: TButton;
     Rotate90Button: TButton;
     Rotate180Button: TButton;
@@ -130,6 +133,7 @@ type
     procedure ZoomInButtonClick(Sender: TObject);
     procedure ZoomOutButtonClick(Sender: TObject);
     procedure ListMenuChileClick(Sender: TObject);
+    procedure ZoomRateLabelClick(Sender: TObject);
   private
     AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
@@ -337,6 +341,15 @@ begin
   Repos.Disselect;
   Repos.Selected[index] := True;
   UpdateView;
+end;
+
+procedure TOperationForm.ZoomRateLabelClick(Sender: TObject);
+begin
+  if not model.HasOperationDocument then
+  begin
+    Exit;
+  end;
+  ZoomRateForm.Display();
 end;
 
 procedure TOperationForm.PopulateFileMenu();

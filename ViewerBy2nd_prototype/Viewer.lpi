@@ -143,6 +143,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="SettingLoaderUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="zoomrateformunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ZoomRateForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ZoomRateFormUnit"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

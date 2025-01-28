@@ -17,8 +17,6 @@ type
     FOriginalLeft: Integer;
     FOriginalWidth: Integer;
     FOriginalHeight: Integer;
-    procedure FormResize(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure SetIsFullScreen(AValue: Boolean);
     procedure SetScreenIndex(AValue: Integer);
     procedure SetTitleVisible(AValue: Boolean);
@@ -71,20 +69,10 @@ end;
 procedure TFormSizeCustomizer.RegistForm(AForm: TForm);
 begin
   FRegisteredForm := AForm;
-  AForm.OnResize:=@FormResize;
-  AForm.OnClose:=@FormClose;
   DoSizer();
 
 end;
-procedure TFormSizeCustomizer.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  BackupOriginal();   //todo : operation form を閉じたときにはViewer form の close イベント発生しない、
-end;
 
-procedure TFormSizeCustomizer.FormResize(Sender: TObject);
-begin
-  BackupOriginal();
-end;
 
 procedure TFormSizeCustomizer.DoSizer()     ;
 begin

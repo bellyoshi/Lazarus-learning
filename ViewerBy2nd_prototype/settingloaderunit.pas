@@ -134,6 +134,7 @@ begin
   // FormSizeCustomizer から現在の設定を取得
   FScreenIndex := FormSizeCustomizer.ScreenIndex;
   FIsFullScreen := FormSizeCustomizer.IsFullScreen;
+  FormSizeCustomizer.BackupOriginal();
   FWindowTop := FormSizeCustomizer.WindowTop;
   FWindowLeft := FormSizeCustomizer.WindowLeft;
   FWindowWidth := FormSizeCustomizer.WindowWidth;

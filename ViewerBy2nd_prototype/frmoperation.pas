@@ -213,7 +213,7 @@ begin
   LoadList();
   LoadBitmap();
   Panel1.Color:=model.Background.Color;
-  if Assigned(model.Zoom) then
+  if model.HasOperationDocument then
   begin
     ZoomRateLabel.Caption:= FloatToStr(model.Zoom.Rate * 100) + '%';
   end

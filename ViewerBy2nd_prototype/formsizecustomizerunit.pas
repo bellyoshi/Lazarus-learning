@@ -13,10 +13,13 @@ type
     FRegisteredForm: TForm;
     FIsFullScreen: Boolean;
     FScreenIndex: Integer;
+    {
     FOriginalTop: Integer;
     FOriginalLeft: Integer;
     FOriginalWidth: Integer;
     FOriginalHeight: Integer;
+    }
+    FOriginal : TRect;
     procedure SetIsFullScreen(AValue: Boolean);
     procedure SetScreenIndex(AValue: Integer);
     procedure SetTitleVisible(AValue: Boolean);
@@ -29,10 +32,13 @@ type
     procedure RegistForm(AForm: TForm);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
     property ScreenIndex: Integer read FScreenIndex write SetScreenIndex;
+    property WindowModeSize : TRect read FOriginal;
+    {
     property WindowTop : Integer read FOriginalTop;
     property WindowLeft: Integer read FOriginalLeft;
     property WindowWidth: Integer read FOriginalWidth;
     property WindowHeight : Integer read FOriginalHeight;
+    }
     procedure SetOriginalSize(Top, Left , Width, Height: Integer);
     property TitleVisible : Boolean read GetTitleVisible write SetTitleVisible;
     property CanTitleVisible : Boolean read GetCanTitleVisible;
@@ -49,10 +55,10 @@ implementation
 { TFormSizeCustomizer }
 procedure TFormSizeCustomizer.SetOriginalSize(Top, Left , Width, Height: Integer);
 begin
-  FOriginalTop:= Top;
-  FOriginalLeft:= Left;
-  FOriginalWidth:= Width;
-  FOriginalHeight:= Height;
+  FOriginal.Top:=Top;
+  FOriginal.Left:= Left;
+  FOriginal.Width:= Width;
+  FOriginal.Height:= Height;
   DoSizer();
 end;
 
@@ -60,10 +66,10 @@ procedure TFormSizeCustomizer.BackupOriginal();
 begin
   If IsFullScreen then Exit;
 
-  FOriginalTop := FRegisteredForm.Top;
-  FOriginalLeft := FRegisteredForm.Left;
-  FOriginalWidth := FRegisteredForm.Width;
-  FOriginalHeight := FRegisteredForm.Height;
+  FOriginal.Top := FRegisteredForm.Top;
+  FOriginal.Left := FRegisteredForm.Left;
+  FOriginal.Width := FRegisteredForm.Width;
+  FOriginal.Height := FRegisteredForm.Height;
 end;
 
 procedure TFormSizeCustomizer.RegistForm(AForm: TForm);
@@ -96,10 +102,10 @@ begin
     else
     begin
       // フルスクリーンを解除し、元の位置とサイズに戻す
-      FRegisteredForm.Top := FOriginalTop;
-      FRegisteredForm.Left := FOriginalLeft;
-      FRegisteredForm.Width := FOriginalWidth;
-      FRegisteredForm.Height := FOriginalHeight;
+      FRegisteredForm.Top := FOriginal.Top;
+      FRegisteredForm.Left := FOriginal.Left;
+      FRegisteredForm.Width := FOriginal.Width;
+      FRegisteredForm.Height := FOriginal.Height;
       FRegisteredForm.BorderStyle := bsSizeable;
     end;
 end;

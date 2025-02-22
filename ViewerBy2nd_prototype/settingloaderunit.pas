@@ -135,10 +135,10 @@ begin
   FScreenIndex := FormSizeCustomizer.ScreenIndex;
   FIsFullScreen := FormSizeCustomizer.IsFullScreen;
   FormSizeCustomizer.BackupOriginal();
-  FWindowTop := FormSizeCustomizer.WindowTop;
-  FWindowLeft := FormSizeCustomizer.WindowLeft;
-  FWindowWidth := FormSizeCustomizer.WindowWidth;
-  FWindowHeight := FormSizeCustomizer.WindowHeight;
+  FWindowTop := FormSizeCustomizer.WindowModeSize.Top;
+  FWindowLeft := FormSizeCustomizer.WindowModeSize.Left;
+  FWindowWidth := FormSizeCustomizer.WindowModeSize.Width;
+  FWindowHeight := FormSizeCustomizer.WindowModeSize.Height;
 
 end;
 

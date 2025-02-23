@@ -13,32 +13,26 @@ type
     FRegisteredForm: TForm;
     FIsFullScreen: Boolean;
     FScreenIndex: Integer;
-    {
-    FOriginalTop: Integer;
-    FOriginalLeft: Integer;
-    FOriginalWidth: Integer;
-    FOriginalHeight: Integer;
-    }
     FOriginal : TRect;
+
     procedure SetIsFullScreen(AValue: Boolean);
     procedure SetScreenIndex(AValue: Integer);
     procedure SetTitleVisible(AValue: Boolean);
     function GetTitleVisible() : Boolean;
     function GetCanTitleVisible() : Boolean;
     function GetCanTitleInVisible() : Boolean;
+    function GetFullscreenEnabled() : Boolean;
+    function GetScreenRect() : TRect;
     procedure DoSizer();
+    function GetWindowSize : TRect;
   public
 
     procedure RegistForm(AForm: TForm);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
     property ScreenIndex: Integer read FScreenIndex write SetScreenIndex;
     property WindowModeSize : TRect read FOriginal;
-    {
-    property WindowTop : Integer read FOriginalTop;
-    property WindowLeft: Integer read FOriginalLeft;
-    property WindowWidth: Integer read FOriginalWidth;
-    property WindowHeight : Integer read FOriginalHeight;
-    }
+    property WindowSize : TRect read GetWindowSize;
+
     procedure SetOriginalSize(Top, Left , Width, Height: Integer);
     property TitleVisible : Boolean read GetTitleVisible write SetTitleVisible;
     property CanTitleVisible : Boolean read GetCanTitleVisible;
@@ -66,10 +60,7 @@ procedure TFormSizeCustomizer.BackupOriginal();
 begin
   If IsFullScreen then Exit;
 
-  FOriginal.Top := FRegisteredForm.Top;
-  FOriginal.Left := FRegisteredForm.Left;
-  FOriginal.Width := FRegisteredForm.Width;
-  FOriginal.Height := FRegisteredForm.Height;
+  FOriginal := FRegisteredForm.BoundsRect;
 end;
 
 procedure TFormSizeCustomizer.RegistForm(AForm: TForm);
@@ -79,35 +70,46 @@ begin
 
 end;
 
+function TFormSizeCustomizer.GetScreenRect : TRect;
+begin
+  Result.Top := Screen.Monitors[FScreenIndex].Top;
+  Result.Left := Screen.Monitors[FScreenIndex].Left;
+  Result.Width := Screen.Monitors[FScreenIndex].Width;
+  Result.Height := Screen.Monitors[FScreenIndex].Height;
+end;
 
-procedure TFormSizeCustomizer.DoSizer()     ;
+function TFormSizeCustomizer.GetWindowSize : TRect;
+begin
+  if GetFullscreenEnabled() then
+  begin
+    Result := GetScreenRect();
+  end else begin
+    Result := FOriginal;
+  end;
+end;
+function TFormSizeCustomizer.GetFullscreenEnabled() : Boolean;
+begin
+  Result := FIsFullScreen and (FScreenIndex >= 0) and (FScreenIndex < Screen.MonitorCount);
+end;
+
+procedure TFormSizeCustomizer.DoSizer()   ;
+var
+   rect : TRect;
 begin
 
     if FRegisteredForm = nil then Exit;
 
-
-
-    if FIsFullScreen then
+    if GetFullscreenEnabled() then
     begin
-      // 現在の位置とサイズをバックアップ済みのため直接フルスクリーン化
-      if (FScreenIndex >= 0) and (FScreenIndex < Screen.MonitorCount) then
-      begin
-        FRegisteredForm.Top := Screen.Monitors[FScreenIndex].Top;
-        FRegisteredForm.Left := Screen.Monitors[FScreenIndex].Left;
-        FRegisteredForm.Width := Screen.Monitors[FScreenIndex].Width;
-        FRegisteredForm.Height := Screen.Monitors[FScreenIndex].Height;
-        FRegisteredForm.BorderStyle := bsNone;
-      end;
-    end
-    else
-    begin
-      // フルスクリーンを解除し、元の位置とサイズに戻す
-      FRegisteredForm.Top := FOriginal.Top;
-      FRegisteredForm.Left := FOriginal.Left;
-      FRegisteredForm.Width := FOriginal.Width;
-      FRegisteredForm.Height := FOriginal.Height;
+      FRegisteredForm.BorderStyle := bsNone;
+    end else begin
       FRegisteredForm.BorderStyle := bsSizeable;
     end;
+
+    rect := WindowSize;
+
+    FRegisteredForm.BoundsRect := rect;
+
 end;
 
 procedure TFormSizeCustomizer.SetIsFullScreen(AValue: Boolean);

@@ -1,0 +1,242 @@
+﻿# Free Pascal と Lazarus を使用した動画ファイルの表示
+Michaël Van Canneyt
+2012年11月18日
+
+## 概要
+前回の寄稿では、Lazarus を使用して Windows で動画を録画する方法を紹介しました。本稿では、Windows および Linux 上で Lazarus を使用して任意の動画ファイルを表示する方法を紹介します。
+
+1. はじめに
+多くの人が VideoLAN をオープンソースの優れたクロスプラットフォームメディアプレーヤーとして知っています。このプレーヤーは非常に多くのオーディオ・ビデオフォーマットを再生でき、Windows、Linux、Mac OS などのプラットフォームに対応しています。VideoLAN は以下のサイトからダウンロードできます。
+http://www.videolan.org/
+
+しかし、VideoLAN プレーヤーのコア機能がライブラリとして提供されていることを知っている人は少ないかもしれません。このライブラリ（実際には 2 つのライブラリがあります）は、VideoLAN プレーヤー自体が使用しているもので、他のプログラムでも動画ファイルの表示に利用できます。このライブラリを使用すると、動画を別のウィンドウ内に埋め込むことが可能になり、独自の VideoLAN プレーヤーのフロントエンドを開発することができます。
+
+VideoLAN ライブラリ（libvlc と呼ばれる）のヘッダファイルは Pascal に翻訳され、それに基づいて薄いオブジェクト指向プログラミング（OOP）層が構築されました。この OOP 層は VideoLAN のオブジェクトモデルに密接に一致しており、3 つのコンポーネントを使用することで、GUI を持たないシンプルなプレーヤーを作成できます。動画は自由に浮遊するウィンドウや、全画面表示で再生できます。
+
+この VLC OOP 層の主要なコンポーネントから派生した Lazarus 用のコンポーネントも作成されました。これは、Lazarus のコントロール内に動画ウィンドウを埋め込む機能を追加したものです。（fpGUI 用にも同様のコンポーネントが存在します。fpGUI は Graeme Geldenhuys によって管理されている LCL の代替 GUI ライブラリです。）
+
+このコードは Free Pascal および Lazarus の Subversion ソースアーカイブに開発版（trunk）として追加されており、今後のリリースで正式に追加される予定です。今すぐ試したい場合は、関連するコードをダウンロードして使用できます。Lazarus ユーザーは lazvlc パッケージをインストールすることで、コンポーネントパレットに プレイリストマネージャ と メディアプレーヤーコンポーネント の 2 つが追加されます。
+
+本コードは Free Pascal と Lazarus 向けに作成されていますが、多少の調整を加えれば Delphi でもコンパイルできるはずです。
+
+2. アーキテクチャ
+VLC ライブラリを使用するには、以下の 3 つのユニットを使います。
+
+libvlc
+vlc.h（VLC の C 言語ヘッダファイル）を Pascal に翻訳した低レベルのユニット。通常はこのユニットの関数を直接使用しませんが、定数や列挙型が定義されています。
+vlc
+低レベルの libvlc をオブジェクト指向にラップしたユニット。以下の 5 つのクラスを含みます。
+lclvlc
+Lazarus 用の VLC プレーヤーコンポーネント TLCLVLCPlayer を提供するユニット。lazvlc パッケージをインストールすると、Lazarus のコンポーネントパレットに登録されます。
+以下のクラスが vlc ユニットに含まれます。
+
+TVLCLibrary
+VLC ライブラリのロードを管理するクラス。ライブラリのパスやオプションを設定でき、ライブラリのバージョン情報も取得可能。
+TVLCMediaPlayer
+動画や音声ファイルを再生するコンポーネント。Play、Pause、Resume、Stop などのメソッドを備える。
+TVLCMediaItem
+1 つのメディアファイル（動画・音声）を表すクラス。Path プロパティにファイルパスを指定する。URL やファイルディスクリプタを使用したストリーミング再生も可能。
+TVLCMediaItems
+TVLCMediaItem のコレクション。VLC の libvlc_media_list_t をラップしている。
+TVLCMediaListPlayer
+プレイリストマネージャ。TVLCMediaItems を使用してプレイリストを管理し、TVLCMediaPlayer で再生する。
+3. ライブラリの読み込みと初期化
+VLC ライブラリはオンデマンドでロードされ、ロード後に初期化する必要があります。通常、TVLCLibrary のインスタンスを作成する必要はなく、VLCLibrary 関数を使用すると自動的にグローバルインスタンスが作成されます。
+
+初期化の際に注意すべき点は以下の 2 つです。
+
+一部のビデオドライバが浮動小数点エラーを発生させるため、Math ユニットの SetExceptionMask を使用してこれらの例外を無効にする必要があります。
+pascal
+コピーする
+編集する
+setexceptionmask([exInvalidOp, exDenormalized, exZeroDivide, 
+                  exOverflow, exUnderflow, exPrecision]);
+VLC はスレッドを使用するため、Free Pascal の RTL（ランタイムライブラリ）のスレッドシステムを明示的に初期化する必要があります。以下のコードを実行すると、スレッドが適切に初期化されます。
+pascal
+コピーする
+編集する
+With TThread.Create(False) do Terminate;
+4. シンプルなコマンドラインプレーヤー
+以下のコードは、コマンドラインから動画ファイルを再生する最小限のプログラムです。
+
+pascal
+コピーする
+編集する
+program testvlc;
+{$mode objfpc}{$H+}
+
+uses
+  {$ifdef unix}cthreads,{$endif}
+  sysutils, math, libvlc, vlc;
+
+const
+  AllExceptions = [exInvalidOp, exDenormalized, exZeroDivide,
+                   exOverflow, exUnderflow, exPrecision];
+
+begin
+  SetExceptionMask(AllExceptions);
+  With TVLCMediaPlayer.Create(Nil) do
+  try
+    PlayFile(ParamStr(1));
+    Repeat
+      Sleep(100);
+    until State in [libvlc_Ended, libvlc_Error];
+  finally
+    Free;
+  end;
+end.
+このプログラムは、コマンドライン引数で指定したファイルを再生し、再生が終了するまでループで待機するだけのシンプルなものです。
+
+
+5 プレイリストの管理
+TVLCPlayer コンポーネントは、一度に 1 つのメディアアイテムを再生します。TVLCMediaItem は、メディアアイテムのコレクションの一部になることができます。VLC ライブラリには、プレイリスト内でコレクションを管理し再生する機能があります。この機能は TVLCMediaListPlayer でラップされています。
+このコンポーネントは TVLCMediaPlayer コンポーネントと同様に再生（Play）、一時停止（Pause）、停止（Stop）のコマンドを持っていますが、それに加えて、プレイリスト内の次または前のアイテムにジャンプするための「Prev」および「Next」コマンドを備えています。
+
+さらに、以下のプロパティを持ちます：
+
+Player：メディアアイテムの再生に使用する TVLCMediaPlayer コンポーネントのインスタンスを指します。
+PlayMode：メディアの再生方法を制御する列挙型のプロパティ。以下の 3 つのモードがあります：
+pmNormal（通常）
+pmLoop（ループ）
+pmRepeat（リピート）
+MediaItems：再生中の TVLCMediaItems のコレクションです。
+このコンポーネントを使用すると、コマンドラインプログラムを拡張し、1 つのファイルではなく複数のファイルを再生できるようになります。
+
+pascal
+コピーする
+編集する
+program testvlc2;
+{$mode objfpc}{$H+}
+uses
+  {$ifdef unix}cthreads,{$endif}
+  sysutils, math, libvlc, vlc;
+
+const
+  AllExceptions = [exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision];
+
+var
+  i: integer;
+begin
+  SetExceptionMask(AllExceptions);
+  with TVLCMediaListPlayer.Create(Nil) do
+  try
+    Player := TVLCMediaPlayer.Create(Nil);
+    for i := 1 to ParamCount do
+      TVLCMediaItem(MediaItems.Add).Path := ParamStr(i);
+    Play;
+    repeat
+      Sleep(100);
+    until State in [libvlc_Ended, libvlc_Error];
+  finally
+    Player.Free;
+    Free;
+  end;
+end.
+TVLCMediaItem コレクションのアイテムの Path プロパティを設定するだけで、ファイルを再生できます。
+
+6 GUI での追加プロパティとイベントの利用
+これまでに紹介したコマンドや例では、プレイヤーとの対話はありませんでした。ファイルを渡すと、プレイヤーが再生を終了するまでプログラムは待機するだけです。しかし、実際のアプリケーションでは、ユーザーがプレイヤーをもっと制御したいと考えるでしょう。
+
+現在再生中のメディアファイルを調査または操作できるさまざまなプロパティがあります。
+
+オーディオ関連のプロパティ：
+AudioTrackCount：ビデオファイル内のオーディオトラック数（読み取り専用）。
+AudioTrackDescriptions：オーディオトラック（言語）の説明を含むゼロベースの配列（読み取り専用）。
+AudioTrack：使用するオーディオトラック（ゼロベース、読み書き可能）。
+AudioDelay：オーディオの遅延（ミリ秒単位、読み書き可能）。
+AudioVolume：オーディオの音量（0～200 の整数、読み書き可能）。
+AudioMuted：サウンドをミュートするブール値（読み書き可能）。
+Channel：使用中のオーディオチャンネル。
+ビデオ関連のプロパティ：
+ChapterCount：ビデオのチャプター数（読み取り専用）。
+Chapter：現在再生中のチャプター（読み書き可能）。
+VideoWidth / VideoHeight：ビデオの幅/高さ（ピクセル単位、読み取り専用）。
+VideoLength / VideoDuration：ビデオの長さ（ミリ秒単位または日時形式、読み取り専用）。
+VideoPosition：ビデオ内の現在の位置（ミリ秒単位、読み書き可能）。
+VideoFractionalPosition：ビデオ内の現在の位置（全体の割合、読み書き可能）。
+VideoFramesPerSecond：フレームレート（読み取り専用）。
+VideoScale：ビデオのスケール（1 は通常サイズ）。
+AspectRatio：アスペクト比（文字列、読み書き可能）。
+再生方法を決定するプロパティ：
+FullScreenMode：True に設定すると、ビデオがフルスクリーンで再生されます。
+FitWindow：True にすると、親のビデオウィンドウがビデオサイズに合わせてリサイズされます。
+UseEvents：True に設定すると libVLC のコールバックが有効になり、いくつかのイベントハンドラーが起動します。
+利用可能なイベント：
+OnMediaChanged：プレイリストを使用している場合、メディアが変更されたときに発生。
+OnEOF / OnError：メディアの終端到達時 / エラー発生時に発生。
+OnOpening / OnPlaying / OnPause / OnStop：再生の開始・停止・一時停止・再開時に発生。
+OnPositionChanged / OnTimeChanged：再生位置や時間が変化したときに発生。
+イベントはビデオを再生しているスレッドから呼び出されるため、画面更新時には Synchronize 手続きを使用する必要があります。
+
+簡易ビデオプレイヤーの作成
+メニューバー、ツールバー、ビデオ表示用のパネル、サウンド・再生位置を調整するトラックバーを持つ小さなビデオプレイヤーを作成できます。
+
+pascal
+コピーする
+編集する
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  FPlayer := TLCLVLCPlayer.Create(Self);
+  FPlayer.ParentWindow := PVideo;
+  FPlayer.OnTimeChanged := @DoTimeChanged;
+  FPlayer.OnPositionChanged := @DoPositionChanged;
+  FPlayer.OnLengthChanged := @DoLengthChanged;
+  FPlayer.UseEvents := True;
+end;
+ビデオの再生は非常にシンプルです：
+
+pascal
+コピーする
+編集する
+procedure TMainForm.MIOpenClick(Sender: TObject);
+begin
+  With ODVideo do
+  begin
+    FileName := FFileName;
+    if Execute then
+    begin
+      FFileName := FileName;
+      FPlayer.PlayFile(FFileName);
+      Caption := 'Lazarus video demo: ' + FFileName;
+    end;
+  end;
+end;
+トラックバーの位置更新：
+
+pascal
+コピーする
+編集する
+procedure TMainForm.DoPositionChanged(Sender: TObject; const APos: Double);
+begin
+  FNewPosition := Round(APos * 100);
+  TThread.Synchronize(Nil, @SetNewPosition);
+end;
+再生の制御：
+
+pascal
+コピーする
+編集する
+procedure TMainForm.BStopClick(Sender: TObject);
+begin
+  FPlayer.Stop;
+end;
+
+procedure TMainForm.BPauseClick(Sender: TObject);
+begin
+  FPlayer.Pause;
+end;
+
+procedure TMainForm.BResumeClick(Sender: TObject);
+begin
+  FPlayer.Resume;
+end;
+この実装で、基本的な機能を持つビデオプレイヤーが完成します。
+
+7 結論
+VideoLanライブラリは、クロスプラットフォームのアプリケーションにビデオプレーヤーを埋め込みたい場合に非常に優れた選択肢です。
+
+VideoLanは多数のビデオフォーマットをサポートし、他のコンピューターからのストリーム再生も可能であり、簡単に使用できるAPIを備えています。このAPIは、Object Pascalのクラスに自然な形でマッピングされています。
+
+また、Free PascalやLazarusのディストリビューションに含まれているため、クロスプラットフォーム対応のLazarusアプリケーションでビデオを再生する最も簡単な方法の1つといえるでしょう。
+
+図1: 動作中のビデオプレーヤー

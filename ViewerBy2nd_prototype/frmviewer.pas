@@ -111,7 +111,8 @@ end;
 
 procedure TViewerForm.FormResize(Sender: TObject);
 begin
-  LoadBitmap();
+  //LoadBitmap();
+  formManager.Update;
 end;
 
 procedure TViewerForm.SetIsFullScreen(Value: Boolean);

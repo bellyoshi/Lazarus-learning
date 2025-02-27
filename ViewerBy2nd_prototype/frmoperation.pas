@@ -129,6 +129,7 @@ type
     procedure PageCountLabelClick(Sender: TObject);
     procedure PreviousButtonClick(Sender: TObject);
     procedure UpdateView;
+    procedure UpdateAuto;
     procedure ViewerDisplayMenuClick(Sender: TObject);
     procedure ZoomInButtonClick(Sender: TObject);
     procedure ZoomOutButtonClick(Sender: TObject);
@@ -206,7 +207,14 @@ procedure TOperationForm.Label1Click(Sender: TObject);
 begin
 
 end;
-
+procedure TOperationForm.UpdateAuto();
+begin
+  UpdateView;
+  if AutoUpdateCheckBox.Checked then
+  begin
+    ViewerForm.ShowDocument()
+  end;
+end;
 procedure TOperationForm.UpdateView();
 begin
   SetCtlEnabled();
@@ -221,10 +229,12 @@ begin
   begin
     ZoomRateLabel.Caption:= '';
   end;
+  {
   if AutoUpdateCheckBox.Checked then
   begin
     ViewerForm.ShowDocument()
   end;
+  }
 end;
 
 procedure TOperationForm.ViewerDisplayMenuClick(Sender: TObject);
@@ -238,7 +248,7 @@ var
 begin
   zoom := model.Zoom;
   zoom.ZoomIn();
-  UpdateView;
+  UpdateAuto;
 end;
 
 procedure TOperationForm.ZoomOutButtonClick(Sender: TObject);
@@ -247,7 +257,7 @@ var
 begin
   zoom := model.Zoom;
   zoom.ZoomOut();
-  UpdateView;
+  UpdateAuto;
 
 end;
 
@@ -288,7 +298,7 @@ end;
 procedure TOperationForm.NextButtonClick(Sender: TObject);
 begin
   model.Next;
-  UpdateView;
+  UpdateAuto;
 end;
 
 procedure TOperationForm.ListMenuClick(Sender: TObject);
@@ -308,7 +318,7 @@ end;
 procedure TOperationForm.PreviousButtonClick(Sender: TObject);
 begin
   model.Previous;
-  UpdateView
+  UpdateAuto;
 
 end;
 
@@ -340,7 +350,7 @@ begin
   index := StrToInt(TMenuItem(Sender).Hint);
   Repos.Disselect;
   Repos.Selected[index] := True;
-  UpdateView;
+  UpdateAuto;
 end;
 
 procedure TOperationForm.ZoomRateLabelClick(Sender: TObject);
@@ -388,27 +398,27 @@ begin
       end;
 
 
-  UpdateView
+  UpdateAuto;
 
 end;
 
 procedure TOperationForm.DelteButtonClick(Sender: TObject);
 begin
   model.Repogitory.Delete;
-  UpdateView();
+  UpdateAuto();
 end;
 
 procedure TOperationForm.DeselectButtonClick(Sender: TObject);
 begin
   model.Repogitory.Disselect;
-  UpdateView();
+  UpdateAuto();
 end;
 
 procedure TOperationForm.BackGroundDisplayButtonClick(Sender: TObject);
 begin
   model.Repogitory.Disselect;
   ViewerForm.ShowDocument() ;
-  UpdateView();
+  UpdateAuto();
 end;
 
 procedure TOperationForm.BackgroundDisplayMenuClick(Sender: TObject);
@@ -433,7 +443,7 @@ begin
   AutoUpdateSettingMenu.Checked:=AutoUpdateCheckBox.Checked;
   if AutoUpdateCheckBox.Checked then
   begin
-    UpdateView;
+    UpdateAuto;
   end;
 end;
 
@@ -445,14 +455,14 @@ begin
   AutoUpdateCheckBoxCheckedChanging := False;
     if AutoUpdateSettingMenu.Checked then
   begin
-    UpdateView;
+    UpdateAuto;
   end;
 end;
 
 procedure TOperationForm.FitWindowButtonClick(Sender: TObject);
 begin
     model.Zoom.fitWindow(Panel1.Width, Panel1.Height);
-    UpdateView;
+    UpdateAuto;
 end;
 
 procedure TOperationForm.Image1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -476,7 +486,7 @@ begin
   if IsMouseDown Then
   begin
    model.Zoom.MouseMove(X,Y);
-   UpdateView;
+   UpdateAuto;
   end;
 
 end;
@@ -517,20 +527,20 @@ begin
   begin
        model.Repogitory.Selected[i] := FilesListBox.Selected[i];
   end;
-  UpdateView;
+  UpdateAuto;
 
 end;
 
 procedure TOperationForm.LastPageButtonClick(Sender: TObject);
 begin
   model.LastPage();
-  UpdateView;
+  UpdateAuto;
 end;
 
 procedure TOperationForm.FirstPageButtonClick(Sender: TObject);
 begin
   model.FirstPage();
-  UpdateView;
+  UpdateAuto;
 end;
 
 procedure TOperationForm.OpenMenuClick(Sender: TObject);
@@ -561,12 +571,13 @@ end;
 procedure TOperationForm.Rotate0ButtonClick(Sender: TObject);
 begin
   model.Rotate(0);
-    UpdateView      ;
+  UpdateAuto;
 end;
 
 procedure TOperationForm.Rotate180ButtonClick(Sender: TObject);
 begin
-  model.Rotate(180);    UpdateView  ;
+  model.Rotate(180);
+  UpdateAuto;
 end;
 
 procedure TOperationForm.Rotate180MenuClick(Sender: TObject);
@@ -576,7 +587,8 @@ end;
 
 procedure TOperationForm.Rotate270ButtonClick(Sender: TObject);
 begin
-  model.Rotate(270);     UpdateView   ;
+  model.Rotate(270);
+  UpdateAuto;
 end;
 
 procedure TOperationForm.Rotate270MenuClick(Sender: TObject);
@@ -586,19 +598,20 @@ end;
 
 procedure TOperationForm.Rotate90ButtonClick(Sender: TObject);
 begin
-  model.Rotate(90);    UpdateView ;
+  model.Rotate(90);
+  UpdateAuto;
 end;
 
 procedure TOperationForm.SelectAllButtonClick(Sender: TObject);
 begin
   Repos.SelectAll;
-  UpdateView();
+  UpdateAuto();
 end;
 
 procedure TOperationForm.ViewAllButtonClick(Sender: TObject);
 begin
   model.Zoom.Rate:=1.0;
-  UpdateView();
+  UpdateAuto();
 end;
 
 procedure TOperationForm.ViewerCloseButtonClick(Sender: TObject);

@@ -9,7 +9,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, frmViewer, ViewerModel, RepogitoryUnit,  Generics.Collections,
+  Menus, frmViewer, ViewerModel, RepogitoryUnit,  Generics.Collections,FormSizeCustomizerUnit,
   PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit, AboutUnit,ZoomRateFormUnit, SettingLoaderUnit;
 
 type
@@ -141,6 +141,7 @@ type
         IsMouseDown : Boolean;
     procedure LoadBitmap;
     procedure SetCtlEnabled();
+    procedure SetPanelSize();
     procedure LoadList();
     procedure PopulateFileMenu();
     procedure LoadListBox(fileList : TStringList);
@@ -215,10 +216,19 @@ begin
     ViewerForm.ShowDocument()
   end;
 end;
+
+procedure TOperationForm.SetPanelSize();
+begin
+
+  //todo:
+
+end;
+
 procedure TOperationForm.UpdateView();
 begin
   SetCtlEnabled();
   LoadList();
+  SetPanelSize();
   LoadBitmap();
   Panel1.Color:=model.Background.Color;
   if model.HasOperationDocument then

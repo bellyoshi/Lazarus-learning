@@ -9,14 +9,16 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, frmViewer, ViewerModel, RepogitoryUnit,  Generics.Collections,FormSizeCustomizerUnit,
-  PageFormUnit, SettingFormUnit, IViewUnit,  ZoomUnit, AboutUnit,ZoomRateFormUnit, SettingLoaderUnit;
+  Menus, ComCtrls, frmViewer, ViewerModel, RepogitoryUnit, Generics.Collections,
+  FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
+  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit;
 
 type
 
   { TOperationForm }
 
   TOperationForm = class(TForm, IView)
+    StatusBar1: TStatusBar;
     ZoomRateMenuItem: TMenuItem;
     ZoomOutMenuItem: TMenuItem;
     ZoonInMenuItem: TMenuItem;
@@ -218,9 +220,22 @@ begin
 end;
 
 procedure TOperationForm.SetPanelSize();
+var
+  rect : TRect;
+  w,h : Integer;
 begin
 
-  //todo:
+  If not Assigned(FormSizeCustomizer) Then
+  begin
+    exit;
+  end;
+  rect := FormSizeCustomizer.CurrentWindowSize;
+  w := Panel1.Width;
+  h := (w * rect.Height) div rect.Width;
+  Panel1.Height := h;
+
+  StatusBar1.SimpleText := Format('Width: %d, Height: %d',
+    [rect.Width, rect.Height]);
 
 end;
 

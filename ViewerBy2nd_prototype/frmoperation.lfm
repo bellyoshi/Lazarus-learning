@@ -28,6 +28,9 @@ object OperationForm: TOperationForm
     Caption = 'Panel1'
     ClientHeight = 207
     ClientWidth = 300
+    Color = clRed
+    ParentBackground = False
+    ParentColor = False
     TabOrder = 1
     object Image1: TImage
       Left = 64
@@ -262,13 +265,20 @@ object OperationForm: TOperationForm
     TabOrder = 18
     OnClick = Rotate270ButtonClick
   end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 29
+    Top = 601
+    Width = 973
+    Panels = <>
+  end
   object OpenDialog1: TOpenDialog
     Left = 416
-    Top = 568
+    Top = 528
   end
   object MainMenu: TMainMenu
-    Left = 344
-    Top = 568
+    Left = 336
+    Top = 536
     object FileMenu: TMenuItem
       Caption = 'ファイル(&F)'
       OnClick = FileMenuClick

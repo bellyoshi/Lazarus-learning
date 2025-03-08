@@ -15,6 +15,7 @@ type
     FScreenIndex: Integer;
     FOriginal : TRect;
 
+
     procedure SetIsFullScreen(AValue: Boolean);
     procedure SetScreenIndex(AValue: Integer);
     procedure SetTitleVisible(AValue: Boolean);
@@ -25,13 +26,15 @@ type
     function GetScreenRect() : TRect;
     procedure DoSizer();
     function GetWindowSize : TRect;
+    function GetCurrentWindowSize : TRect;
   public
 
+    property CurrentWindowSize : TRect read GetCurrentWindowSize;
     procedure RegistForm(AForm: TForm);
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
     property ScreenIndex: Integer read FScreenIndex write SetScreenIndex;
     property WindowModeSize : TRect read FOriginal;
-    property WindowSize : TRect read GetWindowSize;
+
 
     procedure SetOriginalSize(Top, Left , Width, Height: Integer);
     property TitleVisible : Boolean read GetTitleVisible write SetTitleVisible;
@@ -87,14 +90,18 @@ begin
     Result := FOriginal;
   end;
 end;
+
+function TFormSizeCustomizer.GetCurrentWindowSize : TRect;
+begin
+  Result := FRegisteredForm.BoundsRect;
+end;
+
 function TFormSizeCustomizer.GetFullscreenEnabled() : Boolean;
 begin
   Result := FIsFullScreen and (FScreenIndex >= 0) and (FScreenIndex < Screen.MonitorCount);
 end;
 
-procedure TFormSizeCustomizer.DoSizer()   ;
-var
-   rect : TRect;
+procedure TFormSizeCustomizer.DoSizer();
 begin
 
     if FRegisteredForm = nil then Exit;
@@ -106,9 +113,7 @@ begin
       FRegisteredForm.BorderStyle := bsSizeable;
     end;
 
-    rect := WindowSize;
-
-    FRegisteredForm.BoundsRect := rect;
+    FRegisteredForm.BoundsRect := GetWindowSize();
 
 end;
 

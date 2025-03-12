@@ -151,6 +151,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ZoomRateFormUnit"/>
       </Unit>
+      <Unit>
+        <Filename Value="uformcontroller.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UFormController"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

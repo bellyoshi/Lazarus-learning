@@ -43,6 +43,10 @@ object ViewerForm: TViewerForm
     object Separator2: TMenuItem
       Caption = '-'
     end
+    object MenuItemOperation: TMenuItem
+      Caption = '操作ウインドウをトップに表示'
+      OnClick = MenuItemOperationClick
+    end
     object MenuItemClose: TMenuItem
       Caption = '閉じる'
       OnClick = MenuItemCloseClick

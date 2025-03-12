@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit,
-  IViewUnit, AboutUnit, SettingLoaderUnit, ZoomRateFormUnit;
+  IViewUnit, AboutUnit, SettingLoaderUnit, ZoomRateFormUnit, UFormController;
 
 {$R *.res}
 
@@ -38,6 +38,7 @@ begin
   formManager.RegisterView(ViewerForm);
   formManager.RegisterView(OperationForm);
 
+  FormController.RegisterForm(OperationForm);
   ViewerForm.Show();
   SettingLoader.ApplySettings;
 

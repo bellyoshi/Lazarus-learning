@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-   ViewerModel, FormSizeCustomizerUnit, IViewUnit;
+   ViewerModel, FormSizeCustomizerUnit, IViewUnit, UFormController;
 
 type
 
@@ -14,6 +14,7 @@ type
 
   TViewerForm = class(TForm, IView)
     Image1: TImage;
+    MenuItemOperation: TMenuItem;
     MenuItemTitleVisible: TMenuItem;
     MenuItemTitleInVisible: TMenuItem;
     MenuItemFullScreen: TMenuItem;
@@ -30,6 +31,7 @@ type
     procedure FormResize(Sender: TObject);
 
     procedure FormContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure MenuItemOperationClick(Sender: TObject);
     procedure MenuItemTitleInVisibleClick(Sender: TObject);
 
     procedure MenuItemCloseClick(Sender: TObject);
@@ -69,7 +71,11 @@ begin
 
     model.View();
     UpdateView();
-    Show();
+    if not Visible then
+    begin
+      Show();;
+    end;
+
 end;
 
 procedure TViewerForm.UpdateView();
@@ -124,6 +130,11 @@ procedure TViewerForm.FormContextPopup(Sender: TObject; MousePos: TPoint; var Ha
 begin
   PopupMenu1.PopUp(MousePos.X, MousePos.Y);
   Handled := True;  // イベントを処理済みにする
+end;
+
+procedure TViewerForm.MenuItemOperationClick(Sender: TObject);
+begin
+  FormController.ShowForm();
 end;
 
 procedure TViewerForm.MenuItemTitleInVisibleClick(Sender: TObject);

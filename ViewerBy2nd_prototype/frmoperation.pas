@@ -18,24 +18,27 @@ type
   { TOperationForm }
 
   TOperationForm = class(TForm, IView)
+    DelteButton: TButton;
+    DeselectButton: TButton;
+    FilesListBox: TListBox;
+    FilesListPanel: TPanel;
+    OpenButton: TButton;
+    PreviewPanel: TPanel;
+    SelectAllButton: TButton;
     StatusBar1: TStatusBar;
     ZoomRateMenuItem: TMenuItem;
     ZoomOutMenuItem: TMenuItem;
-    ZoonInMenuItem: TMenuItem;
-    Rotate0Button: TButton;
-    Rotate90Button: TButton;
+    ZoomInMenuItem: TMenuItem;
+    Rotate000Button: TButton;
+    Rotate090Button: TButton;
     Rotate180Button: TButton;
     Rotate270Button: TButton;
 
-    OpenButton: TButton;
     BackGroundDisplayButton: TButton;
     AutoUpdateCheckBox: TCheckBox;
     FitWindowButton: TButton;
     ViewAllButton: TButton;
     ZoomRateLabel: TLabel;
-    SelectAllButton: TButton;
-    DelteButton: TButton;
-    DeselectButton: TButton;
     ZoomInButton: TButton;
     ZoomOutButton: TButton;
     LastPageButton: TButton;
@@ -45,7 +48,6 @@ type
     ViewerCloseButton: TButton;
     ViewerGroupBox: TGroupBox;
     Label1: TLabel;
-    FilesListBox: TListBox;
     MainMenu: TMainMenu;
     FileMenu: TMenuItem;
     ListMenu: TMenuItem;
@@ -82,7 +84,7 @@ type
     PreviousButton: TButton;
     Image1: TImage;
     OpenDialog1: TOpenDialog;
-    Panel1: TPanel;
+    ThumbnailPanel: TPanel;
     procedure AboutMenuClick(Sender: TObject);
     procedure AutoUpdateCheckBoxChange(Sender: TObject);
     procedure AutoUpdateSettingMenuClick(Sender: TObject);
@@ -90,6 +92,7 @@ type
     procedure BackgroundDisplayMenuClick(Sender: TObject);
     procedure FirstPageMenuClick(Sender: TObject);
     procedure FitWindowButtonClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Image1MouseLeave(Sender: TObject);
@@ -108,15 +111,16 @@ type
     procedure FirstPageButtonClick(Sender: TObject);
     procedure OpenMenuClick(Sender: TObject);
     procedure PageIndexMenuClick(Sender: TObject);
+    procedure PreviewPanelResize(Sender: TObject);
     procedure PreviousPageMenuClick(Sender: TObject);
     procedure Rotate000MenuClick(Sender: TObject);
     procedure Rotate090MenuClick(Sender: TObject);
-    procedure Rotate0ButtonClick(Sender: TObject);
+    procedure Rotate000ButtonClick(Sender: TObject);
     procedure Rotate180ButtonClick(Sender: TObject);
     procedure Rotate180MenuClick(Sender: TObject);
     procedure Rotate270ButtonClick(Sender: TObject);
     procedure Rotate270MenuClick(Sender: TObject);
-    procedure Rotate90ButtonClick(Sender: TObject);
+    procedure Rotate090ButtonClick(Sender: TObject);
     procedure SelectAllButtonClick(Sender: TObject);
     procedure ViewAllButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
@@ -136,7 +140,10 @@ type
     procedure ZoomInButtonClick(Sender: TObject);
     procedure ZoomOutButtonClick(Sender: TObject);
     procedure ListMenuChileClick(Sender: TObject);
+    procedure ZoomOutMenuItemClick(Sender: TObject);
     procedure ZoomRateLabelClick(Sender: TObject);
+    procedure ZoomRateMenuItemClick(Sender: TObject);
+    procedure ZoomInMenuItemClick(Sender: TObject);
   private
     AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
@@ -171,25 +178,45 @@ begin
 procedure TOperationForm.SetCtlEnabled();
 begin
   ViewerDisplayButton.Enabled:=model.HasOperationDocument;
-  ViewerDisplayMenu.Enabled:=ViewerDisplayButton.Enabled;
   NextButton.Enabled:= model.CanNext;
-  NextPageMenu.Enabled:= NextButton.Enabled;
   PreviousButton.Enabled := model.CanPrevious;
-  PreviousPageMenu.Enabled := PreviousButton.Enabled ;
   LastPageButton.Enabled:=model.CanLast;
-  LastPageMenu.Enabled := LastPageButton.Enabled;
   FirstPageButton.Enabled := model.CanFirst;
-  FirstPageMenu.Enabled :=FirstPageButton.Enabled ;
-  PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
-  ZoomInButton.Enabled:= model.CanZoomIn;
 
+  PageCountLabel.Enabled:=model.CanPrevious or model.CanNext;
+  if PageCountLabel.Enabled Then
+  begin
+    PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
+  end else begin
+    PageCountLabel.Caption:= '';
+  end;
+  ZoomInButton.Enabled:= model.CanZoomIn;
   ZoomOutButton.Enabled:=model.CanZoomOut;
+  ZoomRateLabel.Enabled := (model.CanZoomIn) or (model.CanZoomOut);
+
   FitWindowButton.Enabled:=model.CanZoom;
   ViewAllButton.Enabled:=model.CanZoom;
-  Rotate0Button.Enabled:=model.CanRotate;
+  Rotate000Button.Enabled:=model.CanRotate;
   Rotate180Button.Enabled:=model.CanRotate;
   Rotate270Button.Enabled:=model.CanRotate;
-  Rotate90Button.Enabled:=model.CanRotate;
+  Rotate090Button.Enabled:=model.CanRotate;
+
+  ViewerDisplayMenu.Enabled:=ViewerDisplayButton.Enabled;
+  NextPageMenu.Enabled:= NextButton.Enabled;
+  PreviousPageMenu.Enabled := PreviousButton.Enabled ;
+  LastPageMenu.Enabled := LastPageButton.Enabled;
+  FirstPageMenu.Enabled :=FirstPageButton.Enabled ;
+  PageIndexMenu.Enabled:=PageCountLabel.Enabled;
+
+  ZoomInMenuItem.Enabled:= ZoomInButton.Enabled;
+  ZoomOutMenuItem.Enabled := ZoomOutButton.Enabled;
+  ZoomRateMenuItem.Enabled := ZoomRateLabel.Enabled;
+
+  Rotate000Menu.Enabled:=Rotate000Button.Enabled;
+  Rotate180Menu.Enabled:=Rotate180Button.Enabled;
+  Rotate270Menu.Enabled:=Rotate270Button.Enabled;
+  Rotate090Menu.Enabled:=Rotate090Button.Enabled;
+
 
 end;
 
@@ -230,9 +257,9 @@ begin
     exit;
   end;
   rect := FormSizeCustomizer.CurrentWindowSize;
-  w := Panel1.Width;
+  w := ThumbnailPanel.Width;
   h := (w * rect.Height) div rect.Width;
-  Panel1.Height := h;
+  ThumbnailPanel.Height := h;
 
   StatusBar1.SimpleText := Format('Width: %d, Height: %d',
     [rect.Width, rect.Height]);
@@ -245,7 +272,7 @@ begin
   LoadList();
   SetPanelSize();
   LoadBitmap();
-  Panel1.Color:=model.Background.Color;
+  ThumbnailPanel.Color:=model.Background.Color;
   if model.HasOperationDocument then
   begin
     ZoomRateLabel.Caption:= FloatToStr(model.Zoom.Rate * 100) + '%';
@@ -352,15 +379,15 @@ var
   Bitmap : TBitmap;
 begin
 
-  //FitImageSize(Image1, Panel1.Width, Panel1.Height, model.ThumbnailRatio);
+  //FitImageSize(Image1, ThumbnailPanel.Width, ThumbnailPanel.Height, model.ThumbnailRatio);
 
   try
     // PDFium ページを Delphi ビットマップに描画
-    Bitmap := model.GetThumbnailBitmap(Panel1.Width, Panel1.Height);
+    Bitmap := model.GetThumbnailBitmap(ThumbnailPanel.Width, ThumbnailPanel.Height);
     Image1.Width := Bitmap.Width;
     Image1.Height := Bitmap.Height;
-    Image1.Left := (Panel1.Width - Bitmap.Width) div 2;
-    Image1.Top := (Panel1.Height - Bitmap.Height) div 2;
+    Image1.Left := (ThumbnailPanel.Width - Bitmap.Width) div 2;
+    Image1.Top := (ThumbnailPanel.Height - Bitmap.Height) div 2;
 
     Image1.Picture.Bitmap.Assign(Bitmap);
   finally
@@ -378,6 +405,11 @@ begin
   UpdateAuto;
 end;
 
+procedure TOperationForm.ZoomOutMenuItemClick(Sender: TObject);
+begin
+  ZoomOutButtonClick(Sender);
+end;
+
 procedure TOperationForm.ZoomRateLabelClick(Sender: TObject);
 begin
   if not model.HasOperationDocument then
@@ -385,6 +417,16 @@ begin
     Exit;
   end;
   ZoomRateForm.Display();
+end;
+
+procedure TOperationForm.ZoomRateMenuItemClick(Sender: TObject);
+begin
+  ZoomRateLabelClick(Sender);
+end;
+
+procedure TOperationForm.ZoomInMenuItemClick(Sender: TObject);
+begin
+  ZoomInButtonClick(Sender);
 end;
 
 procedure TOperationForm.PopulateFileMenu();
@@ -486,8 +528,30 @@ end;
 
 procedure TOperationForm.FitWindowButtonClick(Sender: TObject);
 begin
-    model.Zoom.fitWindow(Panel1.Width, Panel1.Height);
+    model.Zoom.fitWindow(ThumbnailPanel.Width, ThumbnailPanel.Height);
     UpdateAuto;
+end;
+
+procedure TOperationForm.FormResize(Sender: TObject);
+var
+  smallMode : Boolean;
+const
+  DEF_PREVIEW_WIDTH = 300;
+  MARGIN_WIDTH = 20;
+begin
+  smallMode := Width < FilesListPanel.Width + DEF_PREVIEW_WIDTH + MARGIN_WIDTH;
+   if smallMode then
+   begin
+     PreviewPanel.Left := 0;
+     PreviewPanel.Width:= Width;
+   end else
+   begin
+     PreviewPanel.Left := FilesListPanel.Width + MARGIN_WIDTH;
+     PreviewPanel.Width:= DEF_PREVIEW_WIDTH;
+   end;
+
+   FilesListPanel.Visible := not smallMode;
+
 end;
 
 procedure TOperationForm.Image1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -578,6 +642,12 @@ begin
   PageCountLabelClick(Sender);
 end;
 
+procedure TOperationForm.PreviewPanelResize(Sender: TObject);
+begin
+  ThumbnailPanel.Left:=0;
+  ThumbnailPanel.Width:=PreviewPanel.Width;
+end;
+
 procedure TOperationForm.PreviousPageMenuClick(Sender: TObject);
 begin
   PreviousButtonClick(Sender);
@@ -585,15 +655,15 @@ end;
 
 procedure TOperationForm.Rotate000MenuClick(Sender: TObject);
 begin
-    Rotate0ButtonClick(Sender);
+    Rotate000ButtonClick(Sender);
 end;
 
 procedure TOperationForm.Rotate090MenuClick(Sender: TObject);
 begin
-  Rotate90ButtonClick(Sender);
+  Rotate090ButtonClick(Sender);
 end;
 
-procedure TOperationForm.Rotate0ButtonClick(Sender: TObject);
+procedure TOperationForm.Rotate000ButtonClick(Sender: TObject);
 begin
   model.Rotate(0);
   UpdateAuto;
@@ -621,7 +691,7 @@ begin
   Rotate270ButtonClick(Sender);
 end;
 
-procedure TOperationForm.Rotate90ButtonClick(Sender: TObject);
+procedure TOperationForm.Rotate090ButtonClick(Sender: TObject);
 begin
   model.Rotate(90);
   UpdateAuto;

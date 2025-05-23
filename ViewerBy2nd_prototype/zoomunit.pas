@@ -8,7 +8,9 @@ uses
   Classes, SysUtils, ImageCreatorUnit, Graphics, Math, ZoomCacheUnit;
 
 const
-  ZoomLevels: array[0..7] of Double = (1.0, 1.25, 1.5, 2.0, 3.0, 5.0, 7.5, 10.0);
+  MAX_ZOOM_RATE = 5.0;
+  DEFAULT_ZOOM_RATE = 1.0;
+  ZoomLevels: array[0..5] of Double = (DEFAULT_ZOOM_RATE, 1.25, 1.5, 2.0, 3.0, MAX_ZOOM_RATE);
 type
   TZoom = class
   private
@@ -61,16 +63,16 @@ begin
   inherited Create;
   //FZoomCache := TZoomCache.Create(ImageCreator);
   FImageCreator := ImageCreator;
-  FRate := 1.0; // 初期倍率
+  FRate := DEFAULT_ZOOM_RATE; // 初期倍率
   CenterX := -1;
 end;
 
 procedure TZoom.SetRate(Value: Double);
 begin
-  if Value < 1.0 then
-    FRate := 1.0
-  else if Value > 10.0 then
-    FRate := 10.0
+  if Value < DEFAULT_ZOOM_RATE then
+    FRate := DEFAULT_ZOOM_RATE
+  else if Value > MAX_ZOOM_RATE then
+    FRate := MAX_ZOOM_RATE
   else
     FRate := Value;
 

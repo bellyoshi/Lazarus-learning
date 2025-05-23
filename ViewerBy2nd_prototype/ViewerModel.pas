@@ -101,7 +101,7 @@ begin
   Result := False;
   if not GetCanZoom then
     Exit;
-  If 10.0 <= Repogitory.GetSelectedFile.Zoom.Rate then
+  If 5.0 <= Repogitory.GetSelectedFile.Zoom.Rate then
     Exit;
   Result := True;
 

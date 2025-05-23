@@ -7,7 +7,7 @@ object PageForm: TPageForm
   ClientHeight = 93
   ClientWidth = 275
   DesignTimePPI = 120
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '4.0.0.4'
   object PageIndexEdit: TEdit
     Left = 16
     Height = 28
@@ -15,6 +15,7 @@ object PageForm: TPageForm
     Width = 74
     TabOrder = 0
     Text = 'PageIndexEdit'
+    OnKeyPress = PageIndexEditKeyPress
   end
   object PageCountLabel: TLabel
     Left = 112

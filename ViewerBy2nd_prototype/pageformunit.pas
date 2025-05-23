@@ -23,6 +23,7 @@ type
     PageCountLabel: TLabel;
     procedure CancelButtonClick(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
+    procedure PageIndexEditKeyPress(Sender: TObject; var Key: char);
     procedure Display();
 
   end;
@@ -63,7 +64,14 @@ begin
   Close;
 end;
 
-
+procedure TPageForm.PageIndexEditKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key = #13 then // Enter key
+  begin
+    Key := #0; // Prevent the default beep
+    OkButtonClick(Sender);
+  end;
+end;
 
 {$R *.lfm}
 

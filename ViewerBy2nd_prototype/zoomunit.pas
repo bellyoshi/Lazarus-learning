@@ -5,7 +5,7 @@ unit ZoomUnit;
 interface
 
 uses
-  Classes, SysUtils, ImageCreatorUnit, Graphics, Math, ZoomCacheUnit;
+  Classes, SysUtils, ImageCreatorUnit, Graphics, Math;
 
 const
   MAX_ZOOM_RATE = 5.0;
@@ -24,7 +24,7 @@ type
     procedure SetRate(Value: Double);
     function GetNextZoomIn(): Double;
     function GetNextZoomOut(): Double;
-    function CreateRect(dispWidth, dispHeight: Integer):TRect;
+    function CreateRect(ZoomedWidth, ZoomedHeight, dispWidth, dispHeight: Integer):TRect;
   public
     constructor Create(ImageCreator: IImageCreator);
     property Rate: Double read FRate write SetRate;
@@ -128,13 +128,15 @@ procedure TZoom.MouseMove(X,Y:Integer);
 var
   deltaX, deltaY: Integer;
   imageWidth, imageHeight: Integer;
+  Ratio: Double;
 begin
   deltaX := MouseX - X;
   deltaY := MouseY - Y;
 
-  // Get current image dimensions
-  imageWidth := Round(FImageCreator.GetRatio() * 1000 * FRate);  // Approximate width
-  imageHeight := Round(1000 * FRate);  // Approximate height
+  // Get current image dimensions using the same reference size as GetBitmap
+  Ratio := FImageCreator.GetRatio();
+  imageWidth := Round(1000 * FRate);  // Reference width * zoom rate
+  imageHeight := Round(imageWidth / Ratio);  // Calculate height maintaining aspect ratio
 
   // Convert pixel movement to relative movement
   if imageWidth > 0 then
@@ -150,23 +152,18 @@ begin
   MouseY := Y;
 end;
 
-function TZoom.CreateRect(dispWidth, dispHeight: Integer):TRect;
+function TZoom.CreateRect(ZoomedWidth, ZoomedHeight, dispWidth, dispHeight: Integer):TRect;
 var
   X: Integer;
   Y: Integer;
-  imageWidth, imageHeight: Integer;
 begin
-  // Get current image dimensions
-  imageWidth := Round(FImageCreator.GetRatio() * 1000 * FRate);  // Approximate width
-  imageHeight := Round(1000 * FRate);  // Approximate height
-
-  // Convert relative position to absolute position
-  X := Round(CenterX * imageWidth - dispWidth / 2);
-  Y := Round(CenterY * imageHeight - dispHeight / 2);
+    // Convert relative position to absolute position
+  X := Round(CenterX * ZoomedWidth - dispWidth / 2);
+  Y := Round(CenterY * ZoomedHeight - dispHeight / 2);
 
   // Ensure the rect stays within image bounds
-  X := Math.Max(0, Math.Min(X, imageWidth - dispWidth));
-  Y := Math.Max(0, Math.Min(Y, imageHeight - dispHeight));
+  X := Math.Max(0, Math.Min(X, ZoomedWidth - dispWidth));
+  Y := Math.Max(0, Math.Min(Y, ZoomedHeight - dispHeight));
 
   Result := TRect.Create(X, Y, X + dispWidth, Y + dispHeight);
 end;
@@ -211,10 +208,10 @@ begin
   formRatio := WindowWidth / WindowHeight;
   Ratio := FImageCreator.GetRatio();
 
+
   if formRatio > Ratio then
   begin
     // 縦が基準
-
     normalHeight := WindowHeight;
     normalWidth := RoundToStep(normalHeight * Ratio);
   end
@@ -229,28 +226,22 @@ begin
   ZoomedHeight := Round(normalHeight * FRate);
 
   // ImageCreatorから拡大した画像を取得
-  //SourceImage := FZoomCache.GetBitmap(ZoomedWidth, ZoomedHeight);
   SourceImage := FImageCreator.GetBitmap(ZoomedWidth, ZoomedHeight);
 
-
-  if CenterX = -1 Then
-  begin
-       CenterX := ZoomedWidth div 2;
-       CenterY := ZoomedHeight div 2;
-  end;
-
   // 切り取り範囲を指定
-  dispHeight:=Min(ZoomedHeight,WindowHeight);
-  dispWidth:=Min(ZoomedWidth,WindowWidth);
-  sourceRect := CreateRect(dispWidth, dispHeight);
-  destRect := TRect.Create(0,0, dispWidth,dispHeight);
+  dispHeight := Min(ZoomedHeight, WindowHeight);
+  dispWidth := Min(ZoomedWidth, WindowWidth);
+
+  // Calculate source rectangle based on relative center position
+  sourceRect := CreateRect(ZoomedWidth, ZoomedHeight, dispWidth, dispHeight);
+  destRect := TRect.Create(0, 0, dispWidth, dispHeight);
+  
   // 結果用の画像を作成
   Result := TBitmap.Create;
   Result.SetSize(dispWidth, dispHeight);
 
-  // SourceImageの左上部分をResultに描画
+  // SourceImageの指定範囲をResultに描画
   Result.Canvas.CopyRect(destRect, SourceImage.Canvas, sourceRect);
-
 end;
 
 

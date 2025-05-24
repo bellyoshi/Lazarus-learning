@@ -17,12 +17,13 @@ type
     FImageCreator : IImageCreator;
     MouseX: Integer;
     MouseY: Integer;
-    CenterX: Integer;
-    CenterY: Integer;
+    CenterX: Double;  // Changed to Double for relative position (0.0 to 1.0)
+    CenterY: Double;  // Changed to Double for relative position (0.0 to 1.0)
     FRate: Double;
     //FZoomCache : TZoomCache;
     procedure SetRate(Value: Double);
-    function GetNextZoom(ZoomIn: Boolean): Double;
+    function GetNextZoomIn(): Double;
+    function GetNextZoomOut(): Double;
     function CreateRect(dispWidth, dispHeight: Integer):TRect;
   public
     constructor Create(ImageCreator: IImageCreator);
@@ -39,8 +40,8 @@ type
 implementation
 procedure TZoom.CenterClear();
 begin
-  CenterX:=-1;
-  CenterY:=-1;
+  CenterX := 0.5;  // Center of the image
+  CenterY := 0.5;  // Center of the image
   //todo:Centerをクラスにする。
   //todo:Rotateメソッドをつくる。 回転しても同じ位置を表示するようにする。
 end;
@@ -64,7 +65,7 @@ begin
   //FZoomCache := TZoomCache.Create(ImageCreator);
   FImageCreator := ImageCreator;
   FRate := DEFAULT_ZOOM_RATE; // 初期倍率
-  CenterX := -1;
+  CenterClear();  // Initialize center position
 end;
 
 procedure TZoom.SetRate(Value: Double);
@@ -78,43 +79,43 @@ begin
 
 end;
 
-function TZoom.GetNextZoom(ZoomIn: Boolean): Double;
-
+function TZoom.GetNextZoomIn(): Double;
 var
   I: Integer;
 begin
   Result := FRate;
   for I := Low(ZoomLevels) to High(ZoomLevels) do
   begin
-    if ZoomIn then
+    if ZoomLevels[I] > FRate then
     begin
-      if ZoomLevels[I] > FRate then
-      begin
-        Result := ZoomLevels[I];
-        Exit;
-      end;
-    end
-    else
-    begin
-      if ZoomLevels[I] < FRate then
-        Result := ZoomLevels[I]
-      else
-        Exit;
+      Result := ZoomLevels[I];
+      Exit;
     end;
+  end;
+end;
+
+function TZoom.GetNextZoomOut(): Double;
+var
+  I: Integer;
+begin
+  Result := FRate;
+  for I := Low(ZoomLevels) to High(ZoomLevels) do
+  begin
+    if ZoomLevels[I] < FRate then
+      Result := ZoomLevels[I]
+    else
+      Exit;
   end;
 end;
 
 procedure TZoom.ZoomIn();
 begin
-  Rate := GetNextZoom(True);
-
-
+  Rate := GetNextZoomIn();
 end;
 
 procedure TZoom.ZoomOut();
 begin
-  Rate := GetNextZoom(False);
-
+  Rate := GetNextZoomOut();
 end;
 
 procedure TZoom.MouseDown(X,Y:Integer);
@@ -126,26 +127,46 @@ end;
 procedure TZoom.MouseMove(X,Y:Integer);
 var
   deltaX, deltaY: Integer;
+  imageWidth, imageHeight: Integer;
 begin
-  deltaX :=  MouseX - X;
+  deltaX := MouseX - X;
   deltaY := MouseY - Y;
 
-  CenterX := CenterX + deltaX;
-  CenterY := CenterY + deltaY;
+  // Get current image dimensions
+  imageWidth := Round(FImageCreator.GetRatio() * 1000 * FRate);  // Approximate width
+  imageHeight := Round(1000 * FRate);  // Approximate height
+
+  // Convert pixel movement to relative movement
+  if imageWidth > 0 then
+    CenterX := CenterX + (deltaX / imageWidth);
+  if imageHeight > 0 then
+    CenterY := CenterY + (deltaY / imageHeight);
+
+  // Clamp values between 0.0 and 1.0
+  CenterX := Math.Max(0.0, Math.Min(1.0, CenterX));
+  CenterY := Math.Max(0.0, Math.Min(1.0, CenterY));
 
   MouseX := X;
   MouseY := Y;
-
-
 end;
 
 function TZoom.CreateRect(dispWidth, dispHeight: Integer):TRect;
 var
   X: Integer;
   Y: Integer;
+  imageWidth, imageHeight: Integer;
 begin
-  X := Math.Max(0, CenterX - dispWidth div 2);
-  Y := Math.Max(0, CenterY - dispHeight div 2);
+  // Get current image dimensions
+  imageWidth := Round(FImageCreator.GetRatio() * 1000 * FRate);  // Approximate width
+  imageHeight := Round(1000 * FRate);  // Approximate height
+
+  // Convert relative position to absolute position
+  X := Round(CenterX * imageWidth - dispWidth / 2);
+  Y := Round(CenterY * imageHeight - dispHeight / 2);
+
+  // Ensure the rect stays within image bounds
+  X := Math.Max(0, Math.Min(X, imageWidth - dispWidth));
+  Y := Math.Max(0, Math.Min(Y, imageHeight - dispHeight));
 
   Result := TRect.Create(X, Y, X + dispWidth, Y + dispHeight);
 end;

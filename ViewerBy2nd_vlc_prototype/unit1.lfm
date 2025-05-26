@@ -1,0 +1,76 @@
+object Form1: TForm1
+  Left = 227
+  Height = 400
+  Top = 143
+  Width = 600
+  Caption = 'VLC Player'
+  ClientHeight = 400
+  ClientWidth = 600
+  DesignTimePPI = 120
+  Font.Height = -15
+  Position = poScreenCenter
+  LCLVersion = '4.0.0.4'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object Panel1: TPanel
+    Left = 0
+    Height = 300
+    Top = 0
+    Width = 600
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 0
+  end
+  object OpenButton: TButton
+    Left = 8
+    Height = 25
+    Top = 312
+    Width = 75
+    Caption = 'Open'
+    TabOrder = 1
+    OnClick = OpenButtonClick
+  end
+  object PlayButton: TButton
+    Left = 96
+    Height = 25
+    Top = 312
+    Width = 75
+    Caption = 'Play'
+    Enabled = False
+    TabOrder = 2
+    OnClick = PlayButtonClick
+  end
+  object StopButton: TButton
+    Left = 184
+    Height = 25
+    Top = 312
+    Width = 75
+    Caption = 'Stop'
+    Enabled = False
+    TabOrder = 3
+    OnClick = StopButtonClick
+  end
+  object TrackBar1: TTrackBar
+    Left = 272
+    Height = 25
+    Top = 312
+    Width = 320
+    Max = 1000
+    Position = 0
+    OnChange = TrackBar1Change
+    Enabled = False
+    TabOrder = 4
+    OnMouseDown = TrackBar1MouseDown
+  end
+  object OpenDialog1: TOpenDialog
+    Left = 30
+    Top = 30
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = Timer1Timer
+    Left = 30
+    Top = 30
+  end
+end

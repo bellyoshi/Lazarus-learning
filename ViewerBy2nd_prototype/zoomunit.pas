@@ -174,29 +174,15 @@ end;
 
 procedure TZoom.fitWindow(WindowWidth, WindowHeight: Integer);
 var
-  normalHeight, normalWidth : Integer;
-  formRatio: Double;
-  Ratio : Double;
-begin
-  formRatio := WindowWidth / WindowHeight;
-  Ratio := FImageCreator.GetRatio();
-
-  if formRatio > Ratio then
+  BitmapCreator: TZoomBitmapCreator;
   begin
-    // 縦が基準
-
-    normalHeight := WindowHeight;
-        normalWidth := RoundToStep(normalHeight * Ratio);
-  end
-  else
-  begin
-    // 横が基準
-    normalWidth := RoundToStep(WindowWidth);
-    normalHeight := Round(normalWidth / Ratio);
+  BitmapCreator := TZoomBitmapCreator.Create(Self, WindowWidth, WindowHeight);
+  try
+    FRate:= WindowWidth / BitmapCreator.normalWidth();
+  finally
+    BitmapCreator.Free;
   end;
 
-
-  FRate:= WindowWidth / normalWidth;
 end;
 
 function TZoom.GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;

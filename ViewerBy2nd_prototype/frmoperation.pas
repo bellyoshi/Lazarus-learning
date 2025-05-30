@@ -11,7 +11,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, ComCtrls, frmViewer, ViewerModel, RepogitoryUnit, Generics.Collections,
   FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
-  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit;
+  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit, Types;
 
 type
 
@@ -100,6 +100,8 @@ type
       );
     procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure Image1MouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure LastPageMenuClick(Sender: TObject);
     procedure NextPageMenuClick(Sender: TObject);
     procedure OpenButtonClick(Sender: TObject);
@@ -532,6 +534,7 @@ begin
     UpdateAuto;
 end;
 
+
 procedure TOperationForm.FormResize(Sender: TObject);
 var
   smallMode : Boolean;
@@ -587,6 +590,17 @@ begin
   begin
    IsMouseDown := False;
   end;
+end;
+
+procedure TOperationForm.Image1MouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  if model.CanZoom then
+  begin
+   model.Zoom.MouseWheel(WheelDelta, MousePos.X, MousePos.Y, Shift);
+   UpdateAuto;
+  end;
+  
 end;
 
 procedure TOperationForm.LastPageMenuClick(Sender: TObject);

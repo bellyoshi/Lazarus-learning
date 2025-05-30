@@ -8,10 +8,10 @@ object OperationForm: TOperationForm
   ClientWidth = 885
   DesignTimePPI = 120
   Menu = MainMenu
+  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnResize = FormResize
-  LCLVersion = '3.6.0.0'
   object NextButton: TButton
     Left = 750
     Height = 31
@@ -219,6 +219,7 @@ object OperationForm: TOperationForm
         OnMouseLeave = Image1MouseLeave
         OnMouseMove = Image1MouseMove
         OnMouseUp = Image1MouseUp
+        OnMouseWheel = Image1MouseWheel
       end
     end
     object Label1: TLabel

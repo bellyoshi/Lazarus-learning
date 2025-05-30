@@ -8,6 +8,11 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   ComCtrls, lclvlc, vlc, libvlc;
 
+const
+  TRACKBAR_MAX = 10000;
+  TRACKBAR_MARGIN = 10;
+  VIDEO_FILTER = 'Video files|*.mp4;*.avi;*.mkv;*.wmv|All files|*.*';
+
 type
 
   { TForm1 }
@@ -55,8 +60,6 @@ begin
   IsProgrammaticUpdate := False;
 end;
 
-
-
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(Player);
@@ -64,14 +67,14 @@ end;
 
 procedure TForm1.OpenButtonClick(Sender: TObject);
 begin
-  OpenDialog1.Filter := 'Video files|*.mp4;*.avi;*.mkv;*.wmv|All files|*.*';
+  OpenDialog1.Filter := VIDEO_FILTER;
   if OpenDialog1.Execute then
   begin
     Player.PlayFile(OpenDialog1.FileName);
     TrackBar1.Enabled := True;
     PlayButton.Enabled := True;
     StopButton.Enabled := True;
-    TrackBar1.Max := 1000;
+    TrackBar1.Max := TRACKBAR_MAX;
 
     Timer1.Enabled := True;
   end;
@@ -100,10 +103,17 @@ procedure TForm1.TrackBar1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   NewPosition: Integer;
+  SliderWidth: Integer;
 begin
-
-  // マウス位置から新しい位置を計算
-  NewPosition := X  * TrackBar1.Max div TrackBar1.Width;
+  SliderWidth := TrackBar1.Width - (TRACKBAR_MARGIN * 2);
+  
+  // マウス位置をスライダー領域内に調整
+  X := X - TRACKBAR_MARGIN;
+  if X < 0 then X := 0;
+  if X > SliderWidth then X := SliderWidth;
+  
+  // 新しい位置を計算
+  NewPosition := Round(X / SliderWidth * TrackBar1.Max);
   
   // 範囲チェック
   if NewPosition < 0 then NewPosition := 0;
@@ -127,7 +137,7 @@ begin
 
   if Player.VideoLength = 0 then Exit;
 
-  pos := TrackBar1.Max  * Player.VideoPosition div Player.VideoLength;
+  pos :=  Round(Player.VideoPosition / Player.VideoLength * TrackBar1.Max);
   if pos >= 0 then
     IsProgrammaticUpdate := True;
     TrackBar1.Position := pos;

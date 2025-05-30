@@ -5,7 +5,7 @@ unit ZoomUnit;
 interface
 
 uses
-  Classes, SysUtils, ImageCreatorUnit, Graphics, Math;
+  Classes, SysUtils, ImageCreatorUnit, Graphics, Math, Controls;
 
 const
   MAX_ZOOM_RATE = 5.0;
@@ -23,7 +23,8 @@ type
     procedure SetRate(Value: Double);
     function GetNextZoomIn(): Double;
     function GetNextZoomOut(): Double;
-
+    procedure DoMouseWheelZoom(Delta: Integer; X, Y: Integer);
+    procedure DoMouseWheelScroll(Delta: Integer);
   public
     constructor Create(ImageCreator: IImageCreator);
     property Rate: Double read FRate write SetRate;
@@ -33,6 +34,7 @@ type
     function GetBitmap(WindowWidth, WindowHeight: Integer): TBitmap;
     procedure MouseDown(X,Y:Integer);
     procedure MouseMove(X,Y:Integer);
+    procedure MouseWheel(Delta: Integer; X, Y: Integer; Shift: TShiftState);
     procedure CenterClear();
   end;
 
@@ -170,7 +172,72 @@ begin
   MouseY := Y;
 end;
 
+procedure TZoom.DoMouseWheelZoom(Delta: Integer; X, Y: Integer);
+var
+  oldRate: Double;
+  oldCenterX, oldCenterY: Double;
+  BitmapCreator: TZoomBitmapCreator;
+  zoomedWidth, zoomedHeight: Integer;
+  dispWidth, dispHeight: Integer;
+  relativeX, relativeY: Double;
+begin
+  // 現在の状態を保存
+  oldRate := FRate;
+  oldCenterX := CenterX;
+  oldCenterY := CenterY;
 
+  // ズーム方向に応じて倍率を変更
+  if Delta > 0 then
+    ZoomIn()
+  else
+    ZoomOut();
+
+  // 倍率が変更されなかった場合は何もしない
+  if oldRate = FRate then
+    Exit;
+
+  // マウス位置を基準にズームするために、相対位置を計算
+  BitmapCreator := TZoomBitmapCreator.Create(Self, 1000, 1000); // 仮のサイズ
+  try
+    zoomedWidth := BitmapCreator.ZoomedWidth();
+    zoomedHeight := BitmapCreator.ZoomedHeight();
+    dispWidth := BitmapCreator.dispWidth();
+    dispHeight := BitmapCreator.dispHeight();
+
+    // マウス位置の相対座標を計算
+    relativeX := (X + (oldCenterX * zoomedWidth - dispWidth / 2)) / zoomedWidth;
+    relativeY := (Y + (oldCenterY * zoomedHeight - dispHeight / 2)) / zoomedHeight;
+
+    // 新しい倍率での中心位置を計算
+    CenterX := relativeX;
+    CenterY := relativeY;
+  finally
+    BitmapCreator.Free;
+  end;
+end;
+
+procedure TZoom.DoMouseWheelScroll(Delta: Integer);
+var
+  BitmapCreator: TZoomBitmapCreator;
+  scrollAmount: Double;
+begin
+  BitmapCreator := TZoomBitmapCreator.Create(Self, 1000, 1000); // 仮のサイズ
+  try
+    // スクロール量を相対位置の変化に変換（Deltaの符号を反転して標準的な動作に）
+    scrollAmount := -Delta / (BitmapCreator.ZoomedHeight() * 10); // スクロール感度調整
+    CenterY := Math.Max(0.0, Math.Min(1.0, CenterY + scrollAmount));
+  finally
+    BitmapCreator.Free;
+  end;
+end;
+
+procedure TZoom.MouseWheel(Delta: Integer; X, Y: Integer; Shift: TShiftState);
+begin
+  if ssCtrl in Shift then
+    DoMouseWheelZoom(Delta, X, Y)
+  else
+    DoMouseWheelScroll(Delta);
+end;
 
 procedure TZoom.fitWindow(WindowWidth, WindowHeight: Integer);
 var

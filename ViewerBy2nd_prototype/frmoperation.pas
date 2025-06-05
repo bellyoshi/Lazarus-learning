@@ -2,7 +2,6 @@ unit frmOperation;
 
 // Todo: movie
 // Todo: slim normal window size
-// Todo: ドラッグ＆ドロップでファイルを登録できるようにする。
 // Todo: Form Ratio Windows size Panel sizeで共通化
 
 interface
@@ -11,7 +10,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, ComCtrls, frmViewer, ViewerModel, RepogitoryUnit, Generics.Collections,
   FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
-  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit, Types;
+  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf;
 
 type
 
@@ -92,6 +91,7 @@ type
     procedure BackgroundDisplayMenuClick(Sender: TObject);
     procedure FirstPageMenuClick(Sender: TObject);
     procedure FitWindowButtonClick(Sender: TObject);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
     procedure FormResize(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -146,10 +146,11 @@ type
     procedure ZoomRateLabelClick(Sender: TObject);
     procedure ZoomRateMenuItemClick(Sender: TObject);
     procedure ZoomInMenuItemClick(Sender: TObject);
+
   private
     AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
-        IsMouseDown : Boolean;
+    IsMouseDown : Boolean;
     procedure LoadBitmap;
     procedure SetCtlEnabled();
     procedure SetPanelSize();
@@ -225,6 +226,7 @@ end;
 procedure TOperationForm.FormCreate(Sender: TObject);
 begin
     model := TViewerModel.Create;
+    
     UpdateView;
 
 
@@ -380,22 +382,22 @@ procedure TOperationForm.LoadBitmap;
 var
   Bitmap : TBitmap;
 begin
-
-  //FitImageSize(Image1, ThumbnailPanel.Width, ThumbnailPanel.Height, model.ThumbnailRatio);
-
   try
     // PDFium ページを Delphi ビットマップに描画
     Bitmap := model.GetThumbnailBitmap(ThumbnailPanel.Width, ThumbnailPanel.Height);
-    Image1.Width := Bitmap.Width;
-    Image1.Height := Bitmap.Height;
-    Image1.Left := (ThumbnailPanel.Width - Bitmap.Width) div 2;
-    Image1.Top := (ThumbnailPanel.Height - Bitmap.Height) div 2;
+    if Assigned(Bitmap) then
+    begin
+      Image1.Width := Bitmap.Width;
+      Image1.Height := Bitmap.Height;
+      Image1.Left := (ThumbnailPanel.Width - Bitmap.Width) div 2;
+      Image1.Top := (ThumbnailPanel.Height - Bitmap.Height) div 2;
 
-    Image1.Picture.Bitmap.Assign(Bitmap);
+      Image1.Picture.Assign(Bitmap);
+    end;
   finally
-    Bitmap.Free;
+    if Assigned(Bitmap) then
+      Bitmap.Free;
   end;
-
 end;
 procedure TOperationForm.ListMenuChileClick(Sender: TObject);
 var
@@ -495,6 +497,7 @@ begin
   BackGroundDisplayButtonClick(Sender);
 end;
 
+
 procedure TOperationForm.FirstPageMenuClick(Sender: TObject);
 begin
  FirstPageButtonClick(Sender);
@@ -532,6 +535,24 @@ procedure TOperationForm.FitWindowButtonClick(Sender: TObject);
 begin
     model.Zoom.fitWindow(ThumbnailPanel.Width, ThumbnailPanel.Height);
     UpdateAuto;
+end;
+
+procedure TOperationForm.FormDropFiles(Sender: TObject;
+  const FileNames: array of string);
+var 
+  FileName: String;
+  Ext: String;
+begin
+  for FileName in FileNames do
+  begin
+    Ext := LowerCase(ExtractFileExt(FileName));
+    if (Ext = '.pdf') or (Ext = '.jpg') or (Ext = '.jpeg') or 
+       (Ext = '.png') or (Ext = '.bmp') then
+    begin
+      model.Repogitory.AddFile(FileName);
+    end;
+  end;
+  UpdateAuto;
 end;
 
 
@@ -744,7 +765,6 @@ begin
   SettingLoader.Save;
   model.Free;
 end;
-
 
 
 end.

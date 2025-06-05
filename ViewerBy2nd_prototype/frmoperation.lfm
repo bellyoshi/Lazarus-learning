@@ -3,6 +3,7 @@ object OperationForm: TOperationForm
   Height = 630
   Top = 169
   Width = 885
+  AllowDropFiles = True
   Caption = 'Viewer By 2nd Monitor 操作画面'
   ClientHeight = 630
   ClientWidth = 885
@@ -11,6 +12,7 @@ object OperationForm: TOperationForm
   LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDropFiles = FormDropFiles
   OnResize = FormResize
   object NextButton: TButton
     Left = 750
@@ -289,6 +291,7 @@ object OperationForm: TOperationForm
       Height = 465
       Top = 8
       Width = 221
+      DragMode = dmAutomatic
       ItemHeight = 0
       MultiSelect = True
       TabOrder = 4

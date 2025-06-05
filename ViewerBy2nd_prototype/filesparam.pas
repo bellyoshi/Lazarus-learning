@@ -6,7 +6,8 @@ unit FilesParam;
 interface
 
 uses
-  Graphics,SysUtils, PdfImageCreator, RotateImageCreatorUnit, ZoomUnit, ImageCreatorUnit, TImageCreatorUnit;
+  Graphics, SysUtils, PdfImageCreator, RotateImageCreatorUnit, ZoomUnit, 
+  ImageCreatorUnit, TImageCreatorUnit, ViewerBy2ndFileTypes;
 
 type
   TFilesParam = class
@@ -24,16 +25,13 @@ implementation
 {TFilesParam}
 
 constructor TFilesParam.Create(AFileName : string; ASelected : Boolean);
-var
-  Ext : String;
 begin
   inherited Create;
 
-  Ext := LowerCase(ExtractFileExt(AFileName));
-  if (Ext = '.jpg') or (Ext = '.png') or (Ext = '.bmp') then
+  if IsImageFile(AFileName) then
   begin
     ImageCreator := TImageCreator.Create(AFileName);
-  end else if Ext = '.pdf' then
+  end else if IsPDFFile(AFileName) then
   begin
     ImageCreator := TPdfImageCreator.Create(AFileName);
   end;

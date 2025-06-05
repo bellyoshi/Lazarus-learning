@@ -6,7 +6,7 @@ unit RepogitoryUnit;
 interface
 
 uses
-  Classes, SysUtils, Generics.Collections, FilesParam, PdfImageCreator;
+  Classes, SysUtils, Generics.Collections, FilesParam, PdfImageCreator, ViewerBy2ndFileTypes;
 type
   TRepogitory = class
   private
@@ -144,6 +144,10 @@ var
   pdfImageCreator : TPdfImageCreator;
   i : Integer;
 begin
+  if not CanOpen(FileName) then
+  begin
+    Exit;
+  end;
   for i := 0 to FFilesList.Count - 1 do
   begin
     FFilesList.Items[i].Selected := False;

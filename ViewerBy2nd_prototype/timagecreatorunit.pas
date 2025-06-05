@@ -5,7 +5,7 @@ unit TImageCreatorUnit;
 interface
 
 uses
-  Classes, SysUtils, Graphics,ImageCreatorUnit, FPImage, FPReadJPEG, FPReadPNG, FPReadBMP, ReSizeBilinearUnit;
+  Classes, SysUtils, Graphics,ImageCreatorUnit, FPImage, FPReadJPEG, FPReadPNG, FPReadBMP, ReSizeBilinearUnit, ViewerBy2ndFileTypes;
 
 type
   TImageCreator = class(TInterfacedObject, IDocmentImageCreator)
@@ -58,23 +58,15 @@ end;
 
 procedure TImageCreator.LoadFromFile(const AFileName: string);
 var
-  Ext: string;
   Image: TFPCustomImage;
   Reader: TFPCustomImageReader;
 begin
-  Ext := LowerCase(ExtractFileExt(AFileName));
+  if not IsImageFile(AFileName) then
+    raise Exception.Create('Not an image file');
 
   Image := TFPMemoryImage.Create(0, 0);
   try
-    if Ext = '.jpg' then
-      Reader := TFPReaderJPEG.Create
-    else if Ext = '.png' then
-      Reader := TFPReaderPNG.Create
-    else if Ext = '.bmp' then
-      Reader := TFPReaderBMP.Create
-    else
-      raise Exception.Create('Unsupported file format: ' + Ext);
-
+    Reader := GetTFPReader(AFileName);
     try
       Image.LoadFromFile(AFileName, Reader);
       FBitmap.Assign(Image);
@@ -85,6 +77,7 @@ begin
     Image.Free;
   end;
 end;
+
 function TImageCreator.GetPageIndex: Integer ;
 begin
   Result := 0;

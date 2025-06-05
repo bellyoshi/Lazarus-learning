@@ -156,6 +156,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UFormController"/>
       </Unit>
+      <Unit>
+        <Filename Value="viewerby2ndfiletypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ViewerBy2ndFileTypes"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

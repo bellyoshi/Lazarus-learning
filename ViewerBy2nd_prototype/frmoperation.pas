@@ -10,7 +10,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, ComCtrls, frmViewer, ViewerModel, RepogitoryUnit, Generics.Collections,
   FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
-  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf;
+  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf, ViewerBy2ndFileTypes;
 
 type
 
@@ -457,20 +457,17 @@ procedure TOperationForm.OpenButtonClick(Sender: TObject);
 var
   i : Integer;
 begin
-  // PDF、画像、およびすべてのファイルを選択可能にする
-  OpenDialog1.Filter := 'PDF Files|*.pdf|Image Files|*.jpg;*.jpeg;*.png;*.bmp|All Files|*.*';
+  OpenDialog1.Filter := GetFileFilter;
   OpenDialog1.Options:=OpenDialog1.Options+[ofAllowMultiSelect];
 
   if not OpenDialog1.Execute then Exit;
 
-    for i:=0 to OpenDialog1.Files.Count-1 do
-      begin
-           model.Open(OpenDialog1.Files[i]);
-      end;
-
+  for i:=0 to OpenDialog1.Files.Count-1 do
+  begin
+    model.Open(OpenDialog1.Files[i]);
+  end;
 
   UpdateAuto;
-
 end;
 
 procedure TOperationForm.DelteButtonClick(Sender: TObject);
@@ -541,13 +538,10 @@ procedure TOperationForm.FormDropFiles(Sender: TObject;
   const FileNames: array of string);
 var 
   FileName: String;
-  Ext: String;
 begin
   for FileName in FileNames do
   begin
-    Ext := LowerCase(ExtractFileExt(FileName));
-    if (Ext = '.pdf') or (Ext = '.jpg') or (Ext = '.jpeg') or 
-       (Ext = '.png') or (Ext = '.bmp') then
+    if CanOpen(FileName) then
     begin
       model.Repogitory.AddFile(FileName);
     end;

@@ -240,6 +240,16 @@ object OperationForm: TOperationForm
       Caption = 'PageCountLabel'
       OnClick = PageCountLabelClick
     end
+    object TrackBar1: TTrackBar
+      Left = -2
+      Height = 25
+      Top = 296
+      Width = 320
+      Max = 1000
+      Position = 0
+      Enabled = False
+      TabOrder = 1
+    end
   end
   object FilesListPanel: TPanel
     Left = 8
@@ -297,6 +307,26 @@ object OperationForm: TOperationForm
       TabOrder = 4
       OnSelectionChange = FilesListBoxSelectionChange
     end
+  end
+  object PlayButton: TButton
+    Left = 616
+    Height = 25
+    Top = 344
+    Width = 75
+    Caption = 'Play'
+    Enabled = False
+    TabOrder = 16
+    OnClick = PlayButtonClick
+  end
+  object StopButton: TButton
+    Left = 704
+    Height = 25
+    Top = 344
+    Width = 75
+    Caption = 'Stop'
+    Enabled = False
+    TabOrder = 17
+    OnClick = StopButtonClick
   end
   object OpenDialog1: TOpenDialog
     Left = 824
@@ -425,5 +455,11 @@ object OperationForm: TOperationForm
         OnClick = AboutMenuClick
       end
     end
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 100
+    Left = 824
+    Top = 368
   end
 end

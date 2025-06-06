@@ -10,7 +10,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   Menus, ComCtrls, frmViewer, ViewerModel, RepogitoryUnit, Generics.Collections,
   FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
-  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf, ViewerBy2ndFileTypes;
+  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf, ViewerBy2ndFileTypes,
+  lclvlc, vlc, libvlc;
 
 type
 
@@ -22,9 +23,13 @@ type
     FilesListBox: TListBox;
     FilesListPanel: TPanel;
     OpenButton: TButton;
+    PlayButton: TButton;
     PreviewPanel: TPanel;
     SelectAllButton: TButton;
     StatusBar1: TStatusBar;
+    StopButton: TButton;
+    Timer1: TTimer;
+    TrackBar1: TTrackBar;
     ZoomRateMenuItem: TMenuItem;
     ZoomOutMenuItem: TMenuItem;
     ZoomInMenuItem: TMenuItem;
@@ -84,6 +89,7 @@ type
     Image1: TImage;
     OpenDialog1: TOpenDialog;
     ThumbnailPanel: TPanel;
+    Player: TLCLVlcPlayer;
     procedure AboutMenuClick(Sender: TObject);
     procedure AutoUpdateCheckBoxChange(Sender: TObject);
     procedure AutoUpdateSettingMenuClick(Sender: TObject);
@@ -113,6 +119,7 @@ type
     procedure FirstPageButtonClick(Sender: TObject);
     procedure OpenMenuClick(Sender: TObject);
     procedure PageIndexMenuClick(Sender: TObject);
+    procedure PlayButtonClick(Sender: TObject);
     procedure PreviewPanelResize(Sender: TObject);
     procedure PreviousPageMenuClick(Sender: TObject);
     procedure Rotate000MenuClick(Sender: TObject);
@@ -124,6 +131,7 @@ type
     procedure Rotate270MenuClick(Sender: TObject);
     procedure Rotate090ButtonClick(Sender: TObject);
     procedure SelectAllButtonClick(Sender: TObject);
+    procedure StopButtonClick(Sender: TObject);
     procedure ViewAllButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
     procedure ViewerCloseMenuClick(Sender: TObject);
@@ -146,7 +154,7 @@ type
     procedure ZoomRateLabelClick(Sender: TObject);
     procedure ZoomRateMenuItemClick(Sender: TObject);
     procedure ZoomInMenuItemClick(Sender: TObject);
-
+    procedure Timer1Timer(Sender: TObject);
   private
     AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
@@ -159,7 +167,6 @@ type
     procedure LoadListBox(fileList : TStringList);
     function GetRepository() : TRepogitory;
     property Repos : TRepogitory read GetRepository;
-
   public
 
   end;
@@ -226,6 +233,14 @@ end;
 procedure TOperationForm.FormCreate(Sender: TObject);
 begin
     model := TViewerModel.Create;
+    
+    // Initialize VLC player
+    Player := TLCLVlcPlayer.Create(Self);
+    Player.ParentWindow := ThumbnailPanel;
+    
+    // Initialize video controls
+    PlayButton.Enabled := False;
+    StopButton.Enabled := False;
     
     UpdateView;
 
@@ -464,7 +479,21 @@ begin
 
   for i:=0 to OpenDialog1.Files.Count-1 do
   begin
-    model.Open(OpenDialog1.Files[i]);
+    if IsMovie(OpenDialog1.Files[i]) then
+    begin
+      // Handle video file
+      Player.PlayFile(OpenDialog1.Files[i]);
+      PlayButton.Enabled := True;
+      StopButton.Enabled := True;
+      Timer1.Enabled := True;
+      Image1.Visible := False;
+    end
+    else
+    begin
+      // Handle other files (images, PDFs)
+      model.Open(OpenDialog1.Files[i]);
+      Image1.Visible := True;
+    end;
   end;
 
   UpdateAuto;
@@ -671,6 +700,12 @@ begin
   PageCountLabelClick(Sender);
 end;
 
+procedure TOperationForm.PlayButtonClick(Sender: TObject);
+begin
+  if not Assigned(Player) then Exit;
+  Player.Play;
+end;
+
 procedure TOperationForm.PreviewPanelResize(Sender: TObject);
 begin
   ThumbnailPanel.Left:=0;
@@ -732,6 +767,12 @@ begin
   UpdateAuto();
 end;
 
+procedure TOperationForm.StopButtonClick(Sender: TObject);
+begin
+  if not Assigned(Player) then Exit;
+  Player.Stop;
+end;
+
 procedure TOperationForm.ViewAllButtonClick(Sender: TObject);
 begin
   model.Zoom.Rate:=1.0;
@@ -757,9 +798,19 @@ end;
 procedure TOperationForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   SettingLoader.Save;
+  FreeAndNil(Player);
   model.Free;
 end;
 
+procedure TOperationForm.Timer1Timer(Sender: TObject);
+begin
+  if not Assigned(Player) then Exit;
+  if Player.VideoLength = 0 then Exit;
+  
+  // Update status bar with video position
+  StatusBar1.SimpleText := Format('Position: %d / %d',
+    [Player.VideoPosition, Player.VideoLength]);
+end;
 
 end.
 

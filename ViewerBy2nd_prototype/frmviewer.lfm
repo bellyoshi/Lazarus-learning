@@ -1,22 +1,31 @@
 object ViewerForm: TViewerForm
   Left = 213
-  Height = 240
+  Height = 410
   Top = 214
-  Width = 320
+  Width = 509
   Caption = 'スクリーン Viewer By 2nd Monitor'
-  ClientHeight = 240
-  ClientWidth = 320
+  ClientHeight = 410
+  ClientWidth = 509
   DesignTimePPI = 120
+  PopupMenu = PopupMenu1
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnResize = FormResize
-  PopupMenu = PopupMenu1
-  LCLVersion = '3.6.0.0'
   object Image1: TImage
-    Left = 45
-    Height = 112
-    Top = 22
-    Width = 112
+    Left = 128
+    Height = 128
+    Top = 264
+    Width = 240
     PopupMenu = PopupMenu1
+  end
+  object Panel1: TPanel
+    Left = 64
+    Height = 216
+    Top = 40
+    Width = 413
+    Caption = 'Panel1'
+    PopupMenu = PopupMenu1
+    TabOrder = 0
   end
   object PopupMenu1: TPopupMenu
     Left = 189

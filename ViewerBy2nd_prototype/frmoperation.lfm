@@ -9,7 +9,6 @@ object OperationForm: TOperationForm
   ClientWidth = 885
   DesignTimePPI = 120
   Menu = MainMenu
-  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
@@ -263,7 +262,7 @@ object OperationForm: TOperationForm
     object OpenButton: TButton
       Left = 104
       Height = 31
-      Top = 512
+      Top = 513
       Width = 102
       Caption = '開く'
       TabOrder = 0

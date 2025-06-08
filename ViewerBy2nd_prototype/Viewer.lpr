@@ -29,6 +29,8 @@ begin
   SettingLoader := TSettingLoader.Create;
   SettingLoader.Load;
 
+  player := TViewerBy2ndPlayer.Create;
+
   Application.CreateForm(TOperationForm, OperationForm);
   Application.CreateForm(TViewerForm, ViewerForm);
   Application.CreateForm(TPageForm, PageForm);

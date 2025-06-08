@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-   ViewerModel, FormSizeCustomizerUnit, IViewUnit, UFormController;
+   ViewerModel, FormSizeCustomizerUnit, IViewUnit, UFormController,
+   ViewerBy2ndPlayer;
 
 type
 
@@ -20,6 +21,7 @@ type
     MenuItemFullScreen: TMenuItem;
     MenuItemWindowMode: TMenuItem;
     MenuItemClose: TMenuItem;
+    Panel1: TPanel;
     PopupMenu1: TPopupMenu;
     Separator1: TMenuItem;
     Separator2: TMenuItem;
@@ -45,7 +47,7 @@ type
     procedure LoadBitmap();
   public
     property IsFullScreen: Boolean read FIsFullScreen write SetIsFullScreen;
-    procedure ShowDocument();
+    procedure ShowDocument;
     procedure UpdateView();
   end;
 
@@ -66,30 +68,16 @@ end;
 
 
 
-procedure TViewerForm.ShowDocument();
-begin
-
-    model.View();
-    UpdateView();
-    if not Visible then
-    begin
-      Show();;
-    end;
-
-end;
-
-procedure TViewerForm.UpdateView();
-begin
-  ControlEnabled();
-  LoadBitmap();
-  Self.Color:=model.Background.Color;
-end;
-
-
 procedure TViewerForm.FormCreate(Sender: TObject);
 begin
   FormSizeCustomizer := TFormSizeCustomizer.Create;
   FormSizeCustomizer.RegistForm(ViewerForm);
+  Image1.Visible := True;
+  
+  if Assigned(player) then
+  begin
+    player.RegisterViewer(Self, Panel1);
+  end;
 end;
 
 
@@ -166,6 +154,24 @@ end;
 procedure TViewerForm.MenuItemCloseClick(Sender: TObject);
 begin
   Close;  // フォームを閉じる
+end;
+
+procedure TViewerForm.ShowDocument;
+begin
+  model.View();
+  UpdateView();
+  if not Visible then
+  begin
+    Show();
+  end;
+end;
+
+procedure TViewerForm.UpdateView();
+begin
+  ControlEnabled();
+  Image1.Visible := True;
+  LoadBitmap();
+  Self.Color := model.Background.Color;
 end;
 
 end.

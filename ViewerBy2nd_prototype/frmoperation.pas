@@ -11,7 +11,7 @@ uses
   Menus, ComCtrls, frmViewer, ViewerModel, RepogitoryUnit, Generics.Collections,
   FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
   AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf, ViewerBy2ndFileTypes,
-  lclvlc, vlc, libvlc;
+  ViewerBy2ndPlayer;
 
 type
 
@@ -89,7 +89,6 @@ type
     Image1: TImage;
     OpenDialog1: TOpenDialog;
     ThumbnailPanel: TPanel;
-    Player: TLCLVlcPlayer;
     procedure AboutMenuClick(Sender: TObject);
     procedure AutoUpdateCheckBoxChange(Sender: TObject);
     procedure AutoUpdateSettingMenuClick(Sender: TObject);
@@ -159,6 +158,7 @@ type
     AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
     IsMouseDown : Boolean;
+    FPlayer: TViewerBy2ndPlayer;
     procedure LoadBitmap;
     procedure SetCtlEnabled();
     procedure SetPanelSize();
@@ -234,9 +234,8 @@ procedure TOperationForm.FormCreate(Sender: TObject);
 begin
     model := TViewerModel.Create;
     
-    // Initialize VLC player
-    Player := TLCLVlcPlayer.Create(Self);
-    Player.ParentWindow := ThumbnailPanel;
+    // Initialize video player
+    FPlayer := TViewerBy2ndPlayer.Create(Self, ThumbnailPanel);
     
     // Initialize video controls
     PlayButton.Enabled := False;
@@ -482,7 +481,7 @@ begin
     if IsMovie(OpenDialog1.Files[i]) then
     begin
       // Handle video file
-      Player.PlayFile(OpenDialog1.Files[i]);
+      FPlayer.PlayFile(OpenDialog1.Files[i]);
       PlayButton.Enabled := True;
       StopButton.Enabled := True;
       Timer1.Enabled := True;
@@ -702,8 +701,8 @@ end;
 
 procedure TOperationForm.PlayButtonClick(Sender: TObject);
 begin
-  if not Assigned(Player) then Exit;
-  Player.Play;
+  if not Assigned(FPlayer) then Exit;
+  FPlayer.Play;
 end;
 
 procedure TOperationForm.PreviewPanelResize(Sender: TObject);
@@ -769,8 +768,8 @@ end;
 
 procedure TOperationForm.StopButtonClick(Sender: TObject);
 begin
-  if not Assigned(Player) then Exit;
-  Player.Stop;
+  if not Assigned(FPlayer) then Exit;
+  FPlayer.Stop;
 end;
 
 procedure TOperationForm.ViewAllButtonClick(Sender: TObject);
@@ -798,18 +797,18 @@ end;
 procedure TOperationForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   SettingLoader.Save;
-  FreeAndNil(Player);
+  FreeAndNil(FPlayer);
   model.Free;
 end;
 
 procedure TOperationForm.Timer1Timer(Sender: TObject);
 begin
-  if not Assigned(Player) then Exit;
-  if Player.VideoLength = 0 then Exit;
+  if not Assigned(FPlayer) then Exit;
+  if FPlayer.Player.VideoLength = 0 then Exit;
   
   // Update status bar with video position
   StatusBar1.SimpleText := Format('Position: %d / %d',
-    [Player.VideoPosition, Player.VideoLength]);
+    [FPlayer.Player.VideoPosition, FPlayer.Player.VideoLength]);
 end;
 
 end.

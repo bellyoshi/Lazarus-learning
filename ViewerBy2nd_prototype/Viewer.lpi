@@ -164,6 +164,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ViewerBy2ndFileTypes"/>
       </Unit>
+      <Unit>
+        <Filename Value="viewerby2ndplayer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ViewerBy2ndPlayer"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

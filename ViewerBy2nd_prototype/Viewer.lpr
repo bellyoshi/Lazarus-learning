@@ -11,7 +11,8 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit,
-  IViewUnit, AboutUnit, SettingLoaderUnit, ZoomRateFormUnit, UFormController
+  IViewUnit, AboutUnit, SettingLoaderUnit, ZoomRateFormUnit, UFormController,
+  ViewerBy2ndPlayer
   ;
 
 {$R *.res}

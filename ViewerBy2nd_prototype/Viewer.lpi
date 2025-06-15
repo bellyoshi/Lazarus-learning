@@ -35,7 +35,6 @@
       <Unit>
         <Filename Value="Viewer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="viewer"/>
       </Unit>
       <Unit>
         <Filename Value="frmoperation.pas"/>
@@ -168,6 +167,11 @@
         <Filename Value="viewerby2ndplayer.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ViewerBy2ndPlayer"/>
+      </Unit>
+      <Unit>
+        <Filename Value="tmovieimagecreatorunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TMovieImageCreatorUnit"/>
       </Unit>
     </Units>
   </ProjectOptions>

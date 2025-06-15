@@ -1,6 +1,6 @@
-﻿program viewer;
+﻿program Viewer;
 
-{$mode objfpc}{$H+}
+{$mode ObjFPC}{$H+}
 
 uses
   {$IFDEF UNIX}
@@ -10,10 +10,11 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, frmOperation, frmViewer, ViewerModel, PageFormUnit, SettingFormUnit,
-  IViewUnit, AboutUnit, SettingLoaderUnit, ZoomRateFormUnit, UFormController,
-  ViewerBy2ndPlayer
-  ;
+  Forms, frmOperation, frmViewer, ViewerModel, RepogitoryUnit,
+  FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
+  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit, ViewerBy2ndFileTypes,
+  ViewerBy2ndPlayer, TMovieImageCreatorUnit, UFormController
+  { you can add units after this };
 
 {$R *.res}
 

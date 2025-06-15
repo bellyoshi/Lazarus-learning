@@ -5,7 +5,7 @@ unit ViewerModel;
 interface
 
 uses
-  Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections, ZoomUnit, RotateImageCreatorUnit, FilesParam, Background, RepogitoryUnit;
+  Classes, SysUtils, Graphics, PdfImageCreator, Generics.Collections, ZoomUnit, RotateImageCreatorUnit, FilesParam, Background, RepogitoryUnit, ViewerBy2ndFileTypes;
 
 type
   TViewerModel = class
@@ -39,6 +39,7 @@ type
     constructor Create;
     function GetViewBitmap(Width, Height: Integer): TBitmap;
     function GetThumbnailBitmap(Width, Height: Integer): TBitmap;
+    function IsMovieFile: Boolean;
     property HasViewDocument: Boolean read GetHasViewDocument;
     property HasOperationDocument: Boolean read GetHasOperationDocument;
     property ViewRatio: Double read GetViewRatio;
@@ -279,6 +280,14 @@ end;
 function TViewerModel.GetCanFirst: Boolean;
 begin
   Result := Assigned(OperationFile) and (PageIndex <> 0);
+end;
+
+function TViewerModel.IsMovieFile: Boolean;
+begin
+  Result := False;
+  if not Assigned(OperationFile) then
+    Exit;
+  Result := IsMovie(OperationFile.Filename);
 end;
 end.
 

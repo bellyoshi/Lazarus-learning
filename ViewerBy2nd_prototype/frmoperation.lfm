@@ -9,6 +9,7 @@ object OperationForm: TOperationForm
   ClientWidth = 885
   DesignTimePPI = 120
   Menu = MainMenu
+  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles

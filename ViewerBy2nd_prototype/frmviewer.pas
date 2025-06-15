@@ -90,6 +90,12 @@ begin
 
 
   try
+    // panel1のサイズ変更
+    Panel1.Width := ClientWidth;
+    Panel1.Height := ClientHeight;
+    Panel1.Left := 0;
+    Panel1.Top := 0;
+
     // PDFium ページを Delphi ビットマップに描画
     Bitmap := model.GetViewBitmap(ClientWidth, ClientHeight);
     Image1.Width := Bitmap.Width;

@@ -226,7 +226,11 @@ begin
   Rotate270Menu.Enabled:=Rotate270Button.Enabled;
   Rotate090Menu.Enabled:=Rotate090Button.Enabled;
 
-
+  // 動画ファイルの場合のみ動画パネルを表示
+  PlayButton.Visible := model.IsMovieFile;
+  StopButton.Visible := model.IsMovieFile;
+  TrackBar1.Visible := model.IsMovieFile;
+  Image1.Visible := not model.IsMovieFile;
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
@@ -299,12 +303,15 @@ begin
   begin
     ZoomRateLabel.Caption:= '';
   end;
-  {
-  if AutoUpdateCheckBox.Checked then
+
+  // 動画ファイルの場合、再生を開始
+  if model.IsMovieFile then
   begin
-    ViewerForm.ShowDocument()
+    player.Play;
+    PlayButton.Enabled := True;
+    StopButton.Enabled := True;
+    Timer1.Enabled := True;
   end;
-  }
 end;
 
 procedure TOperationForm.ViewerDisplayMenuClick(Sender: TObject);
@@ -480,7 +487,6 @@ begin
   begin
     if IsMovie(OpenDialog1.Files[i]) then
     begin
-      // Handle video file
       player.PlayFile(OpenDialog1.Files[i]);
       PlayButton.Enabled := True;
       StopButton.Enabled := True;
@@ -489,10 +495,10 @@ begin
     end
     else
     begin
-      // Handle other files (images, PDFs)
-      model.Open(OpenDialog1.Files[i]);
+
       Image1.Visible := True;
     end;
+    model.Open(OpenDialog1.Files[i]);
   end;
 
   UpdateAuto;

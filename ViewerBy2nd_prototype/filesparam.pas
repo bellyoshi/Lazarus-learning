@@ -7,7 +7,7 @@ interface
 
 uses
   Graphics, SysUtils, PdfImageCreator, RotateImageCreatorUnit, ZoomUnit, 
-  ImageCreatorUnit, TImageCreatorUnit, ViewerBy2ndFileTypes;
+  ImageCreatorUnit, TImageCreatorUnit, ViewerBy2ndFileTypes, TMovieImageCreatorUnit;
 
 type
   TFilesParam = class
@@ -27,8 +27,10 @@ implementation
 constructor TFilesParam.Create(AFileName : string; ASelected : Boolean);
 begin
   inherited Create;
-
-  if IsImageFile(AFileName) then
+  if IsMovie(AFileName) then
+  begin
+    ImageCreator := TMovieImageCreator.Create(AFileName);
+  end else if IsImageFile(AFileName) then
   begin
     ImageCreator := TImageCreator.Create(AFileName);
   end else if IsPDFFile(AFileName) then

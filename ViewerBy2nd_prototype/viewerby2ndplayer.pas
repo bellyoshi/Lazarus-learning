@@ -107,10 +107,15 @@ end;
 procedure TViewerBy2ndPlayer.Play;
 begin
   if not Assigned(FThumbnailPlayer) then Exit;
+  
+  // サムネイルプレーヤーの再生
   FThumbnailPlayer.Play;
+  
+  // ビューアープレーヤーの再生
   if Assigned(FViewerPlayer) then
   begin
-    if (FViewerPlayer.VideoLength = 0) and (FFileName <> '') then
+    // ファイル名が指定されているが、ビデオが読み込まれていない場合は再読み込み
+    if (FFileName <> '') and (FViewerPlayer.VideoLength = 0) then
       FViewerPlayer.PlayFile(FFileName);
     FViewerPlayer.Play;
   end;

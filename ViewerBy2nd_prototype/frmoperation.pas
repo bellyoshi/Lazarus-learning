@@ -13,6 +13,15 @@ uses
   AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf, ViewerBy2ndFileTypes,
   ViewerBy2ndPlayer;
 
+const
+  OPERATIONFORM_DEFAULT_WIDTH = 900;
+  OPERATIONFORM_DEFAULT_HEIGHT = 600;
+  OPERATIONFORM_SLIM_WIDTH = 350;
+  OPERATIONFORM_MINIMUM_HEIGHT = 270;
+  OPERATIONFORM_PANEL_HEIGHT = 500;
+  DEF_PREVIEW_WIDTH = 350;
+  MARGIN_WIDTH = 10;
+
 type
 
   { TOperationForm }
@@ -94,6 +103,7 @@ type
     procedure AutoUpdateSettingMenuClick(Sender: TObject);
     procedure BackGroundDisplayButtonClick(Sender: TObject);
     procedure BackgroundDisplayMenuClick(Sender: TObject);
+    procedure DefaultSizeMenuClick(Sender: TObject);
     procedure FirstPageMenuClick(Sender: TObject);
     procedure FitWindowButtonClick(Sender: TObject);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
@@ -108,6 +118,7 @@ type
     procedure Image1MouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure LastPageMenuClick(Sender: TObject);
+    procedure MinimumSizeMenuClick(Sender: TObject);
     procedure NextPageMenuClick(Sender: TObject);
     procedure OpenButtonClick(Sender: TObject);
     procedure DelteButtonClick(Sender: TObject);
@@ -130,6 +141,7 @@ type
     procedure Rotate270MenuClick(Sender: TObject);
     procedure Rotate090ButtonClick(Sender: TObject);
     procedure SelectAllButtonClick(Sender: TObject);
+    procedure SlimSizeMenuClick(Sender: TObject);
     procedure StopButtonClick(Sender: TObject);
     procedure VideoPositionTrackBarChange(Sender: TObject);
     procedure ViewAllButtonClick(Sender: TObject);
@@ -154,6 +166,10 @@ type
     procedure ZoomInMenuItemClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure VideoPositionTrackBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    function IsSizeDefault: Boolean;
+    function IsSizeSlim: Boolean;
+    function IsSizeMinimum: Boolean;
+    procedure SetSizeModeControlVisible;
   private
     AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
@@ -197,10 +213,12 @@ begin
   SetRotateControlsEnabled;
   SetMovieControlsEnabled;
   SetMenuControlsEnabled;
+  SetSizeModeControlVisible;
 end;
 
 procedure TOperationForm.SetPageNavigationControlsEnabled;
 begin
+  FilesListPanel.Visible := IsSizeDefault;
   NextButton.Enabled := model.CanNext;
   PreviousButton.Enabled := model.CanPrevious;
   LastPageButton.Enabled := model.CanLast;
@@ -231,6 +249,8 @@ end;
 
 procedure TOperationForm.SetMovieControlsEnabled;
 begin
+  ViewerGroupBox.Visible := IsSizeDefault or IsSizeSlim;
+  PreviewPanel.Visible := True; // Minimumでも常に表示
   PlayButton.Visible := model.IsMovieFile;
   StopButton.Visible := model.IsMovieFile;
   VideoPositionTrackBar.Visible := model.IsMovieFile;
@@ -259,11 +279,11 @@ end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
 begin
-    model := TViewerModel.Create;
-
-    player.RegisterThumbnail(Self, ThumbnailPanel);
-    
-    UpdateView;
+  Width := OPERATIONFORM_DEFAULT_WIDTH;
+  Height := OPERATIONFORM_DEFAULT_HEIGHT;
+  model := TViewerModel.Create;
+  player.RegisterThumbnail(Self, ThumbnailPanel);
+  UpdateView;
 end;
 
 procedure TOperationForm.Label1Click(Sender: TObject);
@@ -527,6 +547,13 @@ begin
   BackGroundDisplayButtonClick(Sender);
 end;
 
+procedure TOperationForm.DefaultSizeMenuClick(Sender: TObject);
+begin
+  Width := OPERATIONFORM_DEFAULT_WIDTH;
+  Height := OPERATIONFORM_DEFAULT_HEIGHT;
+  SetCtlEnabled;
+end;
+
 
 procedure TOperationForm.FirstPageMenuClick(Sender: TObject);
 begin
@@ -584,25 +611,8 @@ end;
 
 
 procedure TOperationForm.FormResize(Sender: TObject);
-var
-  smallMode : Boolean;
-const
-  DEF_PREVIEW_WIDTH = 300;
-  MARGIN_WIDTH = 20;
 begin
-  smallMode := Width < FilesListPanel.Width + DEF_PREVIEW_WIDTH + MARGIN_WIDTH;
-   if smallMode then
-   begin
-     PreviewPanel.Left := 0;
-     PreviewPanel.Width:= Width;
-   end else
-   begin
-     PreviewPanel.Left := FilesListPanel.Width + MARGIN_WIDTH;
-     PreviewPanel.Width:= DEF_PREVIEW_WIDTH;
-   end;
-
-   FilesListPanel.Visible := not smallMode;
-
+   SetCtlEnabled();
 end;
 
 procedure TOperationForm.Image1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -654,6 +664,13 @@ end;
 procedure TOperationForm.LastPageMenuClick(Sender: TObject);
 begin
   LastPageButtonClick(Sender);
+end;
+
+procedure TOperationForm.MinimumSizeMenuClick(Sender: TObject);
+begin
+  Width := OPERATIONFORM_SLIM_WIDTH;
+  Height := OPERATIONFORM_MINIMUM_HEIGHT;
+  SetCtlEnabled;
 end;
 
 procedure TOperationForm.NextPageMenuClick(Sender: TObject);
@@ -771,6 +788,13 @@ begin
   UpdateAuto();
 end;
 
+procedure TOperationForm.SlimSizeMenuClick(Sender: TObject);
+begin
+  Width := OPERATIONFORM_SLIM_WIDTH;
+  Height := OPERATIONFORM_DEFAULT_HEIGHT;
+  SetCtlEnabled;
+end;
+
 procedure TOperationForm.StopButtonClick(Sender: TObject);
 begin
   if not Assigned(player) then Exit;
@@ -836,12 +860,9 @@ procedure TOperationForm.VideoPositionTrackBarMouseDown(Sender: TObject; Button:
 var
   NewPosition: Integer;
   SliderWidth: Integer;
-  Margin: Integer;
 begin
-  Margin := 10; // 必要に応じて調整
-  SliderWidth := VideoPositionTrackBar.Width - (Margin * 2);
-
-  X := X - Margin;
+  SliderWidth := VideoPositionTrackBar.Width - (MARGIN_WIDTH * 2);
+  X := X - MARGIN_WIDTH;
   if X < 0 then X := 0;
   if X > SliderWidth then X := SliderWidth;
 
@@ -854,6 +875,54 @@ begin
   if NewPosition > VideoPositionTrackBar.Max then NewPosition := VideoPositionTrackBar.Max;
 
   VideoPositionTrackBar.Position := NewPosition;
+end;
+
+function TOperationForm.IsSizeDefault: Boolean;
+begin
+  Result := (Width >= OPERATIONFORM_DEFAULT_WIDTH) and (Height >= OPERATIONFORM_DEFAULT_HEIGHT);
+end;
+
+function TOperationForm.IsSizeSlim: Boolean;
+begin
+  Result := (Width <= OPERATIONFORM_SLIM_WIDTH) and (Height >= OPERATIONFORM_PANEL_HEIGHT) and (not IsSizeMinimum);
+end;
+
+function TOperationForm.IsSizeMinimum: Boolean;
+begin
+  Result := (Width <= OPERATIONFORM_SLIM_WIDTH) and (Height <= OPERATIONFORM_MINIMUM_HEIGHT);
+end;
+
+procedure TOperationForm.SetSizeModeControlVisible;
+begin
+  FilesListPanel.Visible:= IsSizeDefault;
+
+  // FilesListPanel.VisibleがFalseの場合はPreviewPanelを一番右に表示
+
+  if not FilesListPanel.Visible then
+  begin
+    PreviewPanel.Left := 0;
+
+  end else
+  begin
+    PreviewPanel.Left := FilesListPanel.Width + MARGIN_WIDTH;
+
+  end;
+    //Rotateボタンの位置を調整する
+
+    Rotate090Button.Left := PreviewPanel.Left + PreviewPanel.Width + MARGIN_WIDTH;
+    Rotate000Button.Left := Rotate090Button.Left + 50;
+    Rotate180Button.Left := Rotate000Button.Left ;
+    Rotate270Button.Left := Rotate090Button.Left + Rotate090Button.Width + MARGIN_WIDTH ;
+    //FitWindowボタンの位置を調整する
+    FitWindowButton.Left := Rotate090Button.Left;
+    ViewAllButton.Left := FitWindowButton.Left + FitWindowButton.Width + MARGIN_WIDTH;
+
+  if Width < OPERATIONFORM_SLIM_WIDTH then
+  begin
+      PreviewPanel.Width:= Width;
+  end else begin
+      PreviewPanel.Width:= DEF_PREVIEW_WIDTH;
+  end;
 end;
 
 end.

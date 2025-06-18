@@ -10,6 +10,7 @@ object OperationForm: TOperationForm
   DesignTimePPI = 120
   Font.Height = -15
   Menu = MainMenu
+  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
@@ -331,12 +332,12 @@ object OperationForm: TOperationForm
     OnClick = StopButtonClick
   end
   object OpenDialog1: TOpenDialog
-    Left = 824
-    Top = 560
+    Left = 912
+    Top = 464
   end
   object MainMenu: TMainMenu
-    Left = 776
-    Top = 560
+    Left = 848
+    Top = 456
     object FileMenu: TMenuItem
       Caption = 'ファイル(&F)'
       object ListMenu: TMenuItem
@@ -439,12 +440,15 @@ object OperationForm: TOperationForm
         Caption = '操作画面サイズ'
         object DefaultSizeMenu: TMenuItem
           Caption = 'DefaultSizeMenu'
+          OnClick = DefaultSizeMenuClick
         end
         object SlimSizeMenu: TMenuItem
           Caption = 'SlimSizeMenu'
+          OnClick = SlimSizeMenuClick
         end
         object MinimumSizeMenu: TMenuItem
           Caption = 'MinimumSizeMenu'
+          OnClick = MinimumSizeMenuClick
         end
       end
     end

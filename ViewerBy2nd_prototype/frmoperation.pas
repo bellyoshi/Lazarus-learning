@@ -916,6 +916,15 @@ begin
     //FitWindowボタンの位置を調整する
     FitWindowButton.Left := Rotate090Button.Left;
     ViewAllButton.Left := FitWindowButton.Left + FitWindowButton.Width + MARGIN_WIDTH;
+    //Zoomボタンの位置を調整する
+    ZoomInButton.Left := Rotate090Button.Left + 25;
+    ZoomOutButton.Left := ZoomInButton.Left + ZoomInButton.Width + MARGIN_WIDTH;
+    ZoomRateLabel.Left := Rotate000Button.Left + 25;
+    //ページ移動ボタンの位置を調整する　最初→前へ→次へ→最後
+    FirstPageButton.Left := Rotate090Button.Left;
+    PreviousButton.Left := FirstPageButton.Left + FirstPageButton.Width + MARGIN_WIDTH;
+    NextButton.Left := PreviousButton.Left + PreviousButton.Width + MARGIN_WIDTH;
+    LastPageButton.Left := NextButton.Left + NextButton.Width + MARGIN_WIDTH;
 
   if Width < OPERATIONFORM_SLIM_WIDTH then
   begin

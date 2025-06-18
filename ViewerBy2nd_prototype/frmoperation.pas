@@ -29,7 +29,7 @@ type
     StatusBar1: TStatusBar;
     StopButton: TButton;
     Timer1: TTimer;
-    TrackBar1: TTrackBar;
+    VideoPositionTrackBar: TTrackBar;
     ZoomRateMenuItem: TMenuItem;
     ZoomOutMenuItem: TMenuItem;
     ZoomInMenuItem: TMenuItem;
@@ -131,16 +131,15 @@ type
     procedure Rotate090ButtonClick(Sender: TObject);
     procedure SelectAllButtonClick(Sender: TObject);
     procedure StopButtonClick(Sender: TObject);
+    procedure VideoPositionTrackBarChange(Sender: TObject);
     procedure ViewAllButtonClick(Sender: TObject);
     procedure ViewerCloseButtonClick(Sender: TObject);
     procedure ViewerCloseMenuClick(Sender: TObject);
     procedure ViewerDisplayButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure FileMenuClick(Sender: TObject);
     procedure Label1Click(Sender: TObject);
     procedure NextButtonClick(Sender: TObject);
-    procedure ListMenuClick(Sender: TObject);
     procedure PageCountLabelClick(Sender: TObject);
     procedure PreviousButtonClick(Sender: TObject);
     procedure UpdateView;
@@ -154,12 +153,19 @@ type
     procedure ZoomRateMenuItemClick(Sender: TObject);
     procedure ZoomInMenuItemClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure VideoPositionTrackBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     AutoUpdateCheckBoxCheckedChanging : Boolean;
     FFilesListBoxLoaded : Boolean;
     IsMouseDown : Boolean;
+    IsProgrammaticUpdate : Boolean;
     procedure LoadBitmap;
     procedure SetCtlEnabled();
+    procedure SetPageNavigationControlsEnabled;
+    procedure SetZoomControlsEnabled;
+    procedure SetRotateControlsEnabled;
+    procedure SetMovieControlsEnabled;
+    procedure SetMenuControlsEnabled;
     procedure SetPanelSize();
     procedure LoadList();
     procedure PopulateFileMenu();
@@ -186,79 +192,85 @@ begin
 
 procedure TOperationForm.SetCtlEnabled();
 begin
-  ViewerDisplayButton.Enabled:=model.HasOperationDocument;
-  NextButton.Enabled:= model.CanNext;
+  SetPageNavigationControlsEnabled;
+  SetZoomControlsEnabled;
+  SetRotateControlsEnabled;
+  SetMovieControlsEnabled;
+  SetMenuControlsEnabled;
+end;
+
+procedure TOperationForm.SetPageNavigationControlsEnabled;
+begin
+  NextButton.Enabled := model.CanNext;
   PreviousButton.Enabled := model.CanPrevious;
-  LastPageButton.Enabled:=model.CanLast;
+  LastPageButton.Enabled := model.CanLast;
   FirstPageButton.Enabled := model.CanFirst;
-
-  PageCountLabel.Enabled:=model.CanPrevious or model.CanNext;
+  PageCountLabel.Enabled := model.CanPrevious or model.CanNext;
   if PageCountLabel.Enabled Then
-  begin
-    PageCountLabel.Caption:= Format('%d / %d', [model.PageIndex + 1, model.PageCount]);
-  end else begin
-    PageCountLabel.Caption:= '';
-  end;
-  ZoomInButton.Enabled:= model.CanZoomIn;
-  ZoomOutButton.Enabled:=model.CanZoomOut;
+    PageCountLabel.Caption := Format('%d / %d', [model.PageIndex + 1, model.PageCount])
+  else
+    PageCountLabel.Caption := '';
+end;
+
+procedure TOperationForm.SetZoomControlsEnabled;
+begin
+  ZoomInButton.Enabled := model.CanZoomIn;
+  ZoomOutButton.Enabled := model.CanZoomOut;
   ZoomRateLabel.Enabled := (model.CanZoomIn) or (model.CanZoomOut);
+  FitWindowButton.Enabled := model.CanZoom;
+  ViewAllButton.Enabled := model.CanZoom;
+end;
 
-  FitWindowButton.Enabled:=model.CanZoom;
-  ViewAllButton.Enabled:=model.CanZoom;
-  Rotate000Button.Enabled:=model.CanRotate;
-  Rotate180Button.Enabled:=model.CanRotate;
-  Rotate270Button.Enabled:=model.CanRotate;
-  Rotate090Button.Enabled:=model.CanRotate;
+procedure TOperationForm.SetRotateControlsEnabled;
+begin
+  Rotate000Button.Enabled := model.CanRotate;
+  Rotate180Button.Enabled := model.CanRotate;
+  Rotate270Button.Enabled := model.CanRotate;
+  Rotate090Button.Enabled := model.CanRotate;
+end;
 
-  ViewerDisplayMenu.Enabled:=ViewerDisplayButton.Enabled;
-  NextPageMenu.Enabled:= NextButton.Enabled;
-  PreviousPageMenu.Enabled := PreviousButton.Enabled ;
-  LastPageMenu.Enabled := LastPageButton.Enabled;
-  FirstPageMenu.Enabled :=FirstPageButton.Enabled ;
-  PageIndexMenu.Enabled:=PageCountLabel.Enabled;
-
-  ZoomInMenuItem.Enabled:= ZoomInButton.Enabled;
-  ZoomOutMenuItem.Enabled := ZoomOutButton.Enabled;
-  ZoomRateMenuItem.Enabled := ZoomRateLabel.Enabled;
-
-  Rotate000Menu.Enabled:=Rotate000Button.Enabled;
-  Rotate180Menu.Enabled:=Rotate180Button.Enabled;
-  Rotate270Menu.Enabled:=Rotate270Button.Enabled;
-  Rotate090Menu.Enabled:=Rotate090Button.Enabled;
-
-  // 動画ファイルの場合のみ動画パネルを表示
+procedure TOperationForm.SetMovieControlsEnabled;
+begin
   PlayButton.Visible := model.IsMovieFile;
   StopButton.Visible := model.IsMovieFile;
-  TrackBar1.Visible := model.IsMovieFile;
+  VideoPositionTrackBar.Visible := model.IsMovieFile;
   Image1.Visible := not model.IsMovieFile;
+  PlayButton.Enabled := model.IsMovieFile;
+  StopButton.Enabled := model.IsMovieFile;
+  Timer1.Enabled := model.IsMovieFile;
+end;
+
+procedure TOperationForm.SetMenuControlsEnabled;
+begin
+  ViewerDisplayMenu.Enabled := ViewerDisplayButton.Enabled;
+  NextPageMenu.Enabled := NextButton.Enabled;
+  PreviousPageMenu.Enabled := PreviousButton.Enabled;
+  LastPageMenu.Enabled := LastPageButton.Enabled;
+  FirstPageMenu.Enabled := FirstPageButton.Enabled;
+  PageIndexMenu.Enabled := PageCountLabel.Enabled;
+  ZoomInMenuItem.Enabled := ZoomInButton.Enabled;
+  ZoomOutMenuItem.Enabled := ZoomOutButton.Enabled;
+  ZoomRateMenuItem.Enabled := ZoomRateLabel.Enabled;
+  Rotate000Menu.Enabled := Rotate000Button.Enabled;
+  Rotate180Menu.Enabled := Rotate180Button.Enabled;
+  Rotate270Menu.Enabled := Rotate270Button.Enabled;
+  Rotate090Menu.Enabled := Rotate090Button.Enabled;
 end;
 
 procedure TOperationForm.FormCreate(Sender: TObject);
 begin
     model := TViewerModel.Create;
-    
-    // Initialize video player
 
     player.RegisterThumbnail(Self, ThumbnailPanel);
     
-    // Initialize video controls
-    PlayButton.Enabled := False;
-    StopButton.Enabled := False;
-    
     UpdateView;
-
-
-end;
-
-procedure TOperationForm.FileMenuClick(Sender: TObject);
-begin
-
 end;
 
 procedure TOperationForm.Label1Click(Sender: TObject);
 begin
 
 end;
+
 procedure TOperationForm.UpdateAuto();
 begin
   UpdateView;
@@ -378,11 +390,6 @@ begin
   UpdateAuto;
 end;
 
-procedure TOperationForm.ListMenuClick(Sender: TObject);
-begin
-
-end;
-
 procedure TOperationForm.PageCountLabelClick(Sender: TObject);
 begin
   if not model.HasOperationDocument then
@@ -488,19 +495,11 @@ begin
     if IsMovie(OpenDialog1.Files[i]) then
     begin
       player.PlayFile(OpenDialog1.Files[i]);
-      PlayButton.Enabled := True;
-      StopButton.Enabled := True;
-      Timer1.Enabled := True;
-      Image1.Visible := False;
-    end
-    else
-    begin
-
-      Image1.Visible := True;
     end;
     model.Open(OpenDialog1.Files[i]);
   end;
 
+  SetCtlEnabled();
   UpdateAuto;
 end;
 
@@ -778,6 +777,15 @@ begin
   player.Stop;
 end;
 
+procedure TOperationForm.VideoPositionTrackBarChange(Sender: TObject);
+begin
+  if IsProgrammaticUpdate then Exit;
+  if not Assigned(player) then Exit;
+  if not VideoPositionTrackBar.Enabled then Exit;
+  // TrackBarの位置を動画再生位置に反映
+  player.VideoPosition := VideoPositionTrackBar.Position;
+end;
+
 procedure TOperationForm.ViewAllButtonClick(Sender: TObject);
 begin
   model.Zoom.Rate:=1.0;
@@ -811,10 +819,41 @@ procedure TOperationForm.Timer1Timer(Sender: TObject);
 begin
   if not Assigned(player) then Exit;
   if player.VideoLength = 0 then Exit;
-  
-  // Update status bar with video position
+
+  // ステータスバーに再生位置を表示
   StatusBar1.SimpleText := Format('Position: %d / %d',
     [player.VideoPosition, player.VideoLength]);
+
+  // VideoPositionTrackBarの同期
+  IsProgrammaticUpdate := True;
+  VideoPositionTrackBar.Enabled := True;
+  VideoPositionTrackBar.Max := player.VideoLength;
+  VideoPositionTrackBar.Position := player.VideoPosition;
+  IsProgrammaticUpdate := False;
+end;
+
+procedure TOperationForm.VideoPositionTrackBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  NewPosition: Integer;
+  SliderWidth: Integer;
+  Margin: Integer;
+begin
+  Margin := 10; // 必要に応じて調整
+  SliderWidth := VideoPositionTrackBar.Width - (Margin * 2);
+
+  X := X - Margin;
+  if X < 0 then X := 0;
+  if X > SliderWidth then X := SliderWidth;
+
+  if SliderWidth > 0 then
+    NewPosition := Round(X / SliderWidth * VideoPositionTrackBar.Max)
+  else
+    NewPosition := 0;
+
+  if NewPosition < 0 then NewPosition := 0;
+  if NewPosition > VideoPositionTrackBar.Max then NewPosition := VideoPositionTrackBar.Max;
+
+  VideoPositionTrackBar.Position := NewPosition;
 end;
 
 end.

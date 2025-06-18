@@ -1,15 +1,15 @@
 object OperationForm: TOperationForm
   Left = 721
-  Height = 630
+  Height = 609
   Top = 169
-  Width = 885
+  Width = 1051
   AllowDropFiles = True
   Caption = 'Viewer By 2nd Monitor 操作画面'
-  ClientHeight = 630
-  ClientWidth = 885
+  ClientHeight = 609
+  ClientWidth = 1051
   DesignTimePPI = 120
+  Font.Height = -15
   Menu = MainMenu
-  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles
@@ -186,8 +186,8 @@ object OperationForm: TOperationForm
   object StatusBar1: TStatusBar
     Left = 0
     Height = 29
-    Top = 601
-    Width = 885
+    Top = 580
+    Width = 1051
     Panels = <>
   end
   object PreviewPanel: TPanel
@@ -240,15 +240,17 @@ object OperationForm: TOperationForm
       Caption = 'PageCountLabel'
       OnClick = PageCountLabelClick
     end
-    object TrackBar1: TTrackBar
+    object VideoPositionTrackBar: TTrackBar
       Left = -2
       Height = 25
       Top = 296
       Width = 320
       Max = 1000
       Position = 0
+      OnChange = VideoPositionTrackBarChange
       Enabled = False
       TabOrder = 1
+      OnMouseDown = VideoPositionTrackBarMouseDown
     end
   end
   object FilesListPanel: TPanel
@@ -337,10 +339,8 @@ object OperationForm: TOperationForm
     Top = 560
     object FileMenu: TMenuItem
       Caption = 'ファイル(&F)'
-      OnClick = FileMenuClick
       object ListMenu: TMenuItem
         Caption = 'リスト(&L)'
-        OnClick = ListMenuClick
       end
       object OpenMenu: TMenuItem
         Caption = '開く(&O)'
@@ -459,6 +459,7 @@ object OperationForm: TOperationForm
   object Timer1: TTimer
     Enabled = False
     Interval = 100
+    OnTimer = Timer1Timer
     Left = 824
     Top = 368
   end

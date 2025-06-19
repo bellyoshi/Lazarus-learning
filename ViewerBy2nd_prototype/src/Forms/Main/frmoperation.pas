@@ -8,10 +8,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, ComCtrls, frmViewer, ViewerModel, RepogitoryUnit, Generics.Collections,
-  FormSizeCustomizerUnit, PageFormUnit, SettingFormUnit, IViewUnit, ZoomUnit,
-  AboutUnit, ZoomRateFormUnit, SettingLoaderUnit,  LCLType, LCLIntf, ViewerBy2ndFileTypes,
-  ViewerBy2ndPlayer;
+  Menus, ComCtrls, ViewerModel, Generics.Collections,
+  FormSizeCustomizerUnit, IViewUnit,
+  SettingLoaderUnit,  LCLType, LCLIntf, ViewerBy2ndFileTypes,
+  ViewerBy2ndPlayer, FormDispatcherUnit;
 
 const
   OPERATIONFORM_DEFAULT_WIDTH = 900;
@@ -186,8 +186,8 @@ type
     procedure LoadList();
     procedure PopulateFileMenu();
     procedure LoadListBox(fileList : TStringList);
-    function GetRepository() : TRepogitory;
-    property Repos : TRepogitory read GetRepository;
+    procedure ProcessAutoUpdate;
+    procedure ProcessVideoPosition;
   public
 
   end;
@@ -200,11 +200,6 @@ implementation
 {$R *.lfm}
 
 { TOperationForm }
-
-function TOperationForm.GetRepository(): TRepogitory;
-begin
-  Result := model.Repogitory;
-  end;
 
 procedure TOperationForm.SetCtlEnabled();
 begin
@@ -257,7 +252,6 @@ begin
   Image1.Visible := not model.IsMovieFile;
   PlayButton.Enabled := model.IsMovieFile;
   StopButton.Enabled := model.IsMovieFile;
-  Timer1.Enabled := model.IsMovieFile;
 end;
 
 procedure TOperationForm.SetMenuControlsEnabled;
@@ -283,6 +277,7 @@ begin
   Height := OPERATIONFORM_DEFAULT_HEIGHT;
   model := TViewerModel.Create;
   player.RegisterThumbnail(Self, ThumbnailPanel);
+  Timer1.Enabled := True;
   UpdateView;
 end;
 
@@ -296,7 +291,7 @@ begin
   UpdateView;
   if AutoUpdateCheckBox.Checked then
   begin
-    ViewerForm.ShowDocument;
+    FormDispatcher.ShowViewerForm;
   end;
 end;
 
@@ -336,13 +331,16 @@ begin
     ZoomRateLabel.Caption:= '';
   end;
 
-  // 動画ファイルの場合、再生を開始
+  // 動画ファイルの場合、新しいファイルを読み込んで再生を開始
   if model.IsMovieFile then
   begin
-    player.Play;
+    // 現在選択されているファイルをプレーヤーに読み込む
+    if Assigned(model.GetSelectedFile) then
+    begin
+      player.PlayFile(model.GetSelectedFile.Filename);
+    end;
     PlayButton.Enabled := True;
     StopButton.Enabled := True;
-    Timer1.Enabled := True;
   end;
 end;
 
@@ -352,22 +350,13 @@ begin
 end;
 
 procedure TOperationForm.ZoomInButtonClick(Sender: TObject);
-var
-  zoom : TZoom;
 begin
-  zoom := model.Zoom;
-  zoom.ZoomIn();
-  UpdateAuto;
+  model.ZoomIn;
 end;
 
 procedure TOperationForm.ZoomOutButtonClick(Sender: TObject);
-var
-  zoom : TZoom;
 begin
-  zoom := model.Zoom;
-  zoom.ZoomOut();
-  UpdateAuto;
-
+  model.ZoomOut;
 end;
 
 procedure TOperationForm.LoadList();
@@ -376,7 +365,7 @@ var
 begin
   FFilesListBoxLoaded := True;
 
-  fileList := model.repogitory.GetFileNames; // Get the filenames from the model
+  fileList := model.GetFileNames; // Get the filenames from the model
   if Assigned(fileList) then
   begin
     LoadListBox(fileList);
@@ -400,14 +389,13 @@ begin
 
   for i := 0 to FilesListBox.Items.Count - 1 do
   begin
-       FilesListBox.Selected[i] := Repos.Selected[i];
+       FilesListBox.Selected[i] := model.GetFileSelected(i);
   end;
 end;
 
 procedure TOperationForm.NextButtonClick(Sender: TObject);
 begin
   model.Next;
-  UpdateAuto;
 end;
 
 procedure TOperationForm.PageCountLabelClick(Sender: TObject);
@@ -416,14 +404,12 @@ begin
   begin
     Exit;
   end;
-  PageForm.Display();
+  FormDispatcher.ShowPageForm;
 end;
 
 procedure TOperationForm.PreviousButtonClick(Sender: TObject);
 begin
   model.Previous;
-  UpdateAuto;
-
 end;
 
 procedure TOperationForm.LoadBitmap;
@@ -449,12 +435,11 @@ begin
 end;
 procedure TOperationForm.ListMenuChileClick(Sender: TObject);
 var
-  index : integer;
+  index: Integer;
 begin
   index := StrToInt(TMenuItem(Sender).Hint);
-  Repos.Disselect;
-  Repos.Selected[index] := True;
-  UpdateAuto;
+  model.DisselectAll;
+  model.SetFileSelected(index, True);
 end;
 
 procedure TOperationForm.ZoomOutMenuItemClick(Sender: TObject);
@@ -468,7 +453,7 @@ begin
   begin
     Exit;
   end;
-  ZoomRateForm.Display();
+  FormDispatcher.ShowZoomRateForm;
 end;
 
 procedure TOperationForm.ZoomRateMenuItemClick(Sender: TObject);
@@ -491,10 +476,10 @@ begin
 
 
   // TStringList の内容をメニュー項目として追加
-  for i := 0 to Repos.GetCount() - 1 do
+  for i := 0 to model.GetFileCount() - 1 do
   begin
     MenuItem := TMenuItem.Create(ListMenu);
-    MenuItem.Caption := ExtractFileName(Repos.GetFileName(i)); // 表示名はファイル名
+    MenuItem.Caption := ExtractFileName(model.GetFileName(i)); // 表示名はファイル名
     MenuItem.Hint := IntToStr(i);
     MenuItem.OnClick := @(ListMenuChileClick);
     ListMenu.Add(MenuItem);
@@ -520,26 +505,22 @@ begin
   end;
 
   SetCtlEnabled();
-  UpdateAuto;
 end;
 
 procedure TOperationForm.DelteButtonClick(Sender: TObject);
 begin
-  model.Repogitory.Delete;
-  UpdateAuto();
+  model.DeleteSelectedFiles;
 end;
 
 procedure TOperationForm.DeselectButtonClick(Sender: TObject);
 begin
-  model.Repogitory.Disselect;
-  UpdateAuto();
+  model.DisselectAll;
 end;
 
 procedure TOperationForm.BackGroundDisplayButtonClick(Sender: TObject);
 begin
-  model.Repogitory.Disselect;
-  ViewerForm.ShowDocument;
-  UpdateAuto();
+  model.DisselectAll;
+  FormDispatcher.ShowViewerForm;
 end;
 
 procedure TOperationForm.BackgroundDisplayMenuClick(Sender: TObject);
@@ -562,7 +543,7 @@ end;
 
 procedure TOperationForm.AboutMenuClick(Sender: TObject);
 begin
-  AboutForm.Show;
+  FormDispatcher.ShowAboutForm;
 end;
 
 procedure TOperationForm.AutoUpdateCheckBoxChange(Sender: TObject);
@@ -590,8 +571,7 @@ end;
 
 procedure TOperationForm.FitWindowButtonClick(Sender: TObject);
 begin
-    model.Zoom.fitWindow(ThumbnailPanel.Width, ThumbnailPanel.Height);
-    UpdateAuto;
+  model.FitWindow(ThumbnailPanel.Width, ThumbnailPanel.Height);
 end;
 
 procedure TOperationForm.FormDropFiles(Sender: TObject;
@@ -603,10 +583,9 @@ begin
   begin
     if CanOpen(FileName) then
     begin
-      model.Repogitory.AddFile(FileName);
+      model.AddFile(FileName);
     end;
   end;
-  UpdateAuto;
 end;
 
 
@@ -636,9 +615,7 @@ begin
   if IsMouseDown Then
   begin
    model.Zoom.MouseMove(X,Y);
-   UpdateAuto;
   end;
-
 end;
 
 procedure TOperationForm.Image1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -653,12 +630,7 @@ end;
 procedure TOperationForm.Image1MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
-  if model.CanZoom then
-  begin
-   model.Zoom.MouseWheel(WheelDelta, MousePos.X, MousePos.Y, Shift);
-   UpdateAuto;
-  end;
-  
+  model.MouseWheel(WheelDelta, MousePos.X, MousePos.Y, Shift);
 end;
 
 procedure TOperationForm.LastPageMenuClick(Sender: TObject);
@@ -680,7 +652,7 @@ end;
 
 procedure TOperationForm.DisplaySettingMenuClick(Sender: TObject);
 begin
-  SettingForm.Show();
+  FormDispatcher.ShowSettingForm;
 end;
 
 procedure TOperationForm.FilesListBoxSelectionChange(Sender: TObject;
@@ -693,22 +665,24 @@ begin
 
   for i:= 0 to FilesListBox.Count - 1 do
   begin
-       model.Repogitory.Selected[i] := FilesListBox.Selected[i];
+       model.SetFileSelected(i, FilesListBox.Selected[i]);
   end;
-  UpdateAuto;
-
+  
+  // 動画ファイルが選択された場合、即座に新しいファイルを読み込む
+  if model.IsMovieFile and Assigned(model.GetSelectedFile) then
+  begin
+    player.PlayFile(model.GetSelectedFile.Filename);
+  end;
 end;
 
 procedure TOperationForm.LastPageButtonClick(Sender: TObject);
 begin
   model.LastPage();
-  UpdateAuto;
 end;
 
 procedure TOperationForm.FirstPageButtonClick(Sender: TObject);
 begin
   model.FirstPage();
-  UpdateAuto;
 end;
 
 procedure TOperationForm.OpenMenuClick(Sender: TObject);
@@ -751,13 +725,11 @@ end;
 procedure TOperationForm.Rotate000ButtonClick(Sender: TObject);
 begin
   model.Rotate(0);
-  UpdateAuto;
 end;
 
 procedure TOperationForm.Rotate180ButtonClick(Sender: TObject);
 begin
   model.Rotate(180);
-  UpdateAuto;
 end;
 
 procedure TOperationForm.Rotate180MenuClick(Sender: TObject);
@@ -768,7 +740,6 @@ end;
 procedure TOperationForm.Rotate270ButtonClick(Sender: TObject);
 begin
   model.Rotate(270);
-  UpdateAuto;
 end;
 
 procedure TOperationForm.Rotate270MenuClick(Sender: TObject);
@@ -779,13 +750,11 @@ end;
 procedure TOperationForm.Rotate090ButtonClick(Sender: TObject);
 begin
   model.Rotate(90);
-  UpdateAuto;
 end;
 
 procedure TOperationForm.SelectAllButtonClick(Sender: TObject);
 begin
-  Repos.SelectAll;
-  UpdateAuto();
+  model.SelectAllFiles;
 end;
 
 procedure TOperationForm.SlimSizeMenuClick(Sender: TObject);
@@ -812,13 +781,12 @@ end;
 
 procedure TOperationForm.ViewAllButtonClick(Sender: TObject);
 begin
-  model.Zoom.Rate:=1.0;
-  UpdateAuto();
+  model.ViewAll;
 end;
 
 procedure TOperationForm.ViewerCloseButtonClick(Sender: TObject);
 begin
-  ViewerForm.Close();
+  FormDispatcher.CloseViewerForm;
 end;
 
 procedure TOperationForm.ViewerCloseMenuClick(Sender: TObject);
@@ -829,7 +797,7 @@ end;
 
 procedure TOperationForm.ViewerDisplayButtonClick(Sender: TObject);
 begin
-  ViewerForm.ShowDocument;
+  FormDispatcher.ShowViewerForm;
 end;
 
 procedure TOperationForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -841,19 +809,38 @@ end;
 
 procedure TOperationForm.Timer1Timer(Sender: TObject);
 begin
-  if not Assigned(player) then Exit;
-  if player.VideoLength = 0 then Exit;
+  ProcessAutoUpdate;
+  ProcessVideoPosition;
+end;
 
-  // ステータスバーに再生位置を表示
-  StatusBar1.SimpleText := Format('Position: %d / %d',
-    [player.VideoPosition, player.VideoLength]);
+procedure TOperationForm.ProcessAutoUpdate;
+begin
+  // AutoUpdateをTimer1で実行
+  if model.Updated then
+  begin
+    UpdateAuto;
+    model.ClearUpdated;
+  end;
+end;
 
-  // VideoPositionTrackBarの同期
-  IsProgrammaticUpdate := True;
-  VideoPositionTrackBar.Enabled := True;
-  VideoPositionTrackBar.Max := player.VideoLength;
-  VideoPositionTrackBar.Position := player.VideoPosition;
-  IsProgrammaticUpdate := False;
+procedure TOperationForm.ProcessVideoPosition;
+begin
+  if model.IsMovieFile then
+  begin
+    if not Assigned(player) then Exit;
+    if player.VideoLength = 0 then Exit;
+
+    // ステータスバーに再生位置を表示
+    StatusBar1.SimpleText := Format('Position: %d / %d',
+      [player.VideoPosition, player.VideoLength]);
+
+    // VideoPositionTrackBarの同期
+    IsProgrammaticUpdate := True;
+    VideoPositionTrackBar.Enabled := True;
+    VideoPositionTrackBar.Max := player.VideoLength;
+    VideoPositionTrackBar.Position := player.VideoPosition;
+    IsProgrammaticUpdate := False;
+  end;
 end;
 
 procedure TOperationForm.VideoPositionTrackBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

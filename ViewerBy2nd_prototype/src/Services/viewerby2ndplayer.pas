@@ -98,6 +98,12 @@ end;
 procedure TViewerBy2ndPlayer.PlayFile(const FileName: string);
 begin
   if not Assigned(FThumbnailPlayer) then Exit;
+  
+  // 既存の再生を停止
+  FThumbnailPlayer.Stop;
+  if Assigned(FViewerPlayer) then
+    FViewerPlayer.Stop;
+  
   FFileName := FileName;
   FThumbnailPlayer.PlayFile(FileName);
   if Assigned(FViewerPlayer) then

@@ -10,7 +10,6 @@ object OperationForm: TOperationForm
   DesignTimePPI = 120
   Font.Height = -15
   Menu = MainMenu
-  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDropFiles = FormDropFiles

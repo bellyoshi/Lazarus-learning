@@ -1,0 +1,323 @@
+object Form1: TForm1
+  Left = 316
+  Height = 600
+  Top = 155
+  Width = 800
+  Caption = 'お絵かきソフト - Paint Application'
+  ClientHeight = 600
+  ClientWidth = 800
+  DesignTimePPI = 120
+  Menu = MainMenu1
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  object ToolBar1: TToolBar
+    Left = 0
+    Height = 30
+    Top = 0
+    Width = 800
+    ButtonHeight = 30
+    ButtonWidth = 60
+    Caption = 'ToolBar1'
+    TabOrder = 0
+    object ToolButton1: TToolButton
+      Left = 1
+      Top = 2
+      Caption = '新規'
+      OnClick = New1Click
+    end
+    object ToolButton2: TToolButton
+      Left = 61
+      Top = 2
+      Caption = '開く'
+      OnClick = Open1Click
+    end
+    object ToolButton3: TToolButton
+      Left = 121
+      Top = 2
+      Caption = '保存'
+      OnClick = Save1Click
+    end
+    object ToolButton4: TToolButton
+      Left = 181
+      Height = 30
+      Top = 2
+      Caption = 'ToolButton4'
+      Style = tbsSeparator
+    end
+    object ToolButton5: TToolButton
+      Left = 189
+      Top = 2
+      Caption = '元に戻す'
+      OnClick = Undo1Click
+    end
+    object ToolButton6: TToolButton
+      Left = 249
+      Top = 2
+      Caption = 'やり直し'
+      OnClick = Redo1Click
+    end
+    object ToolButton7: TToolButton
+      Left = 309
+      Height = 30
+      Top = 2
+      Caption = 'ToolButton7'
+      Style = tbsSeparator
+    end
+    object ToolButton8: TToolButton
+      Left = 317
+      Top = 2
+      Caption = 'ペン'
+      OnClick = PenToolClick
+    end
+    object ToolButton9: TToolButton
+      Left = 377
+      Top = 2
+      Caption = 'ブラシ'
+      OnClick = BrushToolClick
+    end
+    object ToolButton10: TToolButton
+      Left = 437
+      Top = 2
+      Caption = '消しゴム'
+      OnClick = EraserToolClick
+    end
+    object ToolButton11: TToolButton
+      Left = 497
+      Height = 30
+      Top = 2
+      Caption = 'ToolButton11'
+      Style = tbsSeparator
+    end
+    object ToolButton12: TToolButton
+      Left = 505
+      Top = 2
+      Caption = '四角形'
+      OnClick = RectangleToolClick
+    end
+    object ToolButton13: TToolButton
+      Left = 565
+      Top = 2
+      Caption = '円'
+      OnClick = CircleToolClick
+    end
+    object ToolButton14: TToolButton
+      Left = 625
+      Height = 30
+      Top = 2
+      Caption = 'ToolButton14'
+      Style = tbsSeparator
+    end
+    object ToolButton15: TToolButton
+      Left = 633
+      Top = 2
+      Caption = '塗りつぶし'
+      OnClick = FillToolClick
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 570
+    Top = 30
+    Width = 150
+    Align = alLeft
+    Caption = 'Panel1'
+    ClientHeight = 570
+    ClientWidth = 150
+    TabOrder = 1
+    object Label1: TLabel
+      Left = 8
+      Height = 20
+      Top = 8
+      Width = 63
+      Caption = '描画ツール'
+    end
+    object Label2: TLabel
+      Left = 8
+      Height = 20
+      Top = 200
+      Width = 45
+      Caption = '色選択'
+    end
+    object Label3: TLabel
+      Left = 8
+      Height = 20
+      Top = 350
+      Width = 52
+      Caption = '線の太さ'
+    end
+    object ColorBox1: TColorBox
+      Left = 8
+      Height = 28
+      Top = 220
+      Width = 130
+      ItemHeight = 22
+      TabOrder = 0
+      OnChange = ColorBox1Change
+    end
+    object TrackBar1: TTrackBar
+      Left = 8
+      Height = 45
+      Top = 370
+      Width = 130
+      Max = 50
+      Min = 1
+      Position = 5
+      OnChange = TrackBar1Change
+      TabOrder = 1
+    end
+    object Label4: TLabel
+      Left = 8
+      Height = 20
+      Top = 420
+      Width = 67
+      Caption = '線の太さ: 5'
+    end
+    object RadioGroup1: TRadioGroup
+      Left = 8
+      Height = 150
+      Top = 30
+      Width = 130
+      AutoFill = True
+      Caption = 'ツール選択'
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.EnlargeVertical = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsScaleChilds
+      ChildSizing.ShrinkVertical = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 1
+      ClientHeight = 125
+      ClientWidth = 126
+      ItemIndex = 0
+      Items.Strings = (
+        'ペン'
+        'ブラシ'
+        '消しゴム'
+        '四角形'
+        '円'
+        '塗りつぶし'
+      )
+      TabOrder = 2
+      OnClick = RadioGroup1Click
+    end
+  end
+  object ScrollBox1: TScrollBox
+    Left = 150
+    Height = 570
+    Top = 30
+    Width = 650
+    HorzScrollBar.Page = 600
+    VertScrollBar.Page = 400
+    Align = alClient
+    ClientHeight = 566
+    ClientWidth = 646
+    TabOrder = 2
+    object PaintBox1: TPaintBox
+      Left = 0
+      Height = 400
+      Top = 0
+      Width = 600
+      OnMouseDown = PaintBox1MouseDown
+      OnMouseMove = PaintBox1MouseMove
+      OnMouseUp = PaintBox1MouseUp
+      OnPaint = PaintBox1Paint
+    end
+  end
+  object MainMenu1: TMainMenu
+    Left = 8
+    Top = 8
+    object File1: TMenuItem
+      Caption = 'ファイル(&F)'
+      object New1: TMenuItem
+        Caption = '新規(&N)'
+        ShortCut = 16462
+        OnClick = New1Click
+      end
+      object Open1: TMenuItem
+        Caption = '開く(&O)'
+        ShortCut = 16463
+        OnClick = Open1Click
+      end
+      object Save1: TMenuItem
+        Caption = '保存(&S)'
+        ShortCut = 16467
+        OnClick = Save1Click
+      end
+      object SaveAs1: TMenuItem
+        Caption = '名前を付けて保存(&A)'
+        ShortCut = 16449
+        OnClick = SaveAs1Click
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object Exit1: TMenuItem
+        Caption = '終了(&X)'
+        ShortCut = 32883
+        OnClick = Exit1Click
+      end
+    end
+    object Edit1: TMenuItem
+      Caption = '編集(&E)'
+      object Undo1: TMenuItem
+        Caption = '元に戻す(&U)'
+        ShortCut = 16474
+        OnClick = Undo1Click
+      end
+      object Redo1: TMenuItem
+        Caption = 'やり直し(&R)'
+        ShortCut = 16473
+        OnClick = Redo1Click
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object Clear1: TMenuItem
+        Caption = 'すべてクリア(&C)'
+        ShortCut = 16460
+        OnClick = Clear1Click
+      end
+    end
+    object View1: TMenuItem
+      Caption = '表示(&V)'
+      object ZoomIn1: TMenuItem
+        Caption = '拡大(&I)'
+        ShortCut = 16470
+        OnClick = ZoomIn1Click
+      end
+      object ZoomOut1: TMenuItem
+        Caption = '縮小(&O)'
+        ShortCut = 16472
+        OnClick = ZoomOut1Click
+      end
+      object Zoom1001: TMenuItem
+        Caption = '100%(&1)'
+        ShortCut = 16433
+        OnClick = Zoom1001Click
+      end
+    end
+    object Test1: TMenuItem
+      Caption = 'テスト(&T)'
+      object TestFill1: TMenuItem
+        Caption = '塗りつぶしテスト(&F)'
+        OnClick = TestFillClick
+      end
+    end
+  end
+  object ImageList1: TImageList
+    Left = 40
+    Top = 8
+  end
+  object OpenDialog1: TOpenDialog
+    DefaultExt = '.bmp'
+    Filter = 'ビットマップファイル (*.bmp)|*.bmp|すべてのファイル (*.*)|*.*'
+    Left = 72
+    Top = 8
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = '.bmp'
+    Filter = 'ビットマップファイル (*.bmp)|*.bmp|すべてのファイル (*.*)|*.*'
+    Left = 104
+    Top = 8
+  end
+end

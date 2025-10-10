@@ -116,6 +116,7 @@ end;
 
 destructor TPdfImageCreator.Destroy;
 begin
+  FPdfDocument.Close();
   FPdfDocument.Free();
   inherited;
 end;

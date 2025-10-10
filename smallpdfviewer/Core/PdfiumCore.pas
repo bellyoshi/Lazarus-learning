@@ -28,15 +28,12 @@ uses
   Types, SysUtils, Classes, Contnrs,
   PdfiumLib, LoggerUnit;
 
-const
+//const
   // DIN A4
-  PdfDefaultPageWidth = 595;
-  PdfDefaultPageHeight = 842;
+//  PdfDefaultPageWidth = 595;
+//PdfDefaultPageHeight = 842;
 
 type
-  EPdfException = class(Exception);
-  EPdfUnsupportedFeatureException = class(EPdfException);
-  EPdfArgumentOutOfRange = class(EPdfException);
 
   TPdfUnsupportedFeatureHandler = procedure(nType: Integer; const Typ: string) of object;
 
@@ -712,7 +709,6 @@ type
     function ReloadPage(APage: TPdfPage): FPDF_PAGE;
     function GetPrintScaling: Boolean;
     function GetActive: Boolean;
-    procedure CheckActive;
     function GetSecurityHandlerRevision: Integer;
     function GetDocPermissions: Integer;
     function GetFileVersion: Integer;
@@ -731,8 +727,6 @@ type
     procedure LoadFromCustom(ReadFunc: TPdfDocumentCustomReadProc; Size: LongWord; Param: Pointer; const Password: UTF8String = '');
     procedure LoadFromActiveStream(Stream: TStream; const Password: UTF8String = ''); // Stream must not be released until the document is closed
     procedure LoadFromActiveBuffer(Buffer: Pointer; Size: NativeInt; const Password: UTF8String = ''); // Buffer must not be released until the document is closed
-    procedure LoadFromBytes(const Bytes: TBytes; const Password: UTF8String = ''); overload;
-    procedure LoadFromBytes(const Bytes: TBytes; Index: NativeInt; Count: NativeInt; const Password: UTF8String = ''); overload;
     procedure LoadFromStream(Stream: TStream; const Password: UTF8String = '');
     procedure LoadFromFile(const FileName: string; const Password: UTF8String = ''; LoadOption: TPdfDocumentLoadOption = dloDefault);
     procedure Close;
@@ -742,15 +736,11 @@ type
     procedure SaveToBytes(var Bytes: TBytes; Option: TPdfDocumentSaveOption = dsoRemoveSecurity; FileVersion: Integer = -1);
 
     function NewDocument: Boolean;
-    class function CreateNPagesOnOnePageDocument(Source: TPdfDocument; NewPageWidth, NewPageHeight: Double; NumPagesXAxis, NumPagesYAxis: Integer): TPdfDocument; overload;
-    class function CreateNPagesOnOnePageDocument(Source: TPdfDocument; NumPagesXAxis, NumPagesYAxis: Integer): TPdfDocument; overload;
     function ImportAllPages(Source: TPdfDocument; Index: Integer = -1): Boolean;
     function ImportPages(Source: TPdfDocument; const Range: string = ''; Index: Integer = -1): Boolean;
     function ImportPageRange(Source: TPdfDocument; PageIndex: Integer; Count: Integer = -1; Index: Integer = -1): Boolean;
     function ImportPagesByIndex(Source: TPdfDocument; const PageIndices: array of Integer; Index: Integer = -1): Boolean;
     procedure DeletePage(Index: Integer);
-    function NewPage(Width, Height: Double; Index: Integer = -1): TPdfPage; overload;
-    function NewPage(Index: Integer = -1): TPdfPage; overload;
     function ApplyViewerPreferences(Source: TPdfDocument): Boolean;
     function IsPageLoaded(PageIndex: Integer): Boolean;
 
@@ -1011,31 +1001,6 @@ begin
   end;
 end;
 
-procedure RaiseLastPdfError;
-begin
-  case FPDF_GetLastError() of
-    FPDF_ERR_SUCCESS:
-      raise EPdfException.CreateRes(@RsPdfErrorSuccess);
-    FPDF_ERR_FILE:
-      raise EPdfException.CreateRes(@RsPdfErrorFile);
-    FPDF_ERR_FORMAT:
-      raise EPdfException.CreateRes(@RsPdfErrorFormat);
-    FPDF_ERR_PASSWORD:
-      raise EPdfException.CreateRes(@RsPdfErrorPassword);
-    FPDF_ERR_SECURITY:
-      raise EPdfException.CreateRes(@RsPdfErrorSecurity);
-    FPDF_ERR_PAGE:
-      raise EPdfException.CreateRes(@RsPdfErrorPage);
-    {$IF declared(FPDF_ERR_XFALOAD)}
-    FPDF_ERR_XFALOAD:
-      raise EPdfException.CreateRes(@RsPdfErrorXFALoad);
-    FPDF_ERR_XFALAYOUT:
-      raise EPdfException.CreateRes(@RsPdfErrorXFALayout);
-    {$IFEND}
-  else
-    raise EPdfException.CreateRes(@RsPdfErrorUnknown);
-  end;
-end;
 
 procedure FFI_Invalidate(pThis: PFPDF_FORMFILLINFO; page: FPDF_PAGE; left, top, right, bottom: Double); cdecl;
 var
@@ -1548,8 +1513,6 @@ begin
       // FPDF_LoadCustomDocument wasn't updated to load larger files, so we fall back to MMF.
       if LoadOption = dloOnDemand then
         LoadOption := dloMMF;
-      {$ELSE}
-      raise EPdfException.CreateResFmt(@RsFileTooLarge, [ExtractFileName(FileName)]);
       {$ENDIF CPUX64}
     end;
 
@@ -1653,27 +1616,6 @@ begin
   InternLoadFromMem(Buffer, Size, Password);
 end;
 
-procedure TPdfDocument.LoadFromBytes(const Bytes: TBytes; const Password: UTF8String);
-begin
-  LoadFromBytes(Bytes, 0, Length(Bytes), Password);
-end;
-
-procedure TPdfDocument.LoadFromBytes(const Bytes: TBytes; Index, Count: NativeInt;
-  const Password: UTF8String);
-var
-  Len: NativeInt;
-begin
-  Close;
-
-  Len := Length(Bytes);
-  if Index >= Len then
-    raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['Index', Index]);
-  if Index + Count > Len then
-    raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['Count', Count]);
-
-  FBytes := Bytes; // keep alive after return
-  InternLoadFromMem(@Bytes[Index], Count, Password);
-end;
 
 function ReadFromActiveStream(Param: Pointer; Position: LongWord; Buffer: PByte; Size: LongWord): Boolean;
 begin
@@ -1774,8 +1716,7 @@ end;
 procedure TPdfDocument.DocumentLoaded;
 begin
   FFormModified := False;
-  if FDocument = nil then
-    RaiseLastPdfError;
+
 
   FPages.Count := FPDF_GetPageCount(FDocument);
 
@@ -1843,8 +1784,6 @@ begin
   if Result = nil then
   begin
     LPage := FPDF_LoadPage(FDocument, Index);
-    if LPage = nil then
-      RaiseLastPdfError;
     Result := TPdfPage.Create(Self, LPage);
     FPages[Index] := Result;
   end
@@ -1865,16 +1804,13 @@ function TPdfDocument.ReloadPage(APage: TPdfPage): FPDF_PAGE;
 var
   Index: Integer;
 begin
-  CheckActive;
   Index := FPages.IndexOf(APage);
   Result := FPDF_LoadPage(FDocument, Index);
-  if Result = nil then
-    RaiseLastPdfError;
+
 end;
 
 function TPdfDocument.GetPrintScaling: Boolean;
-begin
-  CheckActive;
+begin;
   Result := FPDF_VIEWERREF_GetPrintScaling(FDocument) <> 0;
 end;
 
@@ -1883,57 +1819,13 @@ begin
   Result := FDocument <> nil;
 end;
 
-procedure TPdfDocument.CheckActive;
-begin
-  if not Active then
-    raise EPdfException.CreateRes(@RsDocumentNotActive);
-end;
 
-class function TPdfDocument.CreateNPagesOnOnePageDocument(Source: TPdfDocument;
-  NumPagesXAxis, NumPagesYAxis: Integer): TPdfDocument;
-begin
-  if Source.PageCount > 0 then
-    Result := CreateNPagesOnOnePageDocument(Source, Source.PageSizes[0].X, Source.PageSizes[0].Y, NumPagesXAxis, NumPagesYAxis)
-  else
-    Result := CreateNPagesOnOnePageDocument(Source, PdfDefaultPageWidth, PdfDefaultPageHeight, NumPagesXAxis, NumPagesYAxis); // DIN A4 page
-end;
-
-class function TPdfDocument.CreateNPagesOnOnePageDocument(Source: TPdfDocument;
-  NewPageWidth, NewPageHeight: Double; NumPagesXAxis, NumPagesYAxis: Integer): TPdfDocument;
-var
-  OldCurDoc: TPdfDocument;
-begin
-  Result := TPdfDocument.Create;
-  try
-    if (Source = nil) or not Source.Active then
-      Result.NewDocument
-    else
-    begin
-      OldCurDoc := UnsupportedFeatureCurrentDocument;
-      try
-        UnsupportedFeatureCurrentDocument := Result;
-        Result.FDocument := FPDF_ImportNPagesToOne(Source.FDocument, NewPageWidth, NewPageHeight, NumPagesXAxis, NumPagesYAxis);
-      finally
-        UnsupportedFeatureCurrentDocument := OldCurDoc;
-      end;
-      if Result.FDocument <> nil then
-        Result.DocumentLoaded
-      else
-        Result.NewDocument;
-    end;
-  except
-    Result.Free;
-    raise;
-  end;
-end;
 
 function TPdfDocument.InternImportPages(Source: TPdfDocument; PageIndices: PInteger; PageIndicesCount: Integer;
   const Range: AnsiString; Index: Integer; ImportByRange: Boolean): Boolean;
 var
   I, NewCount, OldCount, InsertCount: Integer;
 begin
-  CheckActive;
-  Source.CheckActive;
 
   OldCount := FPDF_GetPageCount(FDocument);
   if Index < 0 then
@@ -2030,7 +1922,6 @@ procedure TPdfDocument.SaveToStream(Stream: TStream; Option: TPdfDocumentSaveOpt
 var
   FileWriteInfo: TFPDFFileWriteEx;
 begin
-  CheckActive;
 
   FileWriteInfo.Inner.version := 1;
   FileWriteInfo.Inner.WriteBlock := @WriteBlockToStream;
@@ -2056,7 +1947,6 @@ var
   Stream: TBytesStream;
   Size: NativeInt;
 begin
-  CheckActive;
 
   Stream := TBytesStream.Create(nil);
   try
@@ -2081,37 +1971,13 @@ end;
 
 procedure TPdfDocument.DeletePage(Index: Integer);
 begin
-  CheckActive;
   FPages.Delete(Index);
   FPDFPage_Delete(FDocument, Index);
 end;
 
-function TPdfDocument.NewPage(Width, Height: Double; Index: Integer): TPdfPage;
-var
-  LPage: FPDF_PAGE;
-begin
-  CheckActive;
-  if Index < 0 then
-    Index := FPages.Count; // append new page
-  LPage := FPDFPage_New(FDocument, Index, Width, Height);
-  if LPage <> nil then
-  begin
-    Result := TPdfPage.Create(Self, LPage);
-    FPages.Insert(Index, Result);
-  end
-  else
-    Result := nil;
-end;
-
-function TPdfDocument.NewPage(Index: Integer = -1): TPdfPage;
-begin
-  Result := NewPage(PdfDefaultPageWidth, PdfDefaultPageHeight, Index);
-end;
 
 function TPdfDocument.ApplyViewerPreferences(Source: TPdfDocument): Boolean;
 begin
-  CheckActive;
-  Source.CheckActive;
   Result := FPDF_CopyViewerPreferences(FDocument, Source.FDocument) <> 0;
 end;
 
@@ -2120,7 +1986,6 @@ var
   Len: Integer;
   A: AnsiString;
 begin
-  CheckActive;
   Len := FPDF_GetFileIdentifier(FDocument, FPDF_FILEIDTYPE(IdType), nil, 0) div SizeOf(AnsiChar) - 1;
   if Len > 0 then
   begin
@@ -2137,7 +2002,6 @@ var
   Len: Integer;
   A: AnsiString;
 begin
-  CheckActive;
   A := AnsiString(TagName);
   Len := FPDF_GetMetaText(FDocument, PAnsiChar(A), nil, 0) div SizeOf(WideChar) - 1;
   if Len > 0 then
@@ -2151,19 +2015,16 @@ end;
 
 function TPdfDocument.GetSecurityHandlerRevision: Integer;
 begin
-  CheckActive;
   Result := FPDF_GetSecurityHandlerRevision(FDocument);
 end;
 
 function TPdfDocument.GetDocPermissions: Integer;
 begin
-  CheckActive;
   Result := Integer(FPDF_GetDocPermissions(FDocument));
 end;
 
 function TPdfDocument.GetFileVersion: Integer;
 begin
-  CheckActive;
   if FPDF_GetFileVersion(FDocument, Result) = 0 then
     Result := 0;
 end;
@@ -2172,7 +2033,6 @@ function TPdfDocument.GetPageSize(Index: Integer): TPdfPoint;
 var
   SizeF: TFSSizeF;
 begin
-  CheckActive;
   Result.X := 0;
   Result.Y := 0;
   if FPDF_GetPageSizeByIndexF(FDocument, Index, @SizeF) <> 0 then
@@ -2184,13 +2044,11 @@ end;
 
 function TPdfDocument.GetPageMode: TPdfDocumentPageMode;
 begin
-  CheckActive;
   Result := TPdfDocumentPageMode(FPDFDoc_GetPageMode(FDocument));
 end;
 
 function TPdfDocument.GetNumCopies: Integer;
 begin
-  CheckActive;
   Result := FPDF_VIEWERREF_GetNumCopies(FDocument);
 end;
 
@@ -3220,7 +3078,6 @@ end;
 
 function TPdfAttachmentList.GetCount: Integer;
 begin
-  FDocument.CheckActive;
   Result := FPDFDoc_GetAttachmentCount(FDocument.Handle);
 end;
 
@@ -3228,28 +3085,19 @@ function TPdfAttachmentList.GetItem(Index: Integer): TPdfAttachment;
 var
   Attachment: FPDF_ATTACHMENT;
 begin
-  FDocument.CheckActive;
   Attachment := FPDFDoc_GetAttachment(FDocument.Handle, Index);
-  if Attachment = nil then
-    raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['Index']);
   Result.FDocument := FDocument;
   Result.FHandle := Attachment;
 end;
 
 procedure TPdfAttachmentList.Delete(Index: Integer);
 begin
-  FDocument.CheckActive;
-  if FPDFDoc_DeleteAttachment(FDocument.Handle, Index) = 0 then
-    raise EPdfException.CreateResFmt(@RsPdfCannotDeleteAttachmnent, [Index]);
 end;
 
 function TPdfAttachmentList.Add(const Name: string): TPdfAttachment;
 begin
-  FDocument.CheckActive;
   Result.FDocument := FDocument;
   Result.FHandle := FPDFDoc_AddAttachment(FDocument.Handle, PWideChar(Name));
-  if Result.FHandle = nil then
-    raise EPdfException.CreateResFmt(@RsPdfCannotAddAttachmnent, [Name]);
 end;
 
 function TPdfAttachmentList.IndexOf(const Name: string): Integer;
@@ -3280,15 +3128,12 @@ end;
 
 procedure TPdfAttachment.CheckValid;
 begin
-  if FDocument <> nil then
-    FDocument.CheckActive;
+
 end;
 
 procedure TPdfAttachment.SetContent(ABytes: PByte; Count: Integer);
 begin
   CheckValid;
-  if FPDFAttachment_SetFile(FHandle, FDocument.Handle, ABytes, Count) = 0 then
-    raise EPdfException.CreateResFmt(@RsPdfCannotSetAttachmentContent, [Name]);
 end;
 
 procedure TPdfAttachment.SetContent(const Value: RawByteString);
@@ -3317,11 +3162,6 @@ begin
   CheckValid;
 
   Len := Length(ABytes);
-  if Index >= Len then
-    raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['Index', Index]);
-  if Index + Count > Len then
-    raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['Count', Count]);
-
   if Count = 0 then
     SetContent(nil, 0)
   else
@@ -3400,8 +3240,6 @@ end;
 procedure TPdfAttachment.SetKeyValue(const Key, Value: string);
 begin
   CheckValid;
-  if FPDFAttachment_SetStringValue(FHandle, PAnsiChar(UTF8Encode(Key)), PWideChar(Value)) = 0 then
-    raise EPdfException.CreateRes(@RsPdfAttachmentContentNotSet);
 end;
 
 function TPdfAttachment.GetKeyValue(const Key: string): string;
@@ -3412,8 +3250,6 @@ begin
   CheckValid;
   Utf8Key := UTF8Encode(Key);
   ByteLen := FPDFAttachment_GetStringValue(FHandle, PAnsiChar(Utf8Key), nil, 0);
-  if ByteLen = 0 then
-    raise EPdfException.CreateRes(@RsPdfAttachmentContentNotSet);
 
   if ByteLen <= 2 then
     Result := ''
@@ -3609,13 +3445,10 @@ function TPdfAnnotationList.GetItem(Index: Integer): TPdfAnnotation;
 var
   Annot: FPDF_ANNOTATION;
 begin
-  FPage.FDocument.CheckActive;
 
   if (Index < 0) or (Index >= FItems.Count) or (FItems[Index] = nil) then
   begin
     Annot := FPDFPage_GetAnnot(FPage.Handle, Index);
-    if Annot = nil then
-      raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['Index']);
 
     while FItems.Count <= Index do
       FItems.Add(nil);
@@ -3659,7 +3492,7 @@ var
   Annot: FPDF_ANNOTATION;
   SingleR: FS_RECTF;
 begin
-  FPage.FDocument.CheckActive;
+
   SingleR.left := R.Left;
   SingleR.right := R.Right;
   // Page coordinates are upside down
@@ -3806,8 +3639,6 @@ end;
 
 function TPdfAnnotation.GetFormField: TPdfFormField;
 begin
-  if FFormField = nil then
-    raise EPdfException.CreateRes(@RsPdfAnnotationNotAFormFieldError);
   Result := FFormField;
 end;
 
@@ -3858,9 +3689,6 @@ begin
     if LinkType = altRemoteGoto then
     begin
       // For RemoteGoto the FPDFAction_GetDest function must be called with the remote document
-      if ARemoteDocument <> nil then
-        raise EPdfException.CreateRes(@RsPdfAnnotationLinkRemoteGotoRequiresRemoteDocument);
-      ARemoteDocument.CheckActive;
 
       Doc := ARemoteDocument;
     end;
@@ -4065,7 +3893,7 @@ function TPdfFormField.BeginEditFormField: FPDF_ANNOTATION;
 var
   AnnotPageIndex: Integer;
 begin
-  FPage.FDocument.CheckActive;
+
 
   // Obtain the currently focused form field/annotation so that we can restore the focus after
   // editing our form field.
@@ -4091,7 +3919,7 @@ procedure TPdfFormField.SetValue(const Value: string);
 var
   LastFocusedAnnot: FPDF_ANNOTATION;
 begin
-  FPage.FDocument.CheckActive;
+
 
   if not ReadOnly then
   begin
@@ -4117,7 +3945,7 @@ function TPdfFormField.SelectListBoxOption(OptionIndex: Integer; Selected: Boole
 var
   LastFocusedAnnot: FPDF_ANNOTATION;
 begin
-  FPage.FDocument.CheckActive;
+
 
   Result := False;
   if not ReadOnly then
@@ -4136,7 +3964,7 @@ procedure TPdfFormField.SetChecked(const Value: Boolean);
 var
   LastFocusedAnnot: FPDF_ANNOTATION;
 begin
-  FPage.FDocument.CheckActive;
+
 
   if not ReadOnly and (FieldType in [fftCheckBox, fftRadioButton, fftXFACheckBox]) then
   begin
@@ -4393,10 +4221,6 @@ begin
   if ADocument = nil then
     Exit;
 
-  if AFromPageIndex < 0 then
-    raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['FromPage', AFromPageIndex]);
-  if (AToPageIndex < AFromPageIndex) or (AToPageIndex >= ADocument.PageCount) then
-    raise EPdfArgumentOutOfRange.CreateResFmt(@RsArgumentsOutOfRange, ['ToPage', AToPageIndex]);
 
   PrintedPageNum := 0;
   PrintPageCount := AToPageIndex - AFromPageIndex + 1;

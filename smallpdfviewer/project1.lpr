@@ -17,7 +17,6 @@ uses
 {$R *.res}
 
 begin
-  AllocConsole;
   RequireDerivedFormResource:=True;
   Application.Scaled:=True;
   {$PUSH}{$WARN 5044 OFF}

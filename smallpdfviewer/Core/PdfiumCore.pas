@@ -41,7 +41,6 @@ type
   TPdfPage = class;
   TPdfAttachmentList = class;
   TPdfAnnotationList = class;
-  TPdfFormField = class;
   TPdfAnnotation = class;
 
   TPdfPoint = record
@@ -149,39 +148,7 @@ type
     bfBGRA  = FPDFBitmap_BGRA  // 4 bytes per pixel, byte order: blue, green, red, alpha.
   );
 
-  TPdfFormFieldType = (
-    fftUnknown         = FPDF_FORMFIELD_UNKNOWN,
-    fftPushButton      = FPDF_FORMFIELD_PUSHBUTTON,
-    fftCheckBox        = FPDF_FORMFIELD_CHECKBOX,
-    fftRadioButton     = FPDF_FORMFIELD_RADIOBUTTON,
-    fftComboBox        = FPDF_FORMFIELD_COMBOBOX,
-    fftListBox         = FPDF_FORMFIELD_LISTBOX,
-    fftTextField       = FPDF_FORMFIELD_TEXTFIELD,
-    fftSignature       = FPDF_FORMFIELD_SIGNATURE,
 
-    fftXFA             = FPDF_FORMFIELD_XFA,
-    fftXFACheckBox     = FPDF_FORMFIELD_XFA_CHECKBOX,
-    fftXFAComboBox     = FPDF_FORMFIELD_XFA_COMBOBOX,
-    fftXFAImageField   = FPDF_FORMFIELD_XFA_IMAGEFIELD,
-    fftXFAListBox      = FPDF_FORMFIELD_XFA_LISTBOX,
-    fftXFAPushButton   = FPDF_FORMFIELD_XFA_PUSHBUTTON,
-    fftXFASignature    = FPDF_FORMFIELD_XFA_SIGNATURE,
-    fftXfaTextField    = FPDF_FORMFIELD_XFA_TEXTFIELD
-  );
-
-  TPdfFormFieldFlagsType = (
-    fffReadOnly,
-    fffRequired,
-    fffNoExport,
-
-    fffTextMultiLine,
-    fffTextPassword,
-
-    fffChoiceCombo,
-    fffChoiceEdit,
-    fffChoiceMultiSelect
-  );
-  TPdfFormFieldFlags = set of TPdfFormFieldFlagsType;
 
   TPdfObjectType = (
     otUnknown   = FPDF_OBJECT_UNKNOWN,
@@ -254,75 +221,7 @@ type
     Document: TPdfDocument;
   end;
 
-  TPdfFormField = class(TObject)
-  private
-    FPage: TPdfPage;
-    FHandle: FPDF_ANNOTATION;
-    FAnnotation: TPdfAnnotation;
-    function GetFlags: TPdfFormFieldFlags;
-    function GetReadOnly: Boolean;
-    function GetName: string;
-    function GetAlternateName: string;
-    function GetFieldType: TPdfFormFieldType;
-    function GetValue: string;
-    function GetExportValue: string;
-    function GetOptionCount: Integer;
-    function GetOptionLabel(Index: Integer): string;
-    function GetChecked: Boolean;
-    function GetControlIndex: Integer;
-    function GetControlCount: Integer;
 
-    procedure SetValue(const Value: string);
-    procedure SetChecked(const Value: Boolean);
-  protected
-    constructor Create(AAnnotation: TPdfAnnotation);
-
-    function BeginEditFormField: FPDF_ANNOTATION;
-    procedure EndEditFormField(LastFocusedAnnot: FPDF_ANNOTATION);
-  public
-    destructor Destroy; override;
-
-    function IsXFAFormField: Boolean;
-
-    function IsOptionSelected(OptionIndex: Integer): Boolean;
-    function SelectComboBoxOption(OptionIndex: Integer): Boolean;
-    function SelectListBoxOption(OptionIndex: Integer; Selected: Boolean = True): Boolean;
-
-    property Flags: TPdfFormFieldFlags read GetFlags;
-    property ReadOnly: Boolean read GetReadOnly;
-    property Name: string read GetName;
-    property AlternateName: string read GetAlternateName;
-    property FieldType: TPdfFormFieldType read GetFieldType;
-    property Value: string read GetValue write SetValue;
-    property ExportValue: string read GetExportValue;
-
-    // ComboBox/ListBox
-    property OptionCount: Integer read GetOptionCount;
-    property OptionLabels[Index: Integer]: string read GetOptionLabel;
-
-    // CheckBox/RadioButton
-    property Checked: Boolean read GetChecked write SetChecked;
-    property ControlIndex: Integer read GetControlIndex;
-    property ControlCount: Integer read GetControlCount;
-
-    property Annotation: TPdfAnnotation read FAnnotation;
-    property Handle: FPDF_ANNOTATION read FHandle;
-  end;
-
-  TPdfFormFieldList = class(TObject)
-  private
-    FItems: TList;
-    function GetCount: Integer;
-    function GetItem(Index: Integer): TPdfFormField;
-  protected
-    procedure DestroyingItem(Item: TPdfFormField);
-  public
-    constructor Create(AAnnotations: TPdfAnnotationList);
-    destructor Destroy; override;
-
-    property Count: Integer read GetCount;
-    property Items[Index: Integer]: TPdfFormField read GetItem; default;
-  end;
 
   TPdfLinkGotoDestination = class(TObject)
   private
@@ -357,13 +256,11 @@ type
   private
     FPage: TPdfPage;
     FHandle: FPDF_ANNOTATION;
-    FFormField: TPdfFormField;
     FSubType: FPDF_ANNOTATION_SUBTYPE;
     FLinkDest: FPDF_DEST;
     FLinkType: TPdfAnnotationLinkType;
 
     function GetPdfLinkAction: FPDF_ACTION;
-    function GetFormField: TPdfFormField;
     function GetLinkUri: string;
     function GetAnnotationRect: TPdfRect;
     function GetLinkFileName: string;
@@ -372,13 +269,10 @@ type
   public
     destructor Destroy; override;
 
-    function IsFormField: Boolean;
     function IsLink: Boolean;
 
     function GetLinkGotoDestination(var LinkGotoDestination: TPdfLinkGotoDestination; ARemoteDocument: TPdfDocument = nil): Boolean;
 
-    // IsFormField:
-    property FormField: TPdfFormField read GetFormField;
     // IsLink:
     property LinkType: TPdfAnnotationLinkType read FLinkType;
     property LinkUri: string read GetLinkUri;
@@ -392,14 +286,11 @@ type
   private
     FPage: TPdfPage;
     FItems: TObjectList;
-    FFormFields: TPdfFormFieldList;
     function GetCount: Integer;
     function GetItem(Index: Integer): TPdfAnnotation;
-    function GetFormFields: TPdfFormFieldList;
     function GetAnnotationsLoaded: Boolean;
   protected
     procedure DestroyingItem(Item: TPdfAnnotation);
-    procedure DestroyingFormField(FormField: TPdfFormField);
     function FindLink(Link: FPDF_LINK): TPdfAnnotation;
   public
     constructor Create(APage: TPdfPage);
@@ -415,8 +306,6 @@ type
     property Count: Integer read GetCount;
     property Items[Index: Integer]: TPdfAnnotation read GetItem; default;
 
-    { A list of all form field annotations }
-    property FormFields: TPdfFormFieldList read GetFormFields;
   end;
 
   TPdfLinkInfo = class(TObject)
@@ -487,7 +376,6 @@ type
     function ShiftStateToModifier(const Shift: TShiftState): Integer;
     function GetHandle: FPDF_PAGE;
     function GetTextHandle: FPDF_TEXTPAGE;
-    function GetFormFields: TPdfFormFieldList;
   protected
     function GetPdfActionFilePath(Action: FPDF_ACTION): string;
     function GetPdfActionUriPath(Action: FPDF_ACTION): string;
@@ -558,7 +446,6 @@ type
     function GetTextRectCount(CharIndex, Count: Integer): Integer;
     function GetTextRect(RectIndex: Integer): TPdfRect;
 
-    function HasFormFieldAtPoint(X, Y: Double): TPdfFormFieldType;
 
     { IsUriLinkAtPoint returns true if a Link annotation is at the specified coordinates.
       X, Y are in page coordinates. }
@@ -590,13 +477,11 @@ type
     property Rotation: TPdfPageRotation read FRotation write SetRotation;
 
     property Annotations: TPdfAnnotationList read FAnnotations;
-    property FormFields: TPdfFormFieldList read GetFormFields;
   end;
 
   TPdfFormInvalidateEvent = procedure(Document: TPdfDocument; Page: TPdfPage; const PageRect: TPdfRect) of object;
   TPdfFormOutputSelectedRectEvent = procedure(Document: TPdfDocument; Page: TPdfPage; const PageRect: TPdfRect) of object;
   TPdfFormGetCurrentPageEvent = procedure(Document: TPdfDocument; var CurrentPage: TPdfPage) of object;
-  TPdfFormFieldFocusEvent = procedure(Document: TPdfDocument; Value: PWideChar; ValueLen: Integer; FieldFocused: Boolean) of object;
   TPdfExecuteNamedActionEvent = procedure(Document: TPdfDocument; NamedAction: TPdfNamedActionType) of object;
 
   TPdfAttachment = record
@@ -694,7 +579,6 @@ type
     FOnFormInvalidate: TPdfFormInvalidateEvent;
     FOnFormOutputSelectedRect: TPdfFormOutputSelectedRectEvent;
     FOnFormGetCurrentPage: TPdfFormGetCurrentPageEvent;
-    FOnFormFieldFocus: TPdfFormFieldFocusEvent;
     FOnExecuteNamedAction: TPdfExecuteNamedActionEvent;
 
     procedure InternLoadFromFile(const FileName: string; const Password: UTF8String);
@@ -778,7 +662,6 @@ type
     property OnFormInvalidate: TPdfFormInvalidateEvent read FOnFormInvalidate write FOnFormInvalidate;
     property OnFormOutputSelectedRect: TPdfFormOutputSelectedRectEvent read FOnFormOutputSelectedRect write FOnFormOutputSelectedRect;
     property OnFormGetCurrentPage: TPdfFormGetCurrentPageEvent read FOnFormGetCurrentPage write FOnFormGetCurrentPage;
-    property OnFormFieldFocus: TPdfFormFieldFocusEvent read FOnFormFieldFocus write FOnFormFieldFocus;
     property OnExecuteNamedAction: TPdfExecuteNamedActionEvent read FOnExecuteNamedAction write FOnExecuteNamedAction;
   end;
 
@@ -1311,8 +1194,6 @@ var
   Handler: PPdfFormFillHandler;
 begin
   Handler := PPdfFormFillHandler(pThis);
-  if (Handler.Document <> nil) and Assigned(Handler.Document.OnFormFieldFocus) then
-    Handler.Document.OnFormFieldFocus(Handler.Document, value, valueLen, is_focus <> 0);
 end;
 
 procedure FFI_FocusChange(param: PFPDF_FORMFILLINFO; annot: FPDF_ANNOTATION; page_index: Integer); cdecl;
@@ -2961,12 +2842,6 @@ begin
     Result := False;
 end;
 
-function TPdfPage.HasFormFieldAtPoint(X, Y: Double): TPdfFormFieldType;
-begin
-  Result := TPdfFormFieldType(FPDFPage_HasFormFieldAtPoint(FDocument.FForm, FPage, X, Y));
-  if (Result < Low(TPdfFormFieldType)) or (Result > High(TPdfFormFieldType)) then
-    Result := fftUnknown;
-end;
 
 function TPdfPage.GetHandle: FPDF_PAGE;
 begin
@@ -2987,10 +2862,6 @@ begin
     Result := nil;
 end;
 
-function TPdfPage.GetFormFields: TPdfFormFieldList;
-begin
-  Result := Annotations.FormFields;
-end;
 
 
 { _TPdfBitmapHideCtor }
@@ -3424,14 +3295,14 @@ end;
 
 destructor TPdfAnnotationList.Destroy;
 begin
-  FreeAndNil(FFormFields);
+  //FreeAndNil(FFormFields);
   FreeAndNil(FItems); // closes all annotations
   inherited Destroy;
 end;
 
 procedure TPdfAnnotationList.CloseAnnotations;
 begin
-  FreeAndNil(FFormFields);
+  //FreeAndNil(FFormFields);
   FreeAndNil(FItems); // closes all annotations
   FItems := TObjectList.Create;
 end;
@@ -3469,18 +3340,7 @@ begin
   end;
 end;
 
-procedure TPdfAnnotationList.DestroyingFormField(FormField: TPdfFormField);
-begin
-  if FFormFields <> nil then
-    FFormFields.DestroyingItem(FormField);
-end;
 
-function TPdfAnnotationList.GetFormFields: TPdfFormFieldList;
-begin
-  if FFormFields = nil then
-    FFormFields := TPdfFormFieldList.Create(Self);
-  Result := FFormFields;
-end;
 
 function TPdfAnnotationList.GetAnnotationsLoaded: Boolean;
 begin
@@ -3531,41 +3391,6 @@ begin
 end;
 
 
-{ TPdfFormFieldList }
-
-constructor TPdfFormFieldList.Create(AAnnotations: TPdfAnnotationList);
-var
-  I: Integer;
-begin
-  inherited Create;
-  FItems := TList.Create;
-
-  for I := 0 to AAnnotations.Count - 1 do
-    if AAnnotations[I].IsFormField then
-      FItems.Add(AAnnotations[I].FormField);
-end;
-
-destructor TPdfFormFieldList.Destroy;
-begin
-  FItems.Free;
-  inherited Destroy;
-end;
-
-function TPdfFormFieldList.GetCount: Integer;
-begin
-  Result := FItems.Count;
-end;
-
-function TPdfFormFieldList.GetItem(Index: Integer): TPdfFormField;
-begin
-  Result := TObject(FItems[Index]) as TPdfFormField;
-end;
-
-procedure TPdfFormFieldList.DestroyingItem(Item: TPdfFormField);
-begin
-  if (Item <> nil) and (FItems <> nil) then
-    FItems.Extract(Item);
-end;
 
 
 { TPdfAnnotation }
@@ -3581,10 +3406,6 @@ begin
   FSubType := FPDFAnnot_GetSubtype(FHandle);
   FLinkType := altUnsupported;
   case FSubType of
-    FPDF_ANNOT_WIDGET,
-    FPDF_ANNOT_XFAWIDGET:
-      FFormField := TPdfFormField.Create(Self);
-
     FPDF_ANNOT_LINK:
       begin
         Action := GetPdfLinkAction;
@@ -3603,7 +3424,7 @@ end;
 
 destructor TPdfAnnotation.Destroy;
 begin
-  FreeAndNil(FFormField);
+  //FreeAndNil(FFormField);
   if FHandle <> nil then
   begin
     FPDFPage_CloseAnnot(FHandle);
@@ -3632,15 +3453,7 @@ begin
   Result := FSubType = FPDF_ANNOT_LINK;
 end;
 
-function TPdfAnnotation.IsFormField: Boolean;
-begin
-  Result := FFormField <> nil;
-end;
 
-function TPdfAnnotation.GetFormField: TPdfFormField;
-begin
-  Result := FFormField;
-end;
 
 function TPdfAnnotation.GetAnnotationRect: TPdfRect;
 var
@@ -3728,263 +3541,27 @@ begin
 end;
 
 
-{ TPdfFormField }
-
-constructor TPdfFormField.Create(AAnnotation: TPdfAnnotation);
-begin
-  inherited Create;
-  FAnnotation := AAnnotation;
-  FPage := FAnnotation.FPage;
-  FHandle := FAnnotation.Handle;
-end;
-
-destructor TPdfFormField.Destroy;
-begin
-  FAnnotation.FFormField := nil;
-  FAnnotation.FPage.Annotations.DestroyingFormField(Self);
-  inherited Destroy;
-end;
-
-function TPdfFormField.IsXFAFormField: Boolean;
-begin
-  Result := IS_XFA_FORMFIELD(FPDFAnnot_GetFormFieldType(FPage.FDocument.FormHandle, Handle));
-end;
-
-function TPdfFormField.GetReadOnly: Boolean;
-begin
-  Result := fffReadOnly in Flags;
-end;
-
-function TPdfFormField.GetFlags: TPdfFormFieldFlags;
-var
-  FormFlags: Integer;
-begin
-  FormFlags := FPDFAnnot_GetFormFieldFlags(FPage.FDocument.FormHandle, Handle);
-
-  Result := [];
-  if FormFlags <> FPDF_FORMFLAG_NONE then
-  begin
-    if FormFlags and FPDF_FORMFLAG_READONLY <> 0 then
-      Include(Result, fffReadOnly);
-    if FormFlags and FPDF_FORMFLAG_REQUIRED <> 0 then
-      Include(Result, fffRequired);
-    if FormFlags and FPDF_FORMFLAG_NOEXPORT <> 0 then
-      Include(Result, fffNoExport);
-
-    if FormFlags and FPDF_FORMFLAG_TEXT_MULTILINE <> 0 then
-      Include(Result, fffTextMultiLine);
-    if FormFlags and FPDF_FORMFLAG_TEXT_PASSWORD <> 0 then
-      Include(Result, fffTextPassword);
-
-    if FormFlags and FPDF_FORMFLAG_CHOICE_COMBO <> 0 then
-      Include(Result, fffChoiceCombo);
-    if FormFlags and FPDF_FORMFLAG_CHOICE_EDIT <> 0 then
-      Include(Result, fffChoiceEdit);
-    if FormFlags and FPDF_FORMFLAG_CHOICE_MULTI_SELECT <> 0 then
-      Include(Result, fffChoiceMultiSelect);
-  end;
-end;
-
-function TPdfFormField.GetName: string;
-var
-  Len: Integer;
-begin
-  Len := FPDFAnnot_GetFormFieldName(FPage.FDocument.FormHandle, Handle, nil, 0) div SizeOf(WideChar) - 1;
-  if Len > 0 then
-  begin
-    SetLength(Result, Len);
-    FPDFAnnot_GetFormFieldName(FPage.FDocument.FormHandle, Handle, PWideChar(Result), (Len + 1) * SizeOf(WideChar));
-  end
-  else
-    Result := '';
-end;
-
-function TPdfFormField.GetAlternateName: string;
-var
-  Len: Integer;
-begin
-  Len := FPDFAnnot_GetFormFieldAlternateName(FPage.FDocument.FormHandle, Handle, nil, 0) div SizeOf(WideChar) - 1;
-  if Len > 0 then
-  begin
-    SetLength(Result, Len);
-    FPDFAnnot_GetFormFieldAlternateName(FPage.FDocument.FormHandle, Handle, PWideChar(Result), (Len + 1) * SizeOf(WideChar));
-  end
-  else
-    Result := '';
-end;
-
-function TPdfFormField.GetFieldType: TPdfFormFieldType;
-begin
-  Result := TPdfFormFieldType(FPDFAnnot_GetFormFieldType(FPage.FDocument.FormHandle, Handle));
-  if (Result < Low(TPdfFormFieldType)) or (Result > High(TPdfFormFieldType)) then
-    Result := fftUnknown;
-end;
-
-function TPdfFormField.GetValue: string;
-var
-  Len: Integer;
-begin
-  Len := FPDFAnnot_GetFormFieldValue(FPage.FDocument.FormHandle, Handle, nil, 0) div SizeOf(WideChar) - 1;
-  if Len > 0 then
-  begin
-    SetLength(Result, Len);
-    FPDFAnnot_GetFormFieldValue(FPage.FDocument.FormHandle, Handle, PWideChar(Result), (Len + 1) * SizeOf(WideChar));
-  end
-  else
-    Result := '';
-end;
-
-function TPdfFormField.GetExportValue: string;
-var
-  Len: Integer;
-begin
-  Len := FPDFAnnot_GetFormFieldExportValue(FPage.FDocument.FormHandle, Handle, nil, 0) div SizeOf(WideChar) - 1;
-  if Len > 0 then
-  begin
-    SetLength(Result, Len);
-    FPDFAnnot_GetFormFieldExportValue(FPage.FDocument.FormHandle, Handle, PWideChar(Result), (Len + 1) * SizeOf(WideChar));
-  end
-  else
-    Result := '';
-end;
-
-function TPdfFormField.GetOptionCount: Integer;
-begin
-  Result := FPDFAnnot_GetOptionCount(FPage.FDocument.FormHandle, Handle);
-  if Result < 0 then // annotation types that don't support options will return -1
-    Result := 0;
-end;
-
-function TPdfFormField.GetOptionLabel(Index: Integer): string;
-var
-  Len: Integer;
-begin
-  Len := FPDFAnnot_GetOptionLabel(FPage.FDocument.FormHandle, Handle, Index, nil, 0) div SizeOf(WideChar) - 1;
-  if Len > 0 then
-  begin
-    SetLength(Result, Len);
-    FPDFAnnot_GetOptionLabel(FPage.FDocument.FormHandle, Handle, Index, PWideChar(Result), (Len + 1) * SizeOf(WideChar));
-  end
-  else
-    Result := '';
-end;
-
-function TPdfFormField.IsOptionSelected(OptionIndex: Integer): Boolean;
-begin
-  Result := FPDFAnnot_IsOptionSelected(FPage.FDocument.FormHandle, Handle, OptionIndex) <> 0;
-end;
-
-function TPdfFormField.GetChecked: Boolean;
-begin
-  Result := FPDFAnnot_IsChecked(FPage.FDocument.FormHandle, Handle) <> 0;
-end;
-
-function TPdfFormField.GetControlCount: Integer;
-begin
-  Result := FPDFAnnot_GetFormControlCount(FPage.FDocument.FormHandle, Handle);
-end;
-
-function TPdfFormField.GetControlIndex: Integer;
-begin
-  Result := FPDFAnnot_GetFormControlIndex(FPage.FDocument.FormHandle, Handle);
-end;
-
-function TPdfFormField.BeginEditFormField: FPDF_ANNOTATION;
-var
-  AnnotPageIndex: Integer;
-begin
 
 
-  // Obtain the currently focused form field/annotation so that we can restore the focus after
-  // editing our form field.
-  if FORM_GetFocusedAnnot(FPage.FDocument.FormHandle, AnnotPageIndex, Result) = 0 then
-    Result := nil;
-end;
-
-procedure TPdfFormField.EndEditFormField(LastFocusedAnnot: FPDF_ANNOTATION);
-begin
-  // Restore the focus to the form field/annotation that had the focus before changing our form field.
-  // If no previous form field was focused, kill the focus.
-  if LastFocusedAnnot <> nil then
-  begin
-    if FORM_SetFocusedAnnot(FPage.FDocument.FormHandle, Handle) = 0 then
-      FORM_ForceToKillFocus(FPage.FDocument.FormHandle);
-    FPDFPage_CloseAnnot(LastFocusedAnnot);
-  end
-  else
-    FORM_ForceToKillFocus(FPage.FDocument.FormHandle);
-end;
-
-procedure TPdfFormField.SetValue(const Value: string);
-var
-  LastFocusedAnnot: FPDF_ANNOTATION;
-begin
 
 
-  if not ReadOnly then
-  begin
-    LastFocusedAnnot := BeginEditFormField();
-    try
-      if FORM_SetFocusedAnnot(FPage.FDocument.FormHandle, Handle) <> 0 then
-      begin
-        FORM_SelectAllText(FPage.FDocument.FormHandle, FPage.Handle);
-        FORM_ReplaceSelection(FPage.FDocument.FormHandle, FPage.Handle, PWideChar(Value));
-      end;
-    finally
-      EndEditFormField(LastFocusedAnnot);
-    end;
-  end;
-end;
-
-function TPdfFormField.SelectComboBoxOption(OptionIndex: Integer): Boolean;
-begin
-  Result := SelectListBoxOption(OptionIndex, True);
-end;
-
-function TPdfFormField.SelectListBoxOption(OptionIndex: Integer; Selected: Boolean): Boolean;
-var
-  LastFocusedAnnot: FPDF_ANNOTATION;
-begin
 
 
-  Result := False;
-  if not ReadOnly then
-  begin
-    LastFocusedAnnot := BeginEditFormField();
-    try
-      if FORM_SetFocusedAnnot(FPage.FDocument.FormHandle, Handle) <> 0 then
-        Result := FORM_SetIndexSelected(FPage.FDocument.FormHandle, FPage.Handle, OptionIndex, Ord(Selected <> False)) <> 0;
-    finally
-      EndEditFormField(LastFocusedAnnot);
-    end;
-  end;
-end;
-
-procedure TPdfFormField.SetChecked(const Value: Boolean);
-var
-  LastFocusedAnnot: FPDF_ANNOTATION;
-begin
 
 
-  if not ReadOnly and (FieldType in [fftCheckBox, fftRadioButton, fftXFACheckBox]) then
-  begin
-    if Value <> Checked then
-    begin
-      LastFocusedAnnot := BeginEditFormField();
-      try
-        if FORM_SetFocusedAnnot(FPage.FDocument.FormHandle, Handle) <> 0 then
-        begin
-          // Toggle the RadioButton/Checkbox by emulating "pressing the space bar".
-          FORM_OnKeyDown(FPage.FDocument.FormHandle, FPage.Handle, Ord(' '), 0);
-          FORM_OnChar(FPage.FDocument.FormHandle, FPage.Handle, Ord(' '), 0);
-          FORM_OnKeyUp(FPage.FDocument.FormHandle, FPage.Handle, Ord(' '), 0);
-        end;
-      finally
-        EndEditFormField(LastFocusedAnnot);
-      end;
-    end;
-  end;
-end;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 { TPdfLinkGotoDestination }

@@ -30,9 +30,6 @@ type
 
   TPdfDocument = class;
   TPdfPage = class;
-  TPdfAttachmentList = class;
-  TPdfAnnotationList = class;
-  TPdfAnnotation = class;
 
   TPdfPoint = record
     X, Y: Double;
@@ -204,60 +201,7 @@ type
 
 
 
-  TPdfAnnotation = class(TObject)
-  private
-    FPage: TPdfPage;
-    FHandle: FPDF_ANNOTATION;
-    FSubType: FPDF_ANNOTATION_SUBTYPE;
-    FLinkDest: FPDF_DEST;
-    FLinkType: TPdfAnnotationLinkType;
 
-    function GetPdfLinkAction: FPDF_ACTION;
-    function GetLinkUri: string;
-    function GetAnnotationRect: TPdfRect;
-    function GetLinkFileName: string;
-  protected
-    constructor Create(APage: TPdfPage; AHandle: FPDF_ANNOTATION);
-  public
-    destructor Destroy; override;
-
-    function IsLink: Boolean;
-
-
-    // IsLink:
-    property LinkType: TPdfAnnotationLinkType read FLinkType;
-    property LinkUri: string read GetLinkUri;
-    property LinkFileName: string read GetLinkFileName;
-
-    property AnnotationRect: TPdfRect read GetAnnotationRect;
-    property Handle: FPDF_ANNOTATION read FHandle;
-  end;
-
-  TPdfAnnotationList = class(TObject)
-  private
-    FPage: TPdfPage;
-    FItems: TObjectList;
-    function GetCount: Integer;
-    function GetItem(Index: Integer): TPdfAnnotation;
-    function GetAnnotationsLoaded: Boolean;
-  protected
-    procedure DestroyingItem(Item: TPdfAnnotation);
-    function FindLink(Link: FPDF_LINK): TPdfAnnotation;
-  public
-    constructor Create(APage: TPdfPage);
-    destructor Destroy; override;
-    procedure CloseAnnotations;
-    { NewTextAnnotation creates a new text annotation on the page. After adding one or more
-      annotations you must call Page.ApplyChanges to show them and make the persist before
-      saving the file. R is in page coordinates. }
-    function NewTextAnnotation(const Text: string; const R: TPdfRect): Boolean; {experimental;}
-
-    property AnnotationsLoaded: Boolean read GetAnnotationsLoaded;
-
-    property Count: Integer read GetCount;
-    property Items[Index: Integer]: TPdfAnnotation read GetItem; default;
-
-  end;
 
 
 
@@ -269,7 +213,6 @@ type
     FHeight: Single;
     FTransparency: Boolean;
     FRotation: TPdfPageRotation;
-    FAnnotations: TPdfAnnotationList;
     FTextHandle: FPDF_TEXTPAGE;
     FSearchHandle: FPDF_SCHHANDLE;
     FPageLinkHandle: FPDF_PAGELINK;
@@ -363,10 +306,6 @@ type
       the Uri parameter is set to the link's URI.
       X, Y are in page coordinates. }
     function IsUriLinkAtPoint(X, Y: Double; var Uri: string): Boolean; overload;
-    { GetLinkAtPoint returns the link annotation for the specified coordinates. If no link annotation
-      was found it return nil. It not only returns Uri but also Goto, RemoteGoto, Launch, EmbeddedGoto
-      link annotations. }
-    function GetLinkAtPoint(X, Y: Double): TPdfAnnotation;
 
     { WebLinks are URLs that are parsed from the PDFs text content. No link annotation exists
       for them, so the IsUriLinkAtPoint and GetLinkAtPoint methods don't work for them. }
@@ -385,7 +324,6 @@ type
     property Transparency: Boolean read FTransparency;
     property Rotation: TPdfPageRotation read FRotation write SetRotation;
 
-    property Annotations: TPdfAnnotationList read FAnnotations;
   end;
 
   TPdfFormInvalidateEvent = procedure(Document: TPdfDocument; Page: TPdfPage; const PageRect: TPdfRect) of object;
@@ -393,64 +331,7 @@ type
   TPdfFormGetCurrentPageEvent = procedure(Document: TPdfDocument; var CurrentPage: TPdfPage) of object;
   TPdfExecuteNamedActionEvent = procedure(Document: TPdfDocument; NamedAction: TPdfNamedActionType) of object;
 
-  TPdfAttachment = record
-  private
-    FDocument: TPdfDocument;
-    FHandle: FPDF_ATTACHMENT;
-    procedure CheckValid;
 
-    function GetName: string;
-    function GetKeyValue(const Key: string): string;
-    procedure SetKeyValue(const Key, Value: string);
-    function GetContentSize: Integer;
-  public
-    // SetContent/LoadFromXxx clears the Values[] dictionary.
-    procedure SetContent(const ABytes: TBytes); overload;
-    procedure SetContent(const ABytes: TBytes; Index: NativeInt; Count: Integer); overload;
-    procedure SetContent(ABytes: PByte; Count: Integer); overload;
-    procedure SetContent(const Value: RawByteString); overload;
-    procedure SetContent(const Value: string; Encoding: TEncoding = nil); overload; // Default-encoding is UTF-8
-    procedure LoadFromStream(Stream: TStream);
-    procedure LoadFromFile(const FileName: string);
-
-    procedure GetContent(var ABytes: TBytes); overload;
-    procedure GetContent(Buffer: PByte); overload; // use ContentSize to allocate enough memory
-    procedure GetContent(var Value: RawByteString); overload;
-    procedure GetContent(var Value: string; Encoding: TEncoding = nil); overload;
-    function GetContentAsBytes: TBytes;
-    function GetContentAsRawByteString: RawByteString;
-    function GetContentAsString(Encoding: TEncoding = nil): string; // Default-encoding is UTF-8
-
-    procedure SaveToStream(Stream: TStream);
-    procedure SaveToFile(const FileName: string);
-
-    function HasContent: Boolean;
-
-    function HasKey(const Key: string): Boolean;
-    function GetValueType(const Key: string): TPdfObjectType;
-
-    property Name: string read GetName;
-    property Values[const Key: string]: string read GetKeyValue write SetKeyValue;
-    property ContentSize: Integer read GetContentSize;
-
-    property Handle: FPDF_ATTACHMENT read FHandle;
-  end;
-
-  TPdfAttachmentList = class(TObject)
-  private
-    FDocument: TPdfDocument;
-    function GetCount: Integer;
-    function GetItem(Index: Integer): TPdfAttachment;
-  public
-    constructor Create(ADocument: TPdfDocument);
-
-    function Add(const Name: string): TPdfAttachment;
-    procedure Delete(Index: Integer);
-    function IndexOf(const Name: string): Integer;
-
-    property Count: Integer read GetCount;
-    property Items[Index: Integer]: TPdfAttachment read GetItem; default;
-  end;
 
   TPdfDocument = class(TObject)
   private type
@@ -463,7 +344,6 @@ type
   private
     FDocument: FPDF_DOCUMENT;
     FPages: TObjectList;
-    FAttachments: TPdfAttachmentList;
     FFileName: string;
     {$IFDEF MSWINDOWS}
     FFileHandle: THandle;
@@ -547,7 +427,6 @@ type
     property Pages[Index: Integer]: TPdfPage read GetPage;
     property PageSizes[Index: Integer]: TPdfPoint read GetPageSize;
 
-    property Attachments: TPdfAttachmentList read FAttachments;
 
     property Active: Boolean read GetActive;
     property PrintScaling: Boolean read GetPrintScaling;
@@ -1131,7 +1010,6 @@ constructor TPdfDocument.Create;
 begin
   inherited Create;
   FPages := TObjectList.Create;
-  FAttachments := TPdfAttachmentList.Create(Self);
   {$IFDEF MSWINDOWS}
   FFileHandle := INVALID_HANDLE_VALUE;
   {$ENDIF MSWINDOWS}
@@ -1145,7 +1023,6 @@ end;
 destructor TPdfDocument.Destroy;
 begin
   Close;
-  FAttachments.Free;
   FPages.Free;
   inherited Destroy;
 end;
@@ -1854,7 +1731,6 @@ begin
   inherited Create;
   FDocument := ADocument;
   FPage := APage;
-  FAnnotations := TPdfAnnotationList.Create(Self);
 
   AfterOpen;
 end;
@@ -1863,7 +1739,6 @@ destructor TPdfPage.Destroy;
 begin
   Close;
   FDocument.ExtractPage(Self);
-  FreeAndNil(FAnnotations);
   inherited Destroy;
 end;
 
@@ -1893,7 +1768,6 @@ end;
 
 procedure TPdfPage.Close;
 begin
-  FAnnotations.CloseAnnotations;
 
   if IsValidForm then
   begin
@@ -2157,7 +2031,6 @@ begin
     FPDFPage_GenerateContent(FPage);
 
     // Newly added text annotations will not show the text popup unless the page is notified.
-    FAnnotations.CloseAnnotations;
     if IsValidForm then
     begin
       FORM_DoPageAAction(FPage, FDocument.FForm, FPDFPAGE_AACTION_CLOSE);
@@ -2392,20 +2265,6 @@ begin
     Uri := '';
 end;
 
-function TPdfPage.GetLinkAtPoint(X, Y: Double): TPdfAnnotation;
-var
-  Link: FPDF_LINK;
-begin
-  Link := FPDFLink_GetLinkAtPoint(Handle, X, Y);
-  if Link <> nil then
-  begin
-    Result := Annotations.FindLink(Link);
-    if (Result <> nil) and (Result.LinkType = altUnsupported) then
-      Result := nil;
-  end
-  else
-    Result := nil;
-end;
 
 function TPdfPage.GetWebLinkCount: Integer;
 begin
@@ -2803,547 +2662,14 @@ begin
 end;
 
 
-{ TPdfAttachmentList }
 
-constructor TPdfAttachmentList.Create(ADocument: TPdfDocument);
-begin
-  inherited Create;
-  FDocument := ADocument;
-end;
 
-function TPdfAttachmentList.GetCount: Integer;
-begin
-  Result := FPDFDoc_GetAttachmentCount(FDocument.Handle);
-end;
 
-function TPdfAttachmentList.GetItem(Index: Integer): TPdfAttachment;
-var
-  Attachment: FPDF_ATTACHMENT;
-begin
-  Attachment := FPDFDoc_GetAttachment(FDocument.Handle, Index);
-  Result.FDocument := FDocument;
-  Result.FHandle := Attachment;
-end;
 
-procedure TPdfAttachmentList.Delete(Index: Integer);
-begin
-end;
 
-function TPdfAttachmentList.Add(const Name: string): TPdfAttachment;
-begin
-  Result.FDocument := FDocument;
-  Result.FHandle := FPDFDoc_AddAttachment(FDocument.Handle, PWideChar(Name));
-end;
 
-function TPdfAttachmentList.IndexOf(const Name: string): Integer;
-begin
-  for Result := 0 to Count - 1 do
-    if Items[Result].Name = Name then
-      Exit;
-  Result := -1;
-end;
 
 
-{ TPdfAttachment }
-
-function TPdfAttachment.GetName: string;
-var
-  ByteLen: LongWord;
-begin
-  CheckValid;
-  ByteLen := FPDFAttachment_GetName(Handle, nil, 0); // UTF 16 including #0 terminator in byte size
-  if ByteLen <= 2 then
-    Result := ''
-  else
-  begin
-    SetLength(Result, ByteLen div SizeOf(WideChar) - 1);
-    FPDFAttachment_GetName(FHandle, PWideChar(Result), ByteLen);
-  end;
-end;
-
-procedure TPdfAttachment.CheckValid;
-begin
-
-end;
-
-procedure TPdfAttachment.SetContent(ABytes: PByte; Count: Integer);
-begin
-  CheckValid;
-end;
-
-procedure TPdfAttachment.SetContent(const Value: RawByteString);
-begin
-  if Value = '' then
-    SetContent(nil, 0)
-  else
-    SetContent(PByte(PAnsiChar(Value)), Length(Value) * SizeOf(AnsiChar));
-end;
-
-procedure TPdfAttachment.SetContent(const Value: string; Encoding: TEncoding = nil);
-begin
-  CheckValid;
-  if Value = '' then
-    SetContent(nil, 0)
-  else if (Encoding = nil) or (Encoding = TEncoding.UTF8) then
-    SetContent(UTF8Encode(Value))
-  else
-    SetContent(Encoding.GetBytes(Value));
-end;
-
-procedure TPdfAttachment.SetContent(const ABytes: TBytes; Index: NativeInt; Count: Integer);
-var
-  Len: NativeInt;
-begin
-  CheckValid;
-
-  Len := Length(ABytes);
-  if Count = 0 then
-    SetContent(nil, 0)
-  else
-    SetContent(@ABytes[Index], Count);
-end;
-
-procedure TPdfAttachment.SetContent(const ABytes: TBytes);
-begin
-  SetContent(ABytes, 0, Length(ABytes));
-end;
-
-procedure TPdfAttachment.LoadFromStream(Stream: TStream);
-var
-  StreamPos, StreamSize: Int64;
-  Buf: PByte;
-  Count: Integer;
-begin
-  CheckValid;
-
-  StreamPos := Stream.Position;
-  StreamSize := Stream.Size;
-  Count := StreamSize - StreamPos;
-  if Count = 0 then
-    SetContent(nil, 0)
-  else
-  begin
-    if Stream is TCustomMemoryStream then // direct access to the memory
-    begin
-      SetContent(PByte(TCustomMemoryStream(Stream).Memory) + StreamPos, Count);
-      Stream.Position := StreamSize; // simulate the ReadBuffer call
-    end
-    else
-    begin
-      if Count = 0 then
-        SetContent(nil, 0)
-      else
-      begin
-        GetMem(Buf, Count);
-        try
-          Stream.ReadBuffer(Buf^, Count);
-          SetContent(Buf, Count);
-        finally
-          FreeMem(Buf);
-        end;
-      end;
-    end;
-  end;
-end;
-
-procedure TPdfAttachment.LoadFromFile(const FileName: string);
-var
-  Stream: TFileStream;
-begin
-  CheckValid;
-
-  Stream := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
-  try
-    LoadFromStream(Stream);
-  finally
-    Stream.Free;
-  end;
-end;
-
-function TPdfAttachment.HasKey(const Key: string): Boolean;
-begin
-  CheckValid;
-  Result := FPDFAttachment_HasKey(FHandle, PAnsiChar(UTF8Encode(Key))) <> 0;
-end;
-
-function TPdfAttachment.GetValueType(const Key: string): TPdfObjectType;
-begin
-  CheckValid;
-  Result := TPdfObjectType(FPDFAttachment_GetValueType(FHandle, PAnsiChar(UTF8Encode(Key))));
-end;
-
-procedure TPdfAttachment.SetKeyValue(const Key, Value: string);
-begin
-  CheckValid;
-end;
-
-function TPdfAttachment.GetKeyValue(const Key: string): string;
-var
-  ByteLen: LongWord;
-  Utf8Key: UTF8String;
-begin
-  CheckValid;
-  Utf8Key := UTF8Encode(Key);
-  ByteLen := FPDFAttachment_GetStringValue(FHandle, PAnsiChar(Utf8Key), nil, 0);
-
-  if ByteLen <= 2 then
-    Result := ''
-  else
-  begin
-    SetLength(Result, (ByteLen div SizeOf(WideChar) - 1));
-    FPDFAttachment_GetStringValue(FHandle, PAnsiChar(Utf8Key), PWideChar(Result), ByteLen);
-  end;
-end;
-
-function TPdfAttachment.GetContentSize: Integer;
-var
-  OutBufLen: LongWord;
-begin
-  CheckValid;
-  if FPDFAttachment_GetFile(FHandle, nil, 0, OutBufLen) = 0 then
-    Result := 0
-  else
-    Result := Integer(OutBufLen);
-end;
-
-function TPdfAttachment.HasContent: Boolean;
-var
-  OutBufLen: LongWord;
-begin
-  CheckValid;
-  Result := FPDFAttachment_GetFile(FHandle, nil, 0, OutBufLen) <> 0;
-end;
-
-procedure TPdfAttachment.SaveToFile(const FileName: string);
-var
-  Stream: TStream;
-begin
-  CheckValid;
-
-  Stream := TFileStream.Create(FileName, fmCreate or fmShareDenyWrite);
-  try
-    SaveToStream(Stream);
-  finally
-    Stream.Free;
-  end;
-end;
-
-procedure TPdfAttachment.SaveToStream(Stream: TStream);
-var
-  Size: Integer;
-  OutBufLen: LongWord;
-  StreamPos: Int64;
-  Buf: PByte;
-begin
-  Size := ContentSize;
-
-  if Size > 0 then
-  begin
-    if Stream is TCustomMemoryStream then // direct access to the memory
-    begin
-      StreamPos := Stream.Position;
-      if StreamPos + Size > Stream.Size then
-        Stream.Size := StreamPos + Size; // allocate enough memory
-      Stream.Position := StreamPos;
-
-      FPDFAttachment_GetFile(FHandle, PByte(TCustomMemoryStream(Stream).Memory) + StreamPos, Size, OutBufLen);
-      Stream.Position := StreamPos + Size; // simulate Stream.WriteBuffer
-    end
-    else
-    begin
-      GetMem(Buf, Size);
-      try
-        FPDFAttachment_GetFile(FHandle, Buf, Size, OutBufLen);
-        Stream.WriteBuffer(Buf^, Size);
-      finally
-        FreeMem(Buf);
-      end;
-    end;
-  end;
-end;
-
-procedure TPdfAttachment.GetContent(var Value: string; Encoding: TEncoding);
-var
-  Size: Integer;
-  OutBufLen: LongWord;
-  Buf: PByte;
-begin
-  Size := ContentSize;
-  if Size <= 0 then
-    Value := ''
-  else if Encoding = TEncoding.Unicode then // no conversion needed
-  begin
-    SetLength(Value, Size div SizeOf(WideChar));
-    FPDFAttachment_GetFile(FHandle, PWideChar(Value), Size, OutBufLen);
-  end
-  else
-  begin
-    if Encoding = nil then
-      Encoding := TEncoding.UTF8;
-
-    GetMem(Buf, Size);
-    try
-      FPDFAttachment_GetFile(FHandle, Buf, Size, OutBufLen);
-      SetLength(Value, TEncodingAccess(Encoding).GetMemCharCount(Buf, Size));
-      if Value <> '' then
-        TEncodingAccess(Encoding).GetMemChars(Buf, Size, PWideChar(Value), Length(Value));
-    finally
-      FreeMem(Buf);
-    end;
-  end;
-end;
-
-procedure TPdfAttachment.GetContent(var Value: RawByteString);
-var
-  Size: Integer;
-  OutBufLen: LongWord;
-begin
-  Size := ContentSize;
-
-  if Size <= 0 then
-    Value := ''
-  else
-  begin
-    SetLength(Value, Size);
-    FPDFAttachment_GetFile(FHandle, PAnsiChar(Value), Size, OutBufLen);
-  end;
-end;
-
-procedure TPdfAttachment.GetContent(Buffer: PByte);
-var
-  OutBufLen: LongWord;
-begin
-  FPDFAttachment_GetFile(FHandle, Buffer, ContentSize, OutBufLen);
-end;
-
-procedure TPdfAttachment.GetContent(var ABytes: TBytes);
-var
-  Size: Integer;
-  OutBufLen: LongWord;
-begin
-  Size := ContentSize;
-
-  if Size <= 0 then
-    ABytes := nil
-  else
-  begin
-    SetLength(ABytes, Size);
-    FPDFAttachment_GetFile(FHandle, @ABytes[0], Size, OutBufLen);
-  end;
-end;
-
-function TPdfAttachment.GetContentAsBytes: TBytes;
-begin
-  GetContent(Result);
-end;
-
-function TPdfAttachment.GetContentAsRawByteString: RawByteString;
-begin
-  GetContent(Result);
-end;
-
-function TPdfAttachment.GetContentAsString(Encoding: TEncoding): string;
-begin
-  GetContent(Result, Encoding);
-end;
-
-
-{ TPdfAnnotationList }
-
-constructor TPdfAnnotationList.Create(APage: TPdfPage);
-begin
-  inherited Create;
-  FPage := APage;
-  FItems := TObjectList.Create;
-end;
-
-destructor TPdfAnnotationList.Destroy;
-begin
-  //FreeAndNil(FFormFields);
-  FreeAndNil(FItems); // closes all annotations
-  inherited Destroy;
-end;
-
-procedure TPdfAnnotationList.CloseAnnotations;
-begin
-  //FreeAndNil(FFormFields);
-  FreeAndNil(FItems); // closes all annotations
-  FItems := TObjectList.Create;
-end;
-
-function TPdfAnnotationList.GetCount: Integer;
-begin
-  Result := FPDFPage_GetAnnotCount(FPage.Handle);
-end;
-
-function TPdfAnnotationList.GetItem(Index: Integer): TPdfAnnotation;
-var
-  Annot: FPDF_ANNOTATION;
-begin
-
-  if (Index < 0) or (Index >= FItems.Count) or (FItems[Index] = nil) then
-  begin
-    Annot := FPDFPage_GetAnnot(FPage.Handle, Index);
-
-    while FItems.Count <= Index do
-      FItems.Add(nil);
-    FItems[Index] := TPdfAnnotation.Create(FPage, Annot);
-  end;
-  Result := FItems[Index] as TPdfAnnotation;
-end;
-
-procedure TPdfAnnotationList.DestroyingItem(Item: TPdfAnnotation);
-var
-  Index: Integer;
-begin
-  if (Item <> nil) and (FItems <> nil) then
-  begin
-    Index := FItems.IndexOf(Item);
-    if Index <> -1 then
-      FItems.List[Index] := nil; // Bypass the Items[] setter to not destroy the Item twice
-  end;
-end;
-
-
-
-function TPdfAnnotationList.GetAnnotationsLoaded: Boolean;
-begin
-  Result := FItems.Count > 0;
-end;
-
-function TPdfAnnotationList.NewTextAnnotation(const Text: string; const R: TPdfRect): Boolean;
-var
-  Annot: FPDF_ANNOTATION;
-  SingleR: FS_RECTF;
-begin
-
-  SingleR.left := R.Left;
-  SingleR.right := R.Right;
-  // Page coordinates are upside down
-  if R.Top < R.Bottom then
-  begin
-    SingleR.top := R.Bottom;
-    SingleR.bottom := R.Top;
-  end
-  else
-  begin
-    SingleR.top := R.Top;
-    SingleR.bottom := R.Bottom;
-  end;
-
-
-  Annot := FPDFPage_CreateAnnot(FPage.Handle, FPDF_ANNOT_TEXT);
-  Result := Annot <> nil;
-  if Result then
-  begin
-    FPDFAnnot_SetRect(Annot, @SingleR);
-    FPDFAnnot_SetStringValue(Annot, 'Contents', PWideChar(Text));
-  end;
-end;
-
-function TPdfAnnotationList.FindLink(Link: FPDF_LINK): TPdfAnnotation;
-var
-  I: Integer;
-begin
-  for I := 0 to Count - 1 do
-  begin
-    Result := Items[I];
-    if (Result.IsLink) and (FPDFAnnot_GetLink(Result.Handle) = Link) then
-      Exit;
-  end;
-  Result := nil;
-end;
-
-
-
-
-{ TPdfAnnotation }
-
-constructor TPdfAnnotation.Create(APage: TPdfPage; AHandle: FPDF_ANNOTATION);
-var
-  Action: FPDF_ACTION;
-begin
-  inherited Create;
-  FPage := APage;
-  FHandle := AHandle;
-
-  FSubType := FPDFAnnot_GetSubtype(FHandle);
-  FLinkType := altUnsupported;
-  case FSubType of
-    FPDF_ANNOT_LINK:
-      begin
-        Action := GetPdfLinkAction;
-        if Action <> nil then
-          FLinkType := TPdfAnnotationLinkType(FPDFAction_GetType(Action))
-        else
-        begin
-          // If we have a Dest-Link then we treat it like a Goto Action-Link (see GetLinkGotoDestination)
-          FLinkDest := FPDFLink_GetDest(FPage.FDocument.Handle, FPDFAnnot_GetLink(Handle));
-          if FLinkDest <> nil then
-            FLinkType := altGoto;
-        end;
-      end;
-  end;
-end;
-
-destructor TPdfAnnotation.Destroy;
-begin
-  //FreeAndNil(FFormField);
-  if FHandle <> nil then
-  begin
-    FPDFPage_CloseAnnot(FHandle);
-    FHandle := nil;
-  end;
-  if FPage.FAnnotations <> nil then
-    FPage.FAnnotations.DestroyingItem(Self);
-  inherited Destroy;
-end;
-
-function TPdfAnnotation.GetPdfLinkAction: FPDF_ACTION;
-var
-  Link: FPDF_LINK;
-begin
-  Result := nil;
-  if FSubType = FPDF_ANNOT_LINK then
-  begin
-    Link := FPDFAnnot_GetLink(Handle);
-    if Link <> nil then
-      Result := FPDFLink_GetAction(Link);
-  end;
-end;
-
-function TPdfAnnotation.IsLink: Boolean;
-begin
-  Result := FSubType = FPDF_ANNOT_LINK;
-end;
-
-
-
-function TPdfAnnotation.GetAnnotationRect: TPdfRect;
-var
-  R: FS_RECTF;
-begin
-  if FPDFAnnot_GetRect(Handle, @R) <> 0 then
-    Result := TPdfRect.New(R.left, R.top, R.right, R.bottom)
-  else
-    Result := TPdfRect.Empty;
-end;
-
-function TPdfAnnotation.GetLinkUri: string;
-begin
-  if LinkType = altURI then
-    Result := FPage.GetPdfActionUriPath(GetPdfLinkAction)
-  else
-    Result := '';
-end;
-
-function TPdfAnnotation.GetLinkFileName: string;
-begin
-  if LinkType in [altRemoteGoto, altLaunch, altEmbeddedGoto] then // PDFium documentation is missing the PDFACTION_EMBEDDEDGOTO part.
-    Result := FPage.GetPdfActionFilePath(GetPdfLinkAction)
-  else
-    Result := '';
-end;
 
 
 

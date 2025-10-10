@@ -1,16 +1,11 @@
 unit PdfiumCore;
 
-{$IFDEF FPC}
+
 {$MODE DelphiUnicode}
-//{$CODEPAGE UTF8}
-//{$MODE Delphi}
 
-{$ENDIF FPC}
+{$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
+{$STRINGCHECKS OFF}
 
-{$IFNDEF FPC}
-  {$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
-  {$STRINGCHECKS OFF}
-{$ENDIF ~FPC}
 
 interface
 
@@ -28,10 +23,6 @@ uses
   Types, SysUtils, Classes, Contnrs,
   PdfiumLib, LoggerUnit;
 
-//const
-  // DIN A4
-//  PdfDefaultPageWidth = 595;
-//PdfDefaultPageHeight = 842;
 
 type
 
@@ -173,17 +164,6 @@ type
     altEmbeddedGoto = PDFACTION_EMBEDDEDGOTO // Go to a destination in an embedded file.
   );
 
-  TPdfLinkGotoDestinationViewKind = (
-    lgdvUnknown = PDFDEST_VIEW_UNKNOWN_MODE,
-    lgdvXYZ     = PDFDEST_VIEW_XYZ,
-    lgdvFit     = PDFDEST_VIEW_FIT,
-    lgdvFitH    = PDFDEST_VIEW_FITH,
-    lgdvFitV    = PDFDEST_VIEW_FITV,
-    lgdvFitR    = PDFDEST_VIEW_FITR,
-    lgdvFitB    = PDFDEST_VIEW_FITB,
-    lgdvFitBH   = PDFDEST_VIEW_FITBH,
-    lgdvFitBV   = PDFDEST_VIEW_FITBV
-  );
 
   // Make the TObject.Create constructor private to hide it, so that the TPdfBitmap.Create
   // overloads won't allow calling TObject.Create.
@@ -223,34 +203,6 @@ type
 
 
 
-  TPdfLinkGotoDestination = class(TObject)
-  private
-    FPageIndex: Integer;
-    FXValid: Boolean;
-    FYValid: Boolean;
-    FZoomValid: Boolean;
-    FX: Single;
-    FY: Single;
-    FZoom: Single;
-    FViewKind: TPdfLinkGotoDestinationViewKind;
-    FViewParams: TPdfFloatArray;
-  public
-    constructor Create(APageIndex: Integer; AXValid, AYValid, AZoomValid: Boolean; AX, AY, AZoom: Single;
-      AViewKind: TPdfLinkGotoDestinationViewKind; const AViewParams: TPdfFloatArray);
-
-    property PageIndex: Integer read FPageIndex;
-
-    property XValid: Boolean read FXValid;
-    property YValid: Boolean read FYValid;
-    property ZoomValid: Boolean read FZoomValid;
-
-    property X: Single read FX;
-    property Y: Single read FY;
-    property Zoom: Single read FZoom;
-
-    property ViewKind: TPdfLinkGotoDestinationViewKind read FViewKind;
-    property ViewParams: TPdfFloatArray read FViewParams;
-  end;
 
   TPdfAnnotation = class(TObject)
   private
@@ -271,7 +223,6 @@ type
 
     function IsLink: Boolean;
 
-    function GetLinkGotoDestination(var LinkGotoDestination: TPdfLinkGotoDestination; ARemoteDocument: TPdfDocument = nil): Boolean;
 
     // IsLink:
     property LinkType: TPdfAnnotationLinkType read FLinkType;
@@ -308,49 +259,7 @@ type
 
   end;
 
-  TPdfLinkInfo = class(TObject)
-  private
-    FLinkAnnotation: TPdfAnnotation;
-    FWebLinkUrl: string;
-    function GetLinkFileName: string;
-    function GetLinkType: TPdfAnnotationLinkType;
-    function GetLinkUri: string;
-  public
-    constructor Create(ALinkAnnotation: TPdfAnnotation; const AWebLinkUrl: string);
-    function GetLinkGotoDestination(var LinkGotoDestination: TPdfLinkGotoDestination; ARemoteDocument: TPdfDocument = nil): Boolean;
 
-    function IsAnnontation: Boolean;
-    function IsWebLink: Boolean;
-
-    property LinkType: TPdfAnnotationLinkType read GetLinkType;
-    property LinkUri: string read GetLinkUri;
-    property LinkFileName: string read GetLinkFileName;
-
-    property LinkAnnotation: TPdfAnnotation read FLinkAnnotation;
-  end;
-
-  { TPdfPageWebLinksInfo caches all the WebLinks for one page. This makes the IsWebLinkAt() methods
-    much faster than always calling into the PDFium library. The URLs are not cached. }
-  TPdfPageWebLinksInfo = class(TObject)
-  private
-    FPage: TPdfPage;
-    FWebLinksRects: array of TPdfRectArray;
-    procedure GetPageWebLinks;
-    function GetWebLinkIndex(X, Y: Double): Integer;
-
-    function GetCount: Integer;
-    function GetRect(Index: Integer): TPdfRectArray;
-    function GetURL(Index: Integer): string;
-  public
-    constructor Create(APage: TPdfPage);
-
-    function IsWebLinkAt(X, Y: Double): Boolean; overload;
-    function IsWebLinkAt(X, Y: Double; var Url: string): Boolean; overload;
-
-    property Count: Integer read GetCount;
-    property URLs[Index: Integer]: string read GetURL;
-    property Rects[Index: Integer]: TPdfRectArray read GetRect;
-  end;
 
   TPdfPage = class(TObject)
   private
@@ -666,52 +575,7 @@ type
   end;
 
   {$IFDEF MSWINDOWS}
-  TPdfDocumentPrinterStatusEvent = procedure(Sender: TObject; CurrentPageNum, PageCount: Integer) of object;
 
-  TPdfDocumentPrinter = class(TObject)
-  private
-    FBeginPrintCounter: Integer;
-
-    FPrinterDC: HDC;
-    FPrintPortraitOrientation: Boolean;
-    FPaperSize: TSize;
-    FPrintArea: TSize;
-    FMargins: TPoint;
-
-    FFitPageToPrintArea: Boolean;
-    FOnPrintStatus: TPdfDocumentPrinterStatusEvent;
-
-    function IsPortraitOrientation(AWidth, AHeight: Integer): Boolean;
-    procedure GetPrinterBounds;
-  protected
-    function PrinterStartDoc(const AJobTitle: string): Boolean; virtual; abstract;
-    procedure PrinterEndDoc; virtual; abstract;
-    procedure PrinterStartPage; virtual; abstract;
-    procedure PrinterEndPage; virtual; abstract;
-    function GetPrinterDC: HDC; virtual; abstract;
-
-    procedure InternPrintPage(APage: TPdfPage; X, Y, Width, Height: Double);
-  public
-    constructor Create;
-
-    { BeginPrint must be called before printing multiple documents.
-      Returns false if the printer can't print. (e.g. The user aborted the PDF Printer's FileDialog) }
-    function BeginPrint(const AJobTitle: string = ''): Boolean;
-    { EndPrint must be called after printing multiple documents were printed. }
-    procedure EndPrint;
-
-    { Prints a range of PDF document pages (0..PageCount-1) }
-    function Print(ADocument: TPdfDocument; AFromPageIndex, AToPageIndex: Integer): Boolean; overload;
-    { Prints all pages of the PDF document. }
-    function Print(ADocument: TPdfDocument): Boolean; overload;
-
-
-    { If FitPageToPrintArea is true the page fill be scaled to fit into the printable area. }
-    property FitPageToPrintArea: Boolean read FFitPageToPrintArea write FFitPageToPrintArea default True;
-
-    { OnPrintStatus is triggered after every printed page }
-    property OnPrintStatus: TPdfDocumentPrinterStatusEvent read FOnPrintStatus write FOnPrintStatus;
-  end;
   {$ENDIF MSWINDOWS}
 
 function SetThreadPdfUnsupportedFeatureHandler(const Handler: TPdfUnsupportedFeatureHandler): TPdfUnsupportedFeatureHandler;
@@ -3481,64 +3345,11 @@ begin
     Result := '';
 end;
 
-function TPdfAnnotation.GetLinkGotoDestination(var LinkGotoDestination: TPdfLinkGotoDestination; ARemoteDocument: TPdfDocument): Boolean;
-var
-  Action: FPDF_ACTION;
-  Dest: FPDF_DEST;
-  Doc: TPdfDocument;
-  PageIndex: Integer;
-  HasXVal, HasYVal, HasZoomVal: FPDF_BOOL;
-  X, Y, Zoom: FS_FLOAT;
-  ViewKind: TPdfLinkGotoDestinationViewKind;
-  NumViewParams: LongWord;
-  ViewParams: TPdfFloatArray;
-begin
-  Result := False;
 
-  Action := GetPdfLinkAction;
-  if ((Action <> nil) or (FLinkDest <> nil)) and (LinkType in [altGoto, altRemoteGoto, altEmbeddedGoto]) then
-  begin
-    Doc := FPage.FDocument;
-    if LinkType = altRemoteGoto then
-    begin
-      // For RemoteGoto the FPDFAction_GetDest function must be called with the remote document
 
-      Doc := ARemoteDocument;
-    end;
 
-    // If we have a Dest-Link instead of a Goto Action-Link we treat it as if it was a Goto Action-Link
-    if FLinkDest <> nil then
-      Dest := FLinkDest
-    else
-      Dest := FPDFAction_GetDest(Doc.Handle, Action);
 
-    // Extract the information
-    if Dest <> nil then
-    begin
-      PageIndex := FPDFDest_GetDestPageIndex(Doc.Handle, Dest);
-      if PageIndex <> -1 then
-      begin
-        if FPDFDest_GetLocationInPage(Dest, HasXVal, HasYVal, HasZoomVal, X, Y, Zoom) <> 0 then
-        begin
-          SetLength(ViewParams, 4); // max. 4 params
-          NumViewParams := 4;
-          ViewKind := TPdfLinkGotoDestinationViewKind(FPDFDest_GetView(Dest, @NumViewParams, @ViewParams[0]));
-          if NumViewParams > 4 then // range check
-            NumViewParams := 4;
-          SetLength(ViewParams, NumViewParams);
 
-          LinkGotoDestination := TPdfLinkGotoDestination.Create(
-            PageIndex,
-            HasXVal <> 0, HasYVal <> 0, HasZoomVal <> 0,
-            X, Y, Zoom,
-            ViewKind, ViewParams
-          );
-          Result := True;
-        end;
-      end;
-    end;
-  end;
-end;
 
 
 
@@ -3550,380 +3361,17 @@ end;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{ TPdfLinkGotoDestination }
-
-constructor TPdfLinkGotoDestination.Create(APageIndex: Integer; AXValid, AYValid, AZoomValid: Boolean;
-  AX, AY, AZoom: Single; AViewKind: TPdfLinkGotoDestinationViewKind; const AViewParams: TPdfFloatArray);
-begin
-  inherited Create;
-  FPageIndex := APageIndex;
-
-  FXValid := AXValid;
-  FYValid := AYValid;
-  FZoomValid := AZoomValid;
-
-  FX := AX;
-  FY := AY;
-  FZoom := AZoom;
-
-  FViewKind := AViewKind;
-  FViewParams := AViewParams;
-end;
-
-
-{ TPdfLinkInfo }
-
-constructor TPdfLinkInfo.Create(ALinkAnnotation: TPdfAnnotation; const AWebLinkUrl: string);
-begin
-  inherited Create;
-  FLinkAnnotation := ALinkAnnotation;
-  FWebLinkUrl := AWebLinkUrl;
-end;
-
-function TPdfLinkInfo.IsAnnontation: Boolean;
-begin
-  Result := FLinkAnnotation <> nil;
-end;
-
-function TPdfLinkInfo.IsWebLink: Boolean;
-begin
-  Result := FLinkAnnotation = nil;
-end;
-
-function TPdfLinkInfo.GetLinkFileName: string;
-begin
-  if FLinkAnnotation <> nil then
-    Result := FLinkAnnotation.LinkFileName;
-end;
-
-function TPdfLinkInfo.GetLinkType: TPdfAnnotationLinkType;
-begin
-  if FLinkAnnotation <> nil then
-    Result := FLinkAnnotation.LinkType
-  else if FWebLinkUrl <> '' then
-    Result := altURI
-  else
-    Result := altUnsupported;
-end;
-
-function TPdfLinkInfo.GetLinkUri: string;
-begin
-  if FLinkAnnotation <> nil then
-    Result := FLinkAnnotation.LinkUri
-  else
-    Result := FWebLinkUrl;
-end;
-
-function TPdfLinkInfo.GetLinkGotoDestination(var LinkGotoDestination: TPdfLinkGotoDestination;
-  ARemoteDocument: TPdfDocument): Boolean;
-begin
-  if FLinkAnnotation <> nil then
-    Result := FLinkAnnotation.GetLinkGotoDestination(LinkGotoDestination, ARemoteDocument)
-  else
-    Result := False;
-end;
-
-
-{ TPdfPageWebLinksInfo }
-
-constructor TPdfPageWebLinksInfo.Create(APage: TPdfPage);
-begin
-  inherited Create;
-  FPage := APage;
-  GetPageWebLinks;
-end;
-
-procedure TPdfPageWebLinksInfo.GetPageWebLinks;
-var
-  LinkIndex, LinkCount: Integer;
-  RectIndex, RectCount: Integer;
-begin
-  if FPage <> nil then
-  begin
-    LinkCount := FPage.GetWebLinkCount;
-    SetLength(FWebLinksRects, LinkCount);
-    for LinkIndex := 0 to LinkCount - 1 do
-    begin
-      RectCount := FPage.GetWebLinkRectCount(LinkIndex);
-      SetLength(FWebLinksRects[LinkIndex], RectCount);
-      for RectIndex := 0 to RectCount - 1 do
-        FWebLinksRects[LinkIndex][RectIndex] := FPage.GetWebLinkRect(LinkIndex, RectIndex);
-    end;
-  end;
-end;
-
-function TPdfPageWebLinksInfo.GetWebLinkIndex(X, Y: Double): Integer;
-var
-  RectIndex: Integer;
-  Pt: TPdfPoint;
-begin
-  if FPage <> nil then
-  begin
-    Pt.X := X;
-    Pt.Y := Y;
-    for Result := 0 to Length(FWebLinksRects) - 1 do
-      for RectIndex := 0 to Length(FWebLinksRects[Result]) - 1 do
-        if FWebLinksRects[Result][RectIndex].PtIn(Pt) then
-          Exit;
-  end;
-  Result := -1;
-end;
-
-function TPdfPageWebLinksInfo.GetCount: Integer;
-begin
-  Result := Length(FWebLinksRects);
-end;
-
-function TPdfPageWebLinksInfo.GetRect(Index: Integer): TPdfRectArray;
-begin
-  Result := FWebLinksRects[Index];
-end;
-
-function TPdfPageWebLinksInfo.GetURL(Index: Integer): string;
-begin
-  Result := FPage.GetWebLinkURL(Index);
-end;
-
-function TPdfPageWebLinksInfo.IsWebLinkAt(X, Y: Double): Boolean;
-begin
-  Result := GetWebLinkIndex(X, Y) <> -1;
-end;
-
-function TPdfPageWebLinksInfo.IsWebLinkAt(X, Y: Double; var Url: string): Boolean;
-var
-  Index: Integer;
-begin
-  Index := GetWebLinkIndex(X, Y);
-  Result := Index <> -1;
-  if Result then
-    Url := FPage.GetWebLinkURL(Index)
-  else
-    Url := '';
-end;
-
-{$IFDEF MSWINDOWS}
-{ TPdfDocumentPrinter }
-
-constructor TPdfDocumentPrinter.Create;
-begin
-  inherited Create;
-  FFitPageToPrintArea := True;
-end;
-
-function TPdfDocumentPrinter.IsPortraitOrientation(AWidth, AHeight: Integer): Boolean;
-begin
-  Result := AHeight > AWidth;
-end;
-
-procedure TPdfDocumentPrinter.GetPrinterBounds;
-begin
-  FPaperSize.cx := GetDeviceCaps(FPrinterDC, PHYSICALWIDTH);
-  FPaperSize.cy := GetDeviceCaps(FPrinterDC, PHYSICALHEIGHT);
-
-  FPrintArea.cx := GetDeviceCaps(FPrinterDC, HORZRES);
-  FPrintArea.cy := GetDeviceCaps(FPrinterDC, VERTRES);
-
-  FMargins.X := GetDeviceCaps(FPrinterDC, PHYSICALOFFSETX);
-  FMargins.Y := GetDeviceCaps(FPrinterDC, PHYSICALOFFSETY);
-end;
-
-function TPdfDocumentPrinter.BeginPrint(const AJobTitle: string): Boolean;
-begin
-  Inc(FBeginPrintCounter);
-  if FBeginPrintCounter = 1 then
-  begin
-    Result := PrinterStartDoc(AJobTitle);
-    if Result then
-    begin
-      FPrinterDC := GetPrinterDC;
-
-      GetPrinterBounds;
-      FPrintPortraitOrientation := IsPortraitOrientation(FPaperSize.cx, FPaperSize.cy);
-    end
-    else
-    begin
-      FPrinterDC := 0;
-      Dec(FBeginPrintCounter);
-    end;
-  end
-  else
-    Result := True;
-end;
-
-procedure TPdfDocumentPrinter.EndPrint;
-begin
-  Dec(FBeginPrintCounter);
-  if FBeginPrintCounter = 0 then
-  begin
-    if FPrinterDC <> 0 then
-    begin
-      FPrinterDC := 0;
-      PrinterEndDoc;
-    end;
-  end;
-end;
-
-function TPdfDocumentPrinter.Print(ADocument: TPdfDocument): Boolean;
-begin
-  if ADocument <> nil then
-    Result := Print(ADocument, 0, ADocument.PageCount - 1)
-  else
-    Result := False;
-end;
-
-function TPdfDocumentPrinter.Print(ADocument: TPdfDocument; AFromPageIndex, AToPageIndex: Integer): Boolean;
-var
-  PageIndex: Integer;
-  WasPageLoaded: Boolean;
-  PdfPage: TPdfPage;
-  PagePortraitOrientation: Boolean;
-  X, Y, W, H: Integer;
-  PrintedPageNum, PrintPageCount: Integer;
-begin
-  Result := False;
-  if ADocument = nil then
-    Exit;
-
-
-  PrintedPageNum := 0;
-  PrintPageCount := AToPageIndex - AFromPageIndex + 1;
-
-  if BeginPrint then
-  begin
-    try
-      if ADocument.FForm <> nil then
-        FORM_DoDocumentAAction(ADocument.FForm, FPDFDOC_AACTION_WP); // BeforePrint
-
-      for PageIndex := AFromPageIndex to AToPageIndex do
-      begin
-        PdfPage := nil;
-        WasPageLoaded := ADocument.IsPageLoaded(PageIndex);
-        try
-          PdfPage := ADocument.Pages[PageIndex];
-          PagePortraitOrientation := IsPortraitOrientation(Trunc(PdfPage.Width), Trunc(PdfPage.Height));
-
-          if FitPageToPrintArea then
-          begin
-            X := 0;
-            Y := 0;
-            W := FPrintArea.cx;
-            H := FPrintArea.cy;
-          end
-          else
-          begin
-            X := -FMargins.X;
-            Y := -FMargins.Y;
-            W := FPaperSize.cx;
-            H := FPaperSize.cy;
-          end;
-
-          if PagePortraitOrientation <> FPrintPortraitOrientation then
-          begin
-            SwapInts(X, Y);
-            SwapInts(W, H);
-          end;
-
-          // Print page
-          PrinterStartPage;
-          try
-            if (W > 0) and (H > 0) then
-              InternPrintPage(PdfPage, X, Y, W, H);
-          finally
-            PrinterEndPage;
-          end;
-          Inc(PrintedPageNum);
-          if Assigned(OnPrintStatus) then
-            OnPrintStatus(Self, PrintedPageNum, PrintPageCount);
-        finally
-          if not WasPageLoaded and (PdfPage <> nil) then
-            PdfPage.Close; // release memory
-        end;
-        if ADocument.FForm <> nil then
-          FORM_DoDocumentAAction(ADocument.FForm, FPDFDOC_AACTION_DP); // AfterPrint
-      end;
-    finally
-      EndPrint;
-    end;
-    Result := True;
-  end;
-end;
-
-procedure TPdfDocumentPrinter.InternPrintPage(APage: TPdfPage; X, Y, Width, Height: Double);
-
-  function RoundToInt(Value: Double): Integer;
-  var
-    F: Double;
-  begin
-    Result := Trunc(Value);
-    F := Frac(Value);
-    if F < 0 then
-    begin
-      if F <= -0.5 then
-        Result := Result - 1;
-    end
-    else if F >= 0.5 then
-      Result := Result + 1;
-  end;
-
-var
-  PageWidth, PageHeight: Double;
-  PageScale, PrintScale: Double;
-  ScaledWidth, ScaledHeight: Double;
-begin
-  PageWidth := APage.Width;
-  PageHeight := APage.Height;
-
-  PageScale := PageHeight / PageWidth;
-  PrintScale := Height / Width;
-
-  ScaledWidth := Width;
-  ScaledHeight := Height;
-  if PageScale > PrintScale then
-    ScaledWidth := Width * (PrintScale / PageScale)
-  else
-    ScaledHeight := Height * (PageScale / PrintScale);
-
-  X := X + (Width - ScaledWidth) / 2;
-  Y := Y + (Height - ScaledHeight) / 2;
-
-  APage.Draw(
-    FPrinterDC,
-    RoundToInt(X), RoundToInt(Y), RoundToInt(ScaledWidth), RoundToInt(ScaledHeight),
-    prNormal, [proPrinting, proAnnotations]
-  );
-end;
-{$ENDIF MSWINDOWS}
 
 initialization
-  {$IFDEF FPC}
+
   InitCriticalSection(PDFiumInitCritSect);
   InitCriticalSection(FFITimersCritSect);
-  {$ELSE}
-  InitializeCriticalSectionAndSpinCount(PDFiumInitCritSect, 4000);
-  InitializeCriticalSectionAndSpinCount(FFITimersCritSect, 4000);
-  {$ENDIF FPC}
+
 
 finalization
-  {$IFDEF FPC}
+
   DoneCriticalSection(FFITimersCritSect);
   DoneCriticalSection(PDFiumInitCritSect);
-  {$ELSE}
-  DeleteCriticalSection(FFITimersCritSect);
-  DeleteCriticalSection(PDFiumInitCritSect);
-  {$ENDIF FPC}
+
 
 end.

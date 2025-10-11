@@ -13,9 +13,12 @@ interface
 
 uses
 
-  LCLType,
-  Types, SysUtils, Classes, Contnrs, Math,
-  PdfiumLib, LoggerUnit;
+  Types,
+  SysUtils,
+  Classes,
+  Contnrs,
+  Math,
+  PdfiumLib;
 
 
 type
@@ -73,14 +76,12 @@ type
     FPage: FPDF_PAGE;
     constructor Create(ADocument: TPdfDocument; APage: FPDF_PAGE);
     procedure Open;
-    function GetHandle: FPDF_PAGE;
   public
     destructor Destroy; override;
     procedure Close;
 
     // Draw the PDF page without the form field values into the bitmap.
     procedure DrawToPdfBitmap(APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
-    property Handle: FPDF_PAGE read GetHandle;
   end;
 
   TPdfDocument = class(TObject)
@@ -109,7 +110,6 @@ type
     property FileName: string read FFileName;
     property PageCount: Integer read GetPageCount;
     property Pages[Index: Integer]: TPdfPage read GetPage;
-    property Handle: FPDF_DOCUMENT read FDocument;
   end;
 
 var
@@ -123,21 +123,21 @@ var
 procedure InitLib;
 {$J+}
 const
-  Initialized: Integer = 0;
+  Initialized: boolean = false;
 {$J-}
 begin
   if Initialized = 0 then
   begin
     EnterCriticalSection(PDFiumInitCritSect);
     try
-      if Initialized = 0 then
+      if not Initialized then
       begin
         {$IFDEF CPUX64}
         // PDFium requires all arithmetic exceptions to be masked in 64bit mode
         SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
         {$ENDIF CPUX64}
         InitPDFium(PDFiumDllDir);
-        Initialized := 1;
+        Initialized := true;
       end;
     finally
       LeaveCriticalSection(PDFiumInitCritSect);
@@ -280,11 +280,6 @@ begin
   FPDF_RenderPageBitmap(APdfBitmap.FBitmap, FPage, X, Y, Width, Height, 0, 1);
 end;
 
-function TPdfPage.GetHandle: FPDF_PAGE;
-begin
-  Open;
-  Result := FPage;
-end;
 
 
 { _TPdfBitmapHideCtor }

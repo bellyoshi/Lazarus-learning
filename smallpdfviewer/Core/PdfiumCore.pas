@@ -12,14 +12,8 @@ interface
 {.$UNDEF MSWINDOWS}
 
 uses
-  {$IFDEF MSWINDOWS}
-  Windows, //WinSpool,
-  {$ELSE}
-    {$IFDEF FPC}
+
   LCLType,
-    {$ENDIF FPC}
-  ExtCtrls, // for TTimer
-  {$ENDIF MSWINDOWS}
   Types, SysUtils, Classes, Contnrs, Math,
   PdfiumLib, LoggerUnit;
 
@@ -94,12 +88,6 @@ type
     FDocument: FPDF_DOCUMENT;
     FPages: TObjectList;
     FFileName: string;
-    {$IFDEF MSWINDOWS}
-    FFileHandle: THandle;
-    FFileMapping: THandle;
-    {$ELSE}
-    FFileStream: TFileStream;
-    {$ENDIF MSWINDOWS}
     FBuffer: PByte;
     FBytes: TBytes;
     FClosing: Boolean;
@@ -163,9 +151,6 @@ constructor TPdfDocument.Create;
 begin
   inherited Create;
   FPages := TObjectList.Create;
-  {$IFDEF MSWINDOWS}
-  FFileHandle := INVALID_HANDLE_VALUE;
-  {$ENDIF MSWINDOWS}
 
   InitLib;
 end;
@@ -190,35 +175,12 @@ begin
       FDocument := nil;
     end;
 
-    {$IFDEF MSWINDOWS}
-    if FFileMapping <> 0 then
-    begin
-      if FBuffer <> nil then
-      begin
-        UnmapViewOfFile(FBuffer);
-        FBuffer := nil;
-      end;
-      CloseHandle(FFileMapping);
-      FFileMapping := 0;
-    end
-    else
-    {$ENDIF MSWINDOWS}
     if FBuffer <> nil then
     begin
       FreeMem(FBuffer);
       FBuffer := nil;
     end;
     FBytes := nil;
-
-    {$IFDEF MSWINDOWS}
-    if FFileHandle <> INVALID_HANDLE_VALUE then
-    begin
-      CloseHandle(FFileHandle);
-      FFileHandle := INVALID_HANDLE_VALUE;
-    end;
-    {$ELSE}
-    FreeAndNil(FFileStream);
-    {$ENDIF MSWINDOWS}
 
     FFileName := '';
   finally

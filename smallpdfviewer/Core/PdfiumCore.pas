@@ -73,13 +73,6 @@ type
     Document: TPdfDocument;
   end;
 
-
-
-
-
-
-
-
   TPdfPage = class(TObject)
   private
     FDocument: TPdfDocument;
@@ -90,16 +83,11 @@ type
   public
     destructor Destroy; override;
     procedure Close;
-    function IsLoaded: Boolean;
 
     // Draw the PDF page without the form field values into the bitmap.
     procedure DrawToPdfBitmap(APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
-
     property Handle: FPDF_PAGE read GetHandle;
   end;
-
-
-
 
   TPdfDocument = class(TObject)
   private
@@ -118,7 +106,6 @@ type
     FUnsupportedFeatures: Boolean;
 
     procedure InternLoadFromFile(const FileName: string; const Password: UTF8String);
-    procedure InternLoadFromMem(Buffer: PByte; Size: NativeInt; const Password: UTF8String);
     function GetPage(Index: Integer): TPdfPage;
     function GetPageCount: Integer;
     procedure ExtractPage(APage: TPdfPage);
@@ -137,16 +124,10 @@ type
     property Handle: FPDF_DOCUMENT read FDocument;
   end;
 
-  {$IFDEF MSWINDOWS}
-
-  {$ENDIF MSWINDOWS}
-
 var
   PDFiumDllDir: string = '';
 
 implementation
-
-
 
 var
   PDFiumInitCritSect: TRTLCriticalSection;
@@ -171,12 +152,6 @@ begin
     end;
   end;
 end;
-
-
-
-
-
-
 
 { TPdfDocument }
 
@@ -254,16 +229,6 @@ begin
   FFileName := FileName;
 end;
 
-
-procedure TPdfDocument.InternLoadFromMem(Buffer: PByte; Size: NativeInt; const Password: UTF8String);
-begin
-  if Size > 0 then
-  begin
-    FDocument := FPDF_LoadMemDocument64(Buffer, Size, PAnsiChar(Pointer(Password)));
-    DocumentLoaded;
-  end;
-end;
-
 procedure TPdfDocument.InternLoadFromFile(const FileName: string; const Password: UTF8String);
 var
   Utf8FileName: UTF8String;
@@ -277,7 +242,6 @@ procedure TPdfDocument.DocumentLoaded;
 begin
   FPages.Count := FPDF_GetPageCount(FDocument);
 end;
-
 
 function TPdfDocument.GetPage(Index: Integer): TPdfPage;
 var
@@ -310,10 +274,6 @@ begin
   Index := FPages.IndexOf(APage);
   Result := FPDF_LoadPage(FDocument, Index);
 end;
-
-
-
-
 
 { TPdfPage }
 
@@ -348,30 +308,17 @@ begin
   end;
 end;
 
-
-
 procedure TPdfPage.DrawToPdfBitmap(APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
 begin
   Open;
   FPDF_RenderPageBitmap(APdfBitmap.FBitmap, FPage, X, Y, Width, Height, 0, 0);
 end;
 
-
-
-
-
-
 function TPdfPage.GetHandle: FPDF_PAGE;
 begin
   Open;
   Result := FPage;
 end;
-
-function TPdfPage.IsLoaded: Boolean;
-begin
-  Result := FPage <> nil;
-end;
-
 
 
 { _TPdfBitmapHideCtor }
@@ -383,6 +330,7 @@ end;
 
 
 { TPdfBitmap }
+
 
 constructor TPdfBitmap.Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean);
 begin
@@ -434,42 +382,10 @@ begin
     FPDFBitmap_FillRect(FBitmap, ALeft, ATop, AWidth, AHeight, AColor);
 end;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 initialization
-
   InitCriticalSection(PDFiumInitCritSect);
 
-
 finalization
-
   DoneCriticalSection(PDFiumInitCritSect);
-
 
 end.

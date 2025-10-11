@@ -20,7 +20,7 @@ uses
     {$ENDIF FPC}
   ExtCtrls, // for TTimer
   {$ENDIF MSWINDOWS}
-  Types, SysUtils, Classes, Contnrs,
+  Types, SysUtils, Classes, Contnrs, Math,
   PdfiumLib, LoggerUnit;
 
 
@@ -144,6 +144,10 @@ begin
     try
       if Initialized = 0 then
       begin
+        {$IFDEF CPUX64}
+        // PDFium requires all arithmetic exceptions to be masked in 64bit mode
+        SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
+        {$ENDIF CPUX64}
         InitPDFium(PDFiumDllDir);
         Initialized := 1;
       end;
@@ -311,7 +315,7 @@ end;
 procedure TPdfPage.DrawToPdfBitmap(APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
 begin
   Open;
-  FPDF_RenderPageBitmap(APdfBitmap.FBitmap, FPage, X, Y, Width, Height, 0, 0);
+  FPDF_RenderPageBitmap(APdfBitmap.FBitmap, FPage, X, Y, Width, Height, 0, 1);
 end;
 
 function TPdfPage.GetHandle: FPDF_PAGE;

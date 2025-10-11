@@ -3,12 +3,14 @@
 // DLL Version: chromium/6611
 
 unit PdfiumLib;
+{$IFDEF FPC}
   {$MODE DelphiUnicode}
+{$ENDIF FPC}
 
-
+{$IFNDEF FPC}
   {$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
   {$STRINGCHECKS OFF} // It only slows down Delphi strings in Delphi 2009 and 2010
-
+{$ENDIF ~FPC}
 {$SCOPEDENUMS ON}
 
 {.$DEFINE DLLEXPORT} // stdcall in WIN32 instead of CDECL in WIN32 (The library switches between those from release to release)

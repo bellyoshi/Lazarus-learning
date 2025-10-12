@@ -126,7 +126,7 @@ const
   Initialized: boolean = false;
 {$J-}
 begin
-  if Initialized = 0 then
+  if not Initialized then
   begin
     EnterCriticalSection(PDFiumInitCritSect);
     try

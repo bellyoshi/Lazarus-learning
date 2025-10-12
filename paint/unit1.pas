@@ -115,6 +115,7 @@ type
     procedure SetCurrentTool(Tool: TDrawingTool);
     procedure DrawShape(ACanvas: TCanvas; StartPt, EndPt: TPoint);
     procedure FloodFill(ACanvas: TCanvas; X, Y: Integer; FillColor, BorderColor: TColor);
+    procedure FloodFillAuto(ACanvas: TCanvas; X, Y: Integer; FillColor: TColor);
     
   public
     { Public declarations }
@@ -215,8 +216,8 @@ begin
     if FCurrentTool = dtFill then
     begin
       SaveToUndoStack;
-      // 境界色を取得（クリックした位置の色）
-      FloodFill(FBitmap.Canvas, X, Y, FCurrentColor, FBitmap.Canvas.Pixels[X, Y]);
+      // 自動境界検出による塗りつぶしを実行
+      FloodFillAuto(FBitmap.Canvas, X, Y, FCurrentColor);
       PaintBox1.Invalidate;
       
       // デバッグ情報
@@ -620,7 +621,12 @@ begin
   
   try
     OldColor := ACanvas.Pixels[X, Y];
-    if (OldColor = BorderColor) or (OldColor = FillColor) then Exit;
+    
+    // 既に同じ色の場合は何もしない
+    if OldColor = FillColor then Exit;
+    
+    // 境界色と同じ場合は塗りつぶさない
+    if OldColor = BorderColor then Exit;
     
     // スタックベースのFloodFill実装
     SetLength(Stack, 1000);
@@ -632,7 +638,9 @@ begin
       CurrentPoint := PopPoint;
       if (CurrentPoint.X < 0) or (CurrentPoint.Y < 0) then Continue;
       
-      if (ACanvas.Pixels[CurrentPoint.X, CurrentPoint.Y] = OldColor) then
+      // 現在のピクセルが塗りつぶし対象の色で、かつ境界色でない場合
+      if (ACanvas.Pixels[CurrentPoint.X, CurrentPoint.Y] = OldColor) and 
+         (ACanvas.Pixels[CurrentPoint.X, CurrentPoint.Y] <> BorderColor) then
       begin
         ACanvas.Pixels[CurrentPoint.X, CurrentPoint.Y] := FillColor;
         
@@ -645,6 +653,90 @@ begin
     end;
     
     SetLength(Stack, 0);
+  except
+    on E: Exception do
+    begin
+      Caption := 'お絵かきソフト - 塗りつぶしエラー: ' + E.Message;
+    end;
+  end;
+end;
+
+procedure TForm1.FloodFillAuto(ACanvas: TCanvas; X, Y: Integer; FillColor: TColor);
+var
+  OldColor: TColor;
+  Stack: array of TPoint;
+  StackTop: Integer;
+  CurrentPoint: TPoint;
+  Visited: array of array of Boolean;
+  i, j: Integer;
+  
+  procedure PushPoint(AX, AY: Integer);
+  begin
+    if (AX >= 0) and (AY >= 0) and (AX < ACanvas.Width) and (AY < ACanvas.Height) then
+    begin
+      if not Visited[AX, AY] then
+      begin
+        if StackTop >= Length(Stack) then
+          SetLength(Stack, Length(Stack) + 1000);
+        Stack[StackTop] := Point(AX, AY);
+        Inc(StackTop);
+        Visited[AX, AY] := True;
+      end;
+    end;
+  end;
+  
+  function PopPoint: TPoint;
+  begin
+    if StackTop > 0 then
+    begin
+      Dec(StackTop);
+      Result := Stack[StackTop];
+    end
+    else
+      Result := Point(-1, -1);
+  end;
+  
+begin
+  if not Assigned(ACanvas) then Exit;
+  if (X < 0) or (Y < 0) or (X >= ACanvas.Width) or (Y >= ACanvas.Height) then Exit;
+  
+  try
+    OldColor := ACanvas.Pixels[X, Y];
+    
+    // 既に同じ色の場合は何もしない
+    if OldColor = FillColor then Exit;
+    
+    // 訪問済み配列を初期化
+    SetLength(Visited, ACanvas.Width, ACanvas.Height);
+    for i := 0 to ACanvas.Width - 1 do
+      for j := 0 to ACanvas.Height - 1 do
+        Visited[i, j] := False;
+    
+    // スタックベースのFloodFill実装
+    SetLength(Stack, 1000);
+    StackTop := 0;
+    PushPoint(X, Y);
+    
+    while StackTop > 0 do
+    begin
+      CurrentPoint := PopPoint;
+      if (CurrentPoint.X < 0) or (CurrentPoint.Y < 0) then Continue;
+      
+      // 現在のピクセルが塗りつぶし対象の色の場合
+      if ACanvas.Pixels[CurrentPoint.X, CurrentPoint.Y] = OldColor then
+      begin
+        ACanvas.Pixels[CurrentPoint.X, CurrentPoint.Y] := FillColor;
+        
+        // 4方向の隣接ピクセルをスタックに追加
+        PushPoint(CurrentPoint.X + 1, CurrentPoint.Y);
+        PushPoint(CurrentPoint.X - 1, CurrentPoint.Y);
+        PushPoint(CurrentPoint.X, CurrentPoint.Y + 1);
+        PushPoint(CurrentPoint.X, CurrentPoint.Y - 1);
+      end;
+    end;
+    
+    SetLength(Stack, 0);
+    SetLength(Visited, 0, 0);
   except
     on E: Exception do
     begin

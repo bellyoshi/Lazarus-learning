@@ -33,52 +33,7 @@ type
   FPDF_BYTESTRING = PAnsiChar;
   
   // Timer callback function type
-  TFPDFTimerCallback = procedure(idEvent: Integer); cdecl;
-  
-  //// System time structure
-  //{$IFDEF MSWINDOWS}
-  //PFPDF_SYSTEMTIME = PSystemTime;
-  //FPDF_SYSTEMTIME = TSystemTime;
-  //{$ELSE}
-  //PFPDF_SYSTEMTIME = ^FPDF_SYSTEMTIME;
-  //FPDF_SYSTEMTIME = record
-  //  wYear: Word;          // years since 1900
-  //  wMonth: Word;         // months since January - [0,11]
-  //  wDayOfWeek: Word;     // days since Sunday - [0,6]
-  //  wDay: Word;           // day of the month - [1,31]
-  //  wHour: Word;          // hours since midnight - [0,23]
-  //  wMinute: Word;        // minutes after the hour - [0,59]
-  //  wSecond: Word;        // seconds after the minute - [0,59]
-  //  wMilliseconds: Word;  // milliseconds after the second - [0,999]
-  //end;
-  //{$ENDIF MSWINDOWS}
-  //
-  //// Form fill info structure
-  //PFPDF_FORMFILLINFO = ^FPDF_FORMFILLINFO;
-  //FPDF_FORMFILLINFO = record
-  //  // Version number of the interface.
-  //  version: Integer;
-  //  
-  //  // Version 1 methods
-  //  Release: procedure(pThis: PFPDF_FORMFILLINFO); cdecl;
-  //  FFI_Invalidate: procedure(pThis: PFPDF_FORMFILLINFO; page: FPDF_PAGE; left, top, right, bottom: Double); cdecl;
-  //  FFI_OutputSelectedRect: procedure(pThis: PFPDF_FORMFILLINFO; page: FPDF_PAGE; left, top, right, bottom: Double); cdecl;
-  //  FFI_SetCursor: procedure(pThis: PFPDF_FORMFILLINFO; nCursorType: Integer); cdecl;
-  //  FFI_SetTimer: function(pThis: PFPDF_FORMFILLINFO; uElapse: Integer; lpTimerFunc: TFPDFTimerCallback): Integer; cdecl;
-  //  FFI_KillTimer: procedure(pThis: PFPDF_FORMFILLINFO; nTimerID: Integer); cdecl;
-  //  FFI_GetLocalTime: function(pThis: PFPDF_FORMFILLINFO): FPDF_SYSTEMTIME; cdecl;
-  //  FFI_OnChange: procedure(pThis: PFPDF_FORMFILLINFO); cdecl;
-  //  FFI_GetPage: function(pThis: PFPDF_FORMFILLINFO; document: FPDF_DOCUMENT; nPageIndex: Integer): FPDF_PAGE; cdecl;
-  //  FFI_GetCurrentPage: function(pThis: PFPDF_FORMFILLINFO; document: FPDF_DOCUMENT): FPDF_PAGE; cdecl;
-  //  FFI_GetRotation: function(pThis: PFPDF_FORMFILLINFO; page: FPDF_PAGE): Integer; cdecl;
-  //  FFI_ExecuteNamedAction: procedure(pThis: PFPDF_FORMFILLINFO; namedAction: FPDF_BYTESTRING); cdecl;
-  //  FFI_SetTextFieldFocus: procedure(pThis: PFPDF_FORMFILLINFO; page: FPDF_PAGE; value: FPDF_BYTESTRING; valueLen: Integer; isFocus: FPDF_BOOL); cdecl;
-  //  FFI_DoURIAction: procedure(pThis: PFPDF_FORMFILLINFO; uri: FPDF_BYTESTRING); cdecl;
-  //  FFI_DoGoToAction: procedure(pThis: PFPDF_FORMFILLINFO; nPageIndex, zoomMode: Integer; fPosArray: PSingle; sizeofArray: Integer); cdecl;
-  //  
-  //  // Version 2 methods
-  //  FFI_DoURIActionWithKeyboardModifier: procedure(param: PFPDF_FORMFILLINFO; uri: FPDF_BYTESTRING; modifiers: Integer); cdecl;
-  //end;
+  //TFPDFTimerCallback = procedure(idEvent: Integer); cdecl;
 
 procedure InitPDFium(const DllPath: string = '' {$IFDEF PDF_ENABLE_V8}; const ResPath: string = ''{$ENDIF});
 procedure FPDF_InitLibrary(); cdecl; external PDFiumDll name 'FPDF_InitLibrary';

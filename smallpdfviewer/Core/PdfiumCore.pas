@@ -133,9 +133,9 @@ begin
       if not Initialized then
       begin
         {$IFDEF CPUX64}
-        // PDFium requires all arithmetic exceptions to be masked in 64bit mode
+        ////// PDFium requires all arithmetic exceptions to be masked in 64bit mode
         SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
-        {$ENDIF CPUX64}
+       {$ENDIF CPUX64}
         InitPDFium(PDFiumDllDir);
         Initialized := true;
       end;

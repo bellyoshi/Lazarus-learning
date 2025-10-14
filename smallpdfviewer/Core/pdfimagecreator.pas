@@ -18,9 +18,9 @@ type
     procedure SetPageIndex(AValue: Integer);
 
   public
-    constructor Create(const Filename: string; PageIndex: Integer = 0);  // コンストラクタ
-    destructor Destroy; override;  // デストラクタ
-    function GetBitmap(Width, Height: Integer): TBitmap;  // ビットマップ取得
+    constructor Create(const Filename: string; PageIndex: Integer = 0);
+    destructor Destroy; override;
+    function GetBitmap(Width, Height: Integer): TBitmap;
     function GetPageCount : Integer ;
     property PageCount : Integer read GetPageCount;
     property PageIndex : Integer read FPageIndex write SetPageIndex;
@@ -89,14 +89,6 @@ begin
   inherited Create;
 
   FFilePath := Filename;
-
-  {initialize}
-  {$IFDEF CPUX64}
-  //PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x64\V8XFA';
-  PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x64';
-  {$ELSE}
-  PDFiumDllDir := ExtractFilePath(ParamStr(0)) + 'x86';
-  {$ENDIF CPUX64}
 
 
   // PDF ドキュメントをロード

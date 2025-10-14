@@ -64,12 +64,12 @@ type
     property Bitmap: FPDF_BITMAP read FBitmap;
   end;
 
-  PPdfFormFillHandler = ^TPdfFormFillHandler;
-  TPdfFormFillHandler = record
-    FormFillInfo: FPDF_FORMFILLINFO;
-    Document: TPdfDocument;
-  end;
-
+  //PPdfFormFillHandler = ^TPdfFormFillHandler;
+  //TPdfFormFillHandler = record
+  //  FormFillInfo: FPDF_FORMFILLINFO;
+  //  Document: TPdfDocument;
+  //end;
+  //
   TPdfPage = class(TObject)
   private
     FDocument: TPdfDocument;

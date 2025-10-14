@@ -9,7 +9,7 @@ unit PdfiumCore;
 
 interface
 
-{.$UNDEF MSWINDOWS}
+
 
 uses
 
@@ -27,15 +27,13 @@ type
   TPdfPage = class;
 
   TPdfBitmapFormat = (
-    bfGrays = FPDFBitmap_Gray, // Gray scale bitmap, one byte per pixel.
-    bfBGR   = FPDFBitmap_BGR,  // 3 bytes per pixel, byte order: blue, green, red.
-    bfBGRx  = FPDFBitmap_BGRx, // 4 bytes per pixel, byte order: blue, green, red, unused.
-    bfBGRA  = FPDFBitmap_BGRA  // 4 bytes per pixel, byte order: blue, green, red, alpha.
+    bfGrays = 1, // FPDFBitmap_Gray - グレースケールビットマップ、1ピクセルあたり1バイト
+    bfBGR   = 2, // FPDFBitmap_BGR - 1ピクセルあたり3バイト、バイト順序：blue, green, red
+    bfBGRx  = 3, // FPDFBitmap_BGRx - 1ピクセルあたり4バイト、バイト順序：blue, green, red、未使用
+    bfBGRA  = 4  // FPDFBitmap_BGRA - 1ピクセルあたり4バイト、バイト順序：blue, green, red、alpha
   );
 
 
-  // Make the TObject.Create constructor private to hide it, so that the TPdfBitmap.Create
-  // overloads won't allow calling TObject.Create.
   _TPdfBitmapHideCtor = class(TObject)
   private
     constructor Create;
@@ -50,9 +48,7 @@ type
     FBytesPerScanLine: Integer;
   public
     constructor Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean = False); overload;
-    //constructor Create(AWidth, AHeight: Integer; AAlpha: Boolean); overload;
     constructor Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat); overload;
-    //constructor Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat; ABuffer: Pointer; ABytesPerScanline: Integer); overload;
     destructor Destroy; override;
 
     procedure FillRect(ALeft, ATop, AWidth, AHeight: Integer; AColor: FPDF_DWORD);
@@ -64,12 +60,6 @@ type
     property Bitmap: FPDF_BITMAP read FBitmap;
   end;
 
-  //PPdfFormFillHandler = ^TPdfFormFillHandler;
-  //TPdfFormFillHandler = record
-  //  FormFillInfo: FPDF_FORMFILLINFO;
-  //  Document: TPdfDocument;
-  //end;
-  //
   TPdfPage = class(TObject)
   private
     FDocument: TPdfDocument;
@@ -80,7 +70,7 @@ type
     destructor Destroy; override;
     procedure Close;
 
-    // Draw the PDF page without the form field values into the bitmap.
+    // フォームフィールドの値を除いてPDFページをビットマップに描画
     procedure DrawToPdfBitmap(APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
   end;
 
@@ -133,10 +123,10 @@ begin
       if not Initialized then
       begin
         {$IFDEF CPUX64}
-        ////// PDFium requires all arithmetic exceptions to be masked in 64bit mode
+        // PDFiumは64ビットモードで全ての算術例外をマスクする必要がある
         SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
-       {$ENDIF CPUX64}
-        InitPDFium(PDFiumDllDir);
+        {$ENDIF CPUX64}
+        FPDF_InitLibrary();
         Initialized := true;
       end;
     finally

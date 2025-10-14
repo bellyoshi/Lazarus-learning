@@ -10,17 +10,7 @@ interface
 const
   PDFiumDll = 'pdfium.dll';
 
-const
-  // More DIB formats
-  FPDFBitmap_Unknown = 0; // Unknown or unsupported format.
-  FPDFBitmap_Gray    = 1; // Gray scale bitmap, one byte per pixel.
-  FPDFBitmap_BGR     = 2; // 3 bytes per pixel, byte order: blue, green, red.
-  FPDFBitmap_BGRx    = 3; // 4 bytes per pixel, byte order: blue, green, red, unused.
-  FPDFBitmap_BGRA    = 4; // 4 bytes per pixel, byte order: blue, green, red, alpha.
-
-  //定数・列挙型
 type
-  // Helper data type for type safety.
   __FPDF_PTRREC = record end;
   __PFPDF_PTRREC = ^__FPDF_PTRREC;
   
@@ -31,26 +21,23 @@ type
   FPDF_BOOL = Integer;
   FPDF_STRING = PAnsiChar;
   FPDF_BYTESTRING = PAnsiChar;
-  
-  // Timer callback function type
-  //TFPDFTimerCallback = procedure(idEvent: Integer); cdecl;
 
-procedure InitPDFium(const DllPath: string = '' {$IFDEF PDF_ENABLE_V8}; const ResPath: string = ''{$ENDIF});
+
 procedure FPDF_InitLibrary(); cdecl; external PDFiumDll name 'FPDF_InitLibrary';
 procedure FPDF_DestroyLibrary(); cdecl; external PDFiumDll name 'FPDF_DestroyLibrary';
 
-//ドキュメント関連関数
+// ドキュメント関連関数
 function FPDF_LoadDocument(file_path: FPDF_STRING; password: FPDF_BYTESTRING): FPDF_DOCUMENT; cdecl; external PDFiumDll;
 procedure FPDF_CloseDocument(document: FPDF_DOCUMENT); cdecl;external PDFiumDll;
 function FPDF_GetPageCount(document: FPDF_DOCUMENT): Integer; cdecl;external PDFiumDll;
 
-//ページ関連関数
+// ページ関連関数
 function FPDF_LoadPage(document: FPDF_DOCUMENT; page: Integer): FPDF_PAGE; cdecl;external PDFiumDll;
 procedure FPDF_ClosePage(page: FPDF_PAGE); cdecl;external PDFiumDll;
 procedure FPDF_RenderPageBitmap(bitmap: FPDF_BITMAP; page: FPDF_PAGE;
   start_x, start_y, size_x, size_y: Integer;rotate: Integer; flags: Integer); cdecl;external PDFiumDll;
 
-//ビットマップ関連関数
+// ビットマップ関連関数
 function FPDFBitmap_Create(width, height: Integer; alpha: Integer): FPDF_BITMAP; cdecl; external PDFiumDll;
 function FPDFBitmap_GetWidth(bitmap: FPDF_BITMAP): Integer; cdecl;external PDFiumDll;
 function FPDFBitmap_GetHeight(bitmap: FPDF_BITMAP): Integer; cdecl;external PDFiumDll;
@@ -63,11 +50,6 @@ procedure FPDFBitmap_FillRect(bitmap: FPDF_BITMAP; left: Integer; top: Integer; 
 
 implementation
 
-
-procedure InitPDFium(const DllPath: string{$IFDEF PDF_ENABLE_V8}; const ResPath: string{$ENDIF});
-begin
-  FPDF_InitLibrary();
-end;
 
 
 end.

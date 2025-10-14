@@ -50,9 +50,9 @@ type
     FBytesPerScanLine: Integer;
   public
     constructor Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean = False); overload;
-    constructor Create(AWidth, AHeight: Integer; AAlpha: Boolean); overload;
+    //constructor Create(AWidth, AHeight: Integer; AAlpha: Boolean); overload;
     constructor Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat); overload;
-    constructor Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat; ABuffer: Pointer; ABytesPerScanline: Integer); overload;
+    //constructor Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat; ABuffer: Pointer; ABytesPerScanline: Integer); overload;
     destructor Destroy; override;
 
     procedure FillRect(ALeft, ATop, AWidth, AHeight: Integer; AColor: FPDF_DWORD);
@@ -292,7 +292,6 @@ end;
 
 { TPdfBitmap }
 
-
 constructor TPdfBitmap.Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean);
 begin
   inherited Create;
@@ -306,21 +305,11 @@ begin
   end;
 end;
 
-constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AAlpha: Boolean);
-begin
-  Create(FPDFBitmap_Create(AWidth, AHeight, Ord(AAlpha)), True);
-end;
-
 constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat);
 begin
   Create(FPDFBitmap_CreateEx(AWidth, AHeight, Ord(AFormat), nil, 0), True);
 end;
 
-constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat; ABuffer: Pointer;
-  ABytesPerScanLine: Integer);
-begin
-  Create(FPDFBitmap_CreateEx(AWidth, AHeight, Ord(AFormat), ABuffer, ABytesPerScanline), True);
-end;
 
 destructor TPdfBitmap.Destroy;
 begin

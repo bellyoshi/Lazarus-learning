@@ -20,11 +20,11 @@ const
 
   //定数・列挙型
 type
-  FPDF_BITMAP = Pointer;
-  FPDF_DOCUMENT = Pointer;
-  FPDF_PAGE = Pointer;
+  FPDF_BITMAP = = type __PFPDF_PTRREC;;
+  FPDF_DOCUMENT = = type __PFPDF_PTRREC;;
+  FPDF_PAGE = = type __PFPDF_PTRREC;;
   FPDF_DWORD = Cardinal;
-  FPDF_FORMFILLINFO = Pointer;
+  FPDF_FORMFILLINFO = ;
 
 procedure InitPDFium(const DllPath: string = '' {$IFDEF PDF_ENABLE_V8}; const ResPath: string = ''{$ENDIF});
 procedure FPDF_InitLibrary(); cdecl; external PDFiumDll name 'FPDF_InitLibrary';

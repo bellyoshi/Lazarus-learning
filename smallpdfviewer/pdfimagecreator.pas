@@ -4,7 +4,7 @@ unit PdfImageCreator;
 
 interface
 uses
-  Classes, SysUtils, PdfiumCore, Graphics;
+  Classes, SysUtils, PdfiumCore, PdfBitmap, Graphics;
 
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
 

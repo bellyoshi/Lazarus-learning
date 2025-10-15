@@ -10,7 +10,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces,
-  Forms, Unit1, PdfImageCreator, PdfiumCore, PdfiumLib, PdfBitmap,
+  Forms, Unit1,
   Classes, SysUtils, Windows;
 
 {$R *.res}

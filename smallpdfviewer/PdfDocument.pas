@@ -1,4 +1,4 @@
-unit PdfiumCore;
+unit PdfDocument;
 
 {$mode ObjFPC}{$H+}
 
@@ -12,20 +12,25 @@ uses
   PdfBitmap;
 
 type
-  TPdfDocument = class;
+  TPdfPage = class; // Forward declaration
+
+  IPdfDocument = interface
+    function ReloadPage(APage: TPdfPage): FPDF_PAGE;
+  end;
+
   TPdfPage = class(TObject)
   private
-    FDocument: TPdfDocument;
+    FDocument: IPdfDocument;
     FPage: FPDF_PAGE;
     procedure Open;
   public
-    constructor Create(ADocument: TPdfDocument; APage: FPDF_PAGE);
+    constructor Create(ADocument: IPdfDocument; APage: FPDF_PAGE);
     destructor Destroy; override;
     procedure Close;
     procedure DrawToPdfBitmap(APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
   end;
 
-  TPdfDocument = class(TObject)
+  TPdfDocument = class(TInterfacedObject, IPdfDocument)
   private
     FDocument: FPDF_DOCUMENT;
     FPages: TObjectList;
@@ -35,7 +40,6 @@ type
     procedure InternLoadFromFile(const FileName: string; const Password: UTF8String);
     function GetPage(Index: Integer): TPdfPage;
     function GetPageCount: Integer;
-    function ReloadPage(APage: TPdfPage): FPDF_PAGE;
     procedure DocumentLoaded;
   public
     constructor Create;
@@ -43,10 +47,14 @@ type
 
     procedure LoadFromFile(const FileName: string; const Password: UTF8String = '');
     procedure Close;
+    procedure SetPage(Index: Integer; APage: TPdfPage);
+    function ReloadPage(APage: TPdfPage): FPDF_PAGE;
+    function GetFileName: string;
 
-    property FileName: string read FFileName;
+    property FileName: string read GetFileName;
     property PageCount: Integer read GetPageCount;
     property Pages[Index: Integer]: TPdfPage read GetPage;
+    property Document: FPDF_DOCUMENT read FDocument;
   end;
 
 implementation
@@ -93,7 +101,6 @@ begin
       FDocument := nil;
     end;
 
-
     FFileName := '';
   finally
     FClosing := False;
@@ -122,21 +129,18 @@ begin
 end;
 
 function TPdfDocument.GetPage(Index: Integer): TPdfPage;
-var
-  LPage: FPDF_PAGE;
 begin
   Result := TPdfPage(FPages[Index]);
-  if Result = nil then
-  begin
-    LPage := FPDF_LoadPage(FDocument, Index);
-    Result := TPdfPage.Create(Self, LPage);
-    FPages[Index] := Result;
-  end
 end;
 
 function TPdfDocument.GetPageCount: Integer;
 begin
   Result := FPages.Count;
+end;
+
+function TPdfDocument.GetFileName: string;
+begin
+  Result := FFileName;
 end;
 
 function TPdfDocument.ReloadPage(APage: TPdfPage): FPDF_PAGE;
@@ -147,9 +151,14 @@ begin
   Result := FPDF_LoadPage(FDocument, Index);
 end;
 
+procedure TPdfDocument.SetPage(Index: Integer; APage: TPdfPage);
+begin
+  FPages[Index] := APage;
+end;
+
 { TPdfPage }
 
-constructor TPdfPage.Create(ADocument: TPdfDocument; APage: FPDF_PAGE);
+constructor TPdfPage.Create(ADocument: IPdfDocument; APage: FPDF_PAGE);
 begin
   inherited Create;
   FDocument := ADocument;

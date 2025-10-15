@@ -4,7 +4,7 @@ unit PdfViewer;
 
 interface
 uses
-  Classes, SysUtils, PdfiumCore, PdfBitmap, Graphics, PdfRenderer;
+  Classes, SysUtils, PdfDocument, PdfiumLib, Graphics, PdfRenderer;
 
 type
   TPdfViewer  = class
@@ -91,11 +91,18 @@ function TPdfViewer.GetBitmap(Width, Height: Integer): TBitmap;
 var
   PdfPage: TPdfPage;
   Bitmap: TBitmap;
+  LPage: FPDF_PAGE;
 begin
   if not Assigned(FPdfDocument) then
     raise Exception.Create('PDF document not loaded');
 
   PdfPage := FPdfDocument.Pages[FPageIndex];
+  if PdfPage = nil then
+  begin
+    LPage := FPDF_LoadPage(FPdfDocument.Document, FPageIndex);
+    PdfPage := TPdfPage.Create(FPdfDocument, LPage);
+    FPdfDocument.SetPage(FPageIndex, PdfPage);
+  end;
 
   Bitmap := TBitmap.Create;
   Bitmap.Width := Width;

@@ -9,10 +9,9 @@ uses
   {$IFDEF HASAMIGA}
   athreads,
   {$ENDIF}
-  Interfaces, // this includes the LCL widgetset
+  Interfaces,
   Forms, Unit1, PdfImageCreator, PdfiumCore, PdfiumLib,
-   Classes, SysUtils, Windows
-  { you can add units after this };
+   Classes, SysUtils, Windows;
 
 {$R *.res}
 

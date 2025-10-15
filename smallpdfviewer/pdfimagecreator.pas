@@ -54,24 +54,19 @@ var
   buffer: Pointer;
   RawImage: TRawImage;
 begin
-  // PDFium ビットマップを作成
   PdfBitmap := TPdfBitmap.Create(w, h, bfBGRA);
   try
-    PdfBitmap.FillRect(0, 0, w, h, $FFFFFFFF); // 背景を白色で塗りつぶし
+    PdfBitmap.FillRect(0, 0, w, h, $FFFFFFFF);
     Page.DrawToPdfBitmap(PdfBitmap, 0, 0, w, h);
 
-    // PDFium ビットマップのバッファサイズを計算
-    SizeInt := w * h * 4; // 4バイト/ピクセル (RGBA)
+    SizeInt := w * h * 4;
 
-    // バイト配列を初期化
-    AIMarge := nil; // 明示的に初期化
+    AIMarge := nil;
     SetLength(AIMarge, SizeInt);
 
-    // PDFium のバッファを取得して、バイト配列にコピー
     buffer := PdfBitmap.GetBuffer;
     Move(buffer^, AIMarge[0], SizeInt);
 
-    // バイト配列から Delphi のビットマップにデータをコピー
     RawImage.Init;
     RawImage.Description.Init_BPP32_B8G8R8A8_M1_BIO_TTB(w, h);
     RawImage.CreateData(true);
@@ -91,7 +86,6 @@ begin
   FFilePath := Filename;
 
 
-  // PDF ドキュメントをロード
   FPdfDocument := TPdfDocument.Create;
 
   if not FileExists(Filename) then
@@ -99,7 +93,6 @@ begin
 
   FPdfDocument.LoadFromFile(Filename);
 
-  // デフォルトでは、最初のページ (0) を表示
   FPageIndex := PageIndex;
 
   if (FPageIndex < 0) or (FPageIndex >= FPdfDocument.PageCount) then
@@ -121,9 +114,8 @@ begin
   if not Assigned(FPdfDocument) then
     raise Exception.Create('PDF document not loaded');
 
-  PdfPage := FPdfDocument.Pages[FPageIndex];  // 指定されたページを取得
+  PdfPage := FPdfDocument.Pages[FPageIndex];
 
-  // ビットマップの作成
   Bitmap := TBitmap.Create;
   Bitmap.Width := Width;
   Bitmap.Height := Height;

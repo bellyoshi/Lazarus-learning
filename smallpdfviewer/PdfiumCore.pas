@@ -1,15 +1,11 @@
 unit PdfiumCore;
 
-
 {$MODE DelphiUnicode}
 
 {$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
 {$STRINGCHECKS OFF}
 
-
 interface
-
-
 
 uses
 
@@ -18,32 +14,23 @@ uses
   Math,
   PdfiumLib;
 
-
 type
 
-  TPdfDocument = class;
-  TPdfPage = class;
-
   TPdfBitmapFormat = (
-    bfGrays = 1, // FPDFBitmap_Gray - グレースケールビットマップ、1ピクセルあたり1バイト
-    bfBGR   = 2, // FPDFBitmap_BGR - 1ピクセルあたり3バイト、バイト順序：blue, green, red
-    bfBGRx  = 3, // FPDFBitmap_BGRx - 1ピクセルあたり4バイト、バイト順序：blue, green, red、未使用
-    bfBGRA  = 4  // FPDFBitmap_BGRA - 1ピクセルあたり4バイト、バイト順序：blue, green, red、alpha
+    bfGrays = 1,
+    bfBGR   = 2,
+    bfBGRx  = 3,
+    bfBGRA  = 4
   );
 
 
-  _TPdfBitmapHideCtor = class(TObject)
-  private
-    constructor Create;
-  end;
 
-  TPdfBitmap = class(_TPdfBitmapHideCtor)
+  TPdfBitmap = class(TObject)
   private
     FBitmap: FPDF_BITMAP;
     FOwnsBitmap: Boolean;
     FWidth: Integer;
     FHeight: Integer;
-    FBytesPerScanLine: Integer;
   public
     constructor Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean = False); overload;
     constructor Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat); overload;
@@ -54,21 +41,19 @@ type
 
     property Width: Integer read FWidth;
     property Height: Integer read FHeight;
-    property BytesPerScanline: Integer read FBytesPerScanLine;
     property Bitmap: FPDF_BITMAP read FBitmap;
   end;
 
+  TPdfDocument = class;
   TPdfPage = class(TObject)
   private
     FDocument: TPdfDocument;
     FPage: FPDF_PAGE;
-    constructor Create(ADocument: TPdfDocument; APage: FPDF_PAGE);
     procedure Open;
   public
+    constructor Create(ADocument: TPdfDocument; APage: FPDF_PAGE);
     destructor Destroy; override;
     procedure Close;
-
-    // フォームフィールドの値を除いてPDFページをビットマップに描画
     procedure DrawToPdfBitmap(APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
   end;
 
@@ -121,7 +106,6 @@ begin
       if not Initialized then
       begin
         {$IFDEF CPUX64}
-        // PDFiumは64ビットモードで全ての算術例外をマスクする必要がある
         SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
         {$ENDIF CPUX64}
         FPDF_InitLibrary();
@@ -268,16 +252,6 @@ begin
   FPDF_RenderPageBitmap(APdfBitmap.FBitmap, FPage, X, Y, Width, Height, 0, 1);
 end;
 
-
-
-{ _TPdfBitmapHideCtor }
-
-constructor _TPdfBitmapHideCtor.Create;
-begin
-  inherited Create;
-end;
-
-
 { TPdfBitmap }
 
 constructor TPdfBitmap.Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean);
@@ -289,7 +263,6 @@ begin
   begin
     FWidth := FPDFBitmap_GetWidth(FBitmap);
     FHeight := FPDFBitmap_GetHeight(FBitmap);
-    FBytesPerScanLine := FPDFBitmap_GetStride(FBitmap);
   end;
 end;
 

@@ -23,8 +23,6 @@ type
     bfBGRA  = 4
   );
 
-
-
   TPdfBitmap = class(TObject)
   private
     FBitmap: FPDF_BITMAP;
@@ -85,13 +83,7 @@ type
     property Pages[Index: Integer]: TPdfPage read GetPage;
   end;
 
-var
-  PDFiumDllDir: string = '';
-
 implementation
-
-var
-  PDFiumInitCritSect: TRTLCriticalSection;
 
 procedure InitLib;
 {$J+}
@@ -101,24 +93,16 @@ const
 begin
   if not Initialized then
   begin
-    EnterCriticalSection(PDFiumInitCritSect);
-    try
-      if not Initialized then
-      begin
-        {$IFDEF CPUX64}
-        SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
-        {$ENDIF CPUX64}
-        FPDF_InitLibrary();
-        Initialized := true;
-      end;
-    finally
-      LeaveCriticalSection(PDFiumInitCritSect);
+    if not Initialized then
+    begin
+      SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);//64bit os 固有
+      FPDF_InitLibrary();
+      Initialized := true;
     end;
   end;
 end;
 
 { TPdfDocument }
-
 constructor TPdfDocument.Create;
 begin
   inherited Create;
@@ -270,7 +254,6 @@ constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapForma
 begin
   Create(FPDFBitmap_CreateEx(AWidth, AHeight, Ord(AFormat), nil, 0), True);
 end;
-
 
 destructor TPdfBitmap.Destroy;
 begin

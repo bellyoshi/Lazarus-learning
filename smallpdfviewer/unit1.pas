@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  PdfImageCreator;
+  PdfViewer;
 
 type
   TForm1 = class(TForm)
@@ -24,8 +24,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    FPdfImageCreator: TPdfImageCreator;
-    FCurrentPage: Integer;
+    FPdfViewer: TPdfViewer;
     procedure LoadPdfFile(const FileName: string);
     procedure UpdatePageDisplay;
     procedure UpdatePageInfo;
@@ -40,15 +39,14 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  FCurrentPage := 0;
-  FPdfImageCreator := nil;
+  FPdfViewer := nil;
   UpdatePageInfo;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  if Assigned(FPdfImageCreator) then
-    FPdfImageCreator.Free;
+  if Assigned(FPdfViewer) then
+    FPdfViewer.Free;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -61,9 +59,9 @@ end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
-  if Assigned(FPdfImageCreator) and (FCurrentPage > 0) then
+  if Assigned(FPdfViewer) then
   begin
-    Dec(FCurrentPage);
+    FPdfViewer.Previous;
     UpdatePageDisplay;
     UpdatePageInfo;
   end;
@@ -71,9 +69,9 @@ end;
 
 procedure TForm1.Button3Click(Sender: TObject);
 begin
-  if Assigned(FPdfImageCreator) and (FCurrentPage < FPdfImageCreator.PageCount - 1) then
+  if Assigned(FPdfViewer) then
   begin
-    Inc(FCurrentPage);
+    FPdfViewer.Next;
     UpdatePageDisplay;
     UpdatePageInfo;
   end;
@@ -82,11 +80,10 @@ end;
 procedure TForm1.LoadPdfFile(const FileName: string);
 begin
   try
-    if Assigned(FPdfImageCreator) then
-      FPdfImageCreator.Free;
+    if Assigned(FPdfViewer) then
+      FPdfViewer.Free;
     
-    FPdfImageCreator := TPdfImageCreator.Create(FileName, 0);
-    FCurrentPage := 0;
+    FPdfViewer := TPdfViewer.Create(FileName);
     
     UpdatePageDisplay;
     UpdatePageInfo;
@@ -96,10 +93,10 @@ begin
     on E: Exception do
     begin
       ShowMessage('PDFファイルの読み込みに失敗しました: ' + E.Message);
-      if Assigned(FPdfImageCreator) then
+      if Assigned(FPdfViewer) then
       begin
-        FPdfImageCreator.Free;
-        FPdfImageCreator := nil;
+        FPdfViewer.Free;
+        FPdfViewer := nil;
       end;
     end;
   end;
@@ -109,15 +106,14 @@ procedure TForm1.UpdatePageDisplay;
 var
   Bitmap: TBitmap;
 begin
-  if not Assigned(FPdfImageCreator) then
+  if not Assigned(FPdfViewer) then
   begin
     Image1.Picture.Clear;
     Exit;
   end;
   
   try
-    FPdfImageCreator.PageIndex := FCurrentPage;
-    Bitmap := FPdfImageCreator.GetBitmap(Image1.Width, Image1.Height);
+    Bitmap := FPdfViewer.GetBitmap(Image1.Width, Image1.Height);
     try
       Image1.Picture.Assign(Bitmap);
     finally
@@ -131,13 +127,13 @@ end;
 
 procedure TForm1.UpdatePageInfo;
 begin
-  if Assigned(FPdfImageCreator) then
-    Label2.Caption := Format('ページ %d / %d', [FCurrentPage + 1, FPdfImageCreator.PageCount])
+  if Assigned(FPdfViewer) then
+    Label2.Caption := Format('ページ %d / %d', [FPdfViewer.PageIndex + 1, FPdfViewer.PageCount])
   else
     Label2.Caption := 'ページ 0 / 0';
     
-  Button2.Enabled := Assigned(FPdfImageCreator) and (FCurrentPage > 0);
-  Button3.Enabled := Assigned(FPdfImageCreator) and (FCurrentPage < FPdfImageCreator.PageCount - 1);
+  Button2.Enabled := Assigned(FPdfViewer) and FPdfViewer.CanPrevious;
+  Button3.Enabled := Assigned(FPdfViewer) and FPdfViewer.CanNext;
 end;
 
 end.

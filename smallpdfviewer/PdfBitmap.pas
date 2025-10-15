@@ -1,6 +1,6 @@
 unit PdfBitmap;
 
-{$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
+{$mode ObjFPC}{$H+}
 
 interface
 

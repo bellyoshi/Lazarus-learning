@@ -3,12 +3,7 @@ program project1;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}
-  cthreads,
-  {$ENDIF}
-  {$IFDEF HASAMIGA}
-  athreads,
-  {$ENDIF}
+
   Interfaces,
   Forms, Unit1,
   Classes, SysUtils, Windows;

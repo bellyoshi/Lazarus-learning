@@ -1,6 +1,6 @@
 unit PdfiumCore;
 
-{$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
+{$mode ObjFPC}{$H+}
 
 interface
 
@@ -35,7 +35,6 @@ type
     procedure InternLoadFromFile(const FileName: string; const Password: UTF8String);
     function GetPage(Index: Integer): TPdfPage;
     function GetPageCount: Integer;
-    procedure ExtractPage(APage: TPdfPage);
     function ReloadPage(APage: TPdfPage): FPDF_PAGE;
     procedure DocumentLoaded;
   public
@@ -140,12 +139,6 @@ begin
   Result := FPages.Count;
 end;
 
-procedure TPdfDocument.ExtractPage(APage: TPdfPage);
-begin
-  if not FClosing then
-    FPages.Extract(APage);
-end;
-
 function TPdfDocument.ReloadPage(APage: TPdfPage): FPDF_PAGE;
 var
   Index: Integer;
@@ -166,7 +159,6 @@ end;
 destructor TPdfPage.Destroy;
 begin
   Close;
-  FDocument.ExtractPage(Self);
   inherited Destroy;
 end;
 

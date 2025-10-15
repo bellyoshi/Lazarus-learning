@@ -1,4 +1,4 @@
-unit PdfImageCreator;
+unit PdfViewer;
 
 {$mode ObjFPC}{$H+}
 
@@ -6,21 +6,24 @@ interface
 uses
   Classes, SysUtils, PdfiumCore, PdfBitmap, Graphics;
 
-procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
-
 type
-  TPdfImageCreator  = class
+  TPdfViewer  = class
 
   private
     FPdfDocument: TPdfDocument;
     FPageIndex: Integer;
     procedure SetPageIndex(AValue: Integer);
+    procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; Width, Height: Integer);
 
   public
-    constructor Create(const Filename: string; PageIndex: Integer = 0);
+    constructor Create(const Filename: string);
     destructor Destroy; override;
     function GetBitmap(Width, Height: Integer): TBitmap;
     function GetPageCount : Integer ;
+    function CanNext: Boolean;
+    function CanPrevious: Boolean;
+    procedure Next;
+    procedure Previous;
     property PageCount : Integer read GetPageCount;
     property PageIndex : Integer read FPageIndex write SetPageIndex;
   end;
@@ -30,7 +33,7 @@ implementation
 uses
   GraphType;
 
-procedure TPdfImageCreator.SetPageIndex(AValue: Integer);
+procedure TPdfViewer.SetPageIndex(AValue: Integer);
 begin
   if AValue < 0 then
     FPageIndex := 0
@@ -40,36 +43,58 @@ begin
     FPageIndex := AValue;
 end;
 
-function TPdfImageCreator.GetPageCount : Integer;
+function TPdfViewer.GetPageCount : Integer;
 begin
   Result := FPdfDocument.PageCount;
 end;
 
-procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; w,h : Integer);
+function TPdfViewer.CanNext: Boolean;
+begin
+  Result := Assigned(FPdfDocument) and (FPageIndex < GetPageCount - 1);
+end;
+
+function TPdfViewer.CanPrevious: Boolean;
+begin
+  Result := Assigned(FPdfDocument) and (FPageIndex > 0);
+end;
+
+procedure TPdfViewer.Next;
+begin
+  if CanNext then
+    FPageIndex := FPageIndex + 1;
+end;
+
+procedure TPdfViewer.Previous;
+begin
+  if CanPrevious then
+    FPageIndex := FPageIndex - 1;
+end;
+
+procedure TPdfViewer.DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; Width, Height: Integer);
 var
   SizeInt: Integer;
   PdfBitmap: TPdfBitmap;
-  AIMarge: TBytes;
+  ImageData: TBytes;
   buffer: Pointer;
   RawImage: TRawImage;
 begin
-  PdfBitmap := TPdfBitmap.Create(w, h, BitmapFormat_bfBGRA);
+  PdfBitmap := TPdfBitmap.Create(Width, Height, BitmapFormat_bfBGRA);
   try
-    PdfBitmap.FillRect(0, 0, w, h, $FFFFFFFF);
-    Page.DrawToPdfBitmap(PdfBitmap, 0, 0, w, h);
+    PdfBitmap.FillRect(0, 0, Width, Height, $FFFFFFFF);
+    Page.DrawToPdfBitmap(PdfBitmap, 0, 0, Width, Height);
 
-    SizeInt := w * h * 4;
+    SizeInt := Width * Height * 4;
 
-    AIMarge := nil;
-    SetLength(AIMarge, SizeInt);
+    ImageData := nil;
+    SetLength(ImageData, SizeInt);
 
     buffer := PdfBitmap.GetBuffer;
-    Move(buffer^, AIMarge[0], SizeInt);
+    Move(buffer^, ImageData[0], SizeInt);
 
     RawImage.Init;
-    RawImage.Description.Init_BPP32_B8G8R8A8_M1_BIO_TTB(w, h);
+    RawImage.Description.Init_BPP32_B8G8R8A8_M1_BIO_TTB(Width, Height);
     RawImage.CreateData(true);
-    RawImage.Data:=@AIMarge[0];
+    RawImage.Data:=@ImageData[0];
 
     Bitmap.LoadFromRawImage(RawImage, false);
   finally
@@ -77,7 +102,7 @@ begin
   end;
 end;
 
-constructor TPdfImageCreator.Create(const Filename: string; PageIndex: Integer = 0);
+constructor TPdfViewer.Create(const Filename: string);
 begin
   inherited Create;
   FPdfDocument := TPdfDocument.Create;
@@ -87,20 +112,17 @@ begin
 
   FPdfDocument.LoadFromFile(Filename);
 
-  FPageIndex := PageIndex;
-
-  if (FPageIndex < 0) or (FPageIndex >= FPdfDocument.PageCount) then
-    raise Exception.Create('Invalid page index');
+  FPageIndex := 0;
 end;
 
-destructor TPdfImageCreator.Destroy;
+destructor TPdfViewer.Destroy;
 begin
   FPdfDocument.Close();
   FPdfDocument.Free();
   inherited;
 end;
 
-function TPdfImageCreator.GetBitmap(Width, Height: Integer): TBitmap;
+function TPdfViewer.GetBitmap(Width, Height: Integer): TBitmap;
 var
   PdfPage: TPdfPage;
   Bitmap: TBitmap;

@@ -1,9 +1,6 @@
 unit PdfiumLib;
 
-//{$MODE DelphiUnicode}
-
 {$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
-{$STRINGCHECKS OFF}
 
 interface
 

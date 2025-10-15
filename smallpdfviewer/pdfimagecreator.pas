@@ -53,7 +53,7 @@ var
   buffer: Pointer;
   RawImage: TRawImage;
 begin
-  PdfBitmap := TPdfBitmap.Create(w, h, bfBGRA);
+  PdfBitmap := TPdfBitmap.Create(w, h, BitmapFormat_bfBGRA);
   try
     PdfBitmap.FillRect(0, 0, w, h, $FFFFFFFF);
     Page.DrawToPdfBitmap(PdfBitmap, 0, 0, w, h);

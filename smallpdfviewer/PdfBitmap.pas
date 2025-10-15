@@ -1,9 +1,6 @@
 unit PdfBitmap;
 
-//{$MODE DelphiUnicode}
-
 {$A8,B-,E-,F-,G+,H+,I+,J-,K-,M-,N-,P+,Q-,R-,S-,T-,U-,V+,X+,Z1}
-{$STRINGCHECKS OFF}
 
 interface
 
@@ -11,14 +8,10 @@ uses
   SysUtils,
   PdfiumLib;
 
-type
-  TPdfBitmapFormat = (
-    bfGrays = 1,
-    bfBGR   = 2,
-    bfBGRx  = 3,
-    bfBGRA  = 4
-  );
+const
+  BitmapFormat_bfBGRA = 4;
 
+type
   TPdfBitmap = class(TObject)
   private
     FBitmap: FPDF_BITMAP;
@@ -27,7 +20,7 @@ type
     FHeight: Integer;
   public
     constructor Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean = False); overload;
-    constructor Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat); overload;
+    constructor Create(AWidth, AHeight: Integer; AFormat: Integer); overload;
     destructor Destroy; override;
 
     procedure FillRect(ALeft, ATop, AWidth, AHeight: Integer; AColor: FPDF_DWORD);
@@ -52,9 +45,9 @@ begin
   end;
 end;
 
-constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AFormat: TPdfBitmapFormat);
+constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AFormat: Integer);
 begin
-  Create(FPDFBitmap_CreateEx(AWidth, AHeight, Ord(AFormat), nil, 0), True);
+  Create(FPDFBitmap_CreateEx(AWidth, AHeight, AFormat, nil, 0), True);
 end;
 
 destructor TPdfBitmap.Destroy;

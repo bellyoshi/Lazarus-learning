@@ -29,8 +29,6 @@ type
     procedure LoadPdfFile(const FileName: string);
     procedure UpdatePageDisplay;
     procedure UpdatePageInfo;
-  public
-
   end;
 
 var
@@ -45,12 +43,10 @@ begin
   FCurrentPage := 0;
   FPdfImageCreator := nil;
   UpdatePageInfo;
-  
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  
   if Assigned(FPdfImageCreator) then
     FPdfImageCreator.Free;
 end;
@@ -84,10 +80,7 @@ begin
 end;
 
 procedure TForm1.LoadPdfFile(const FileName: string);
-var
-  Bitmap: TBitmap;
 begin
-  
   try
     if Assigned(FPdfImageCreator) then
       FPdfImageCreator.Free;

@@ -18,7 +18,6 @@ type
   FPDF_DOCUMENT = type __PFPDF_PTRREC;
   FPDF_PAGE = type __PFPDF_PTRREC;
   FPDF_DWORD = Cardinal;
-  FPDF_BOOL = Integer;
   FPDF_STRING = PAnsiChar;
   FPDF_BYTESTRING = PAnsiChar;
 
@@ -44,7 +43,5 @@ function FPDFBitmap_GetBuffer(bitmap: FPDF_BITMAP): Pointer; cdecl;external PDFi
 procedure FPDFBitmap_FillRect(bitmap: FPDF_BITMAP; left: Integer; top: Integer; width: Integer; height: Integer; color: Integer); cdecl;external PDFiumDll;
 
 implementation
-
-
 
 end.

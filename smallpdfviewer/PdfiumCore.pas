@@ -15,8 +15,6 @@ uses
   PdfBitmap;
 
 type
-
-
   TPdfDocument = class;
   TPdfPage = class(TObject)
   private
@@ -35,10 +33,7 @@ type
     FDocument: FPDF_DOCUMENT;
     FPages: TObjectList;
     FFileName: string;
-    FBuffer: PByte;
-    FBytes: TBytes;
     FClosing: Boolean;
-    FUnsupportedFeatures: Boolean;
 
     procedure InternLoadFromFile(const FileName: string; const Password: UTF8String);
     function GetPage(Index: Integer): TPdfPage;
@@ -60,7 +55,6 @@ type
 
 implementation
 
-
 procedure InitLib;
 {$J+}
 const
@@ -69,14 +63,9 @@ const
 begin
   if not Initialized then
   begin
-
-    if not Initialized then
-    begin
-      SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
-      FPDF_InitLibrary();
-      Initialized := true;
-    end;
-
+    SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
+    FPDF_InitLibrary();
+    Initialized := true;
   end;
 end;
 
@@ -101,7 +90,6 @@ begin
   FClosing := True;
   try
     FPages.Clear;
-    FUnsupportedFeatures := False;
 
     if FDocument <> nil then
     begin
@@ -109,12 +97,6 @@ begin
       FDocument := nil;
     end;
 
-    if FBuffer <> nil then
-    begin
-      FreeMem(FBuffer);
-      FBuffer := nil;
-    end;
-    FBytes := nil;
 
     FFileName := '';
   finally
@@ -213,7 +195,5 @@ begin
   Open;
   FPDF_RenderPageBitmap(APdfBitmap.Bitmap, FPage, X, Y, Width, Height, 0, 1);
 end;
-
-
 
 end.

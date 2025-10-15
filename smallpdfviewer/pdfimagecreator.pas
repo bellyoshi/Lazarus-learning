@@ -14,7 +14,6 @@ type
   private
     FPdfDocument: TPdfDocument;
     FPageIndex: Integer;
-    FFilePath: string;
     procedure SetPageIndex(AValue: Integer);
 
   public
@@ -77,15 +76,10 @@ begin
     PdfBitmap.Free;
   end;
 end;
-{ TPdfImageCreator }
 
 constructor TPdfImageCreator.Create(const Filename: string; PageIndex: Integer = 0);
 begin
   inherited Create;
-
-  FFilePath := Filename;
-
-
   FPdfDocument := TPdfDocument.Create;
 
   if not FileExists(Filename) then

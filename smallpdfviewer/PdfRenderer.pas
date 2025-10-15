@@ -5,7 +5,7 @@ unit PdfRenderer;
 interface
 
 uses
-  Classes, SysUtils, PdfDocument, PdfBitmap, Graphics, GraphType;
+  Classes, SysUtils, PdfPage, PdfBitmap, Graphics, GraphType;
 
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; Width, Height: Integer);
 

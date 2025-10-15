@@ -4,7 +4,7 @@ unit PdfViewer;
 
 interface
 uses
-  Classes, SysUtils, PdfDocument, PdfiumLib, Graphics, PdfRenderer;
+  Classes, SysUtils, PdfDocument, PdfPage, PdfiumLib, Graphics, PdfRenderer;
 
 type
   TPdfViewer  = class

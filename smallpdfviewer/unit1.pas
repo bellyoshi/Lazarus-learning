@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  PdfImageCreator, LoggerUnit;
+  PdfImageCreator;
 
 type
   TForm1 = class(TForm)
@@ -46,12 +46,12 @@ begin
   FPdfImageCreator := nil;
   UpdatePageInfo;
   
-  Logger.LogInfo('PDF Viewer が起動しました');
+  // Logger.LogInfo('PDF Viewer が起動しました');
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  Logger.LogInfo('PDF Viewer を終了します');
+  // Logger.LogInfo('PDF Viewer を終了します');
   
   if Assigned(FPdfImageCreator) then
     FPdfImageCreator.Free;
@@ -70,7 +70,7 @@ begin
   if Assigned(FPdfImageCreator) and (FCurrentPage > 0) then
   begin
     Dec(FCurrentPage);
-    Logger.LogInfo('前のページに移動: ページ %d', [FCurrentPage + 1]);
+    // Logger.LogInfo('前のページに移動: ページ %d', [FCurrentPage + 1]);
     UpdatePageDisplay;
     UpdatePageInfo;
   end;
@@ -81,7 +81,7 @@ begin
   if Assigned(FPdfImageCreator) and (FCurrentPage < FPdfImageCreator.PageCount - 1) then
   begin
     Inc(FCurrentPage);
-    Logger.LogInfo('次のページに移動: ページ %d', [FCurrentPage + 1]);
+    // Logger.LogInfo('次のページに移動: ページ %d', [FCurrentPage + 1]);
     UpdatePageDisplay;
     UpdatePageInfo;
   end;
@@ -91,7 +91,7 @@ procedure TForm1.LoadPdfFile(const FileName: string);
 var
   Bitmap: TBitmap;
 begin
-  Logger.LogInfo('PDFファイルを読み込み中: %s', [ExtractFileName(FileName)]);
+  // Logger.LogInfo('PDFファイルを読み込み中: %s', [ExtractFileName(FileName)]);
   
   try
     // 既存のPDFイメージクリエーターを解放
@@ -107,11 +107,11 @@ begin
     UpdatePageInfo;
     
     Caption := 'PDF Viewer - ' + ExtractFileName(FileName);
-    Logger.LogInfo('PDFファイルの読み込みが完了しました (ページ数: %d)', [FPdfImageCreator.PageCount]);
+    // Logger.LogInfo('PDFファイルの読み込みが完了しました (ページ数: %d)', [FPdfImageCreator.PageCount]);
   except
     on E: Exception do
     begin
-      Logger.LogError('PDFファイルの読み込みに失敗しました: %s', [E.Message]);
+      // Logger.LogError('PDFファイルの読み込みに失敗しました: %s', [E.Message]);
       ShowMessage('PDFファイルの読み込みに失敗しました: ' + E.Message);
       if Assigned(FPdfImageCreator) then
       begin

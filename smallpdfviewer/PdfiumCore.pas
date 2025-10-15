@@ -13,9 +13,7 @@ interface
 
 uses
 
-  Types,
   SysUtils,
-  Classes,
   Contnrs,
   Math,
   PdfiumLib;

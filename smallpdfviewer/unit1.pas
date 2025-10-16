@@ -81,10 +81,13 @@ procedure TForm1.LoadPdfFile(const FileName: string);
 begin
   try
     if Assigned(FPdfViewer) then
+    begin
       FPdfViewer.Free;
-    
+    end;
+
     FPdfViewer := TPdfViewer.Create(FileName);
-    
+
+
     UpdatePageDisplay;
     UpdatePageInfo;
     

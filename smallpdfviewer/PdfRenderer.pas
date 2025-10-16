@@ -5,9 +5,10 @@ unit PdfRenderer;
 interface
 
 uses
-  Classes, SysUtils, PdfPage, PdfBitmap, Graphics, GraphType;
+  Classes, SysUtils, PdfPage, PdfBitmap, Graphics, GraphType, PdfiumLib;
 
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; Width, Height: Integer);
+procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
 
 implementation
 
@@ -22,7 +23,7 @@ begin
   PdfBitmap := TPdfBitmap.Create(Width, Height, BitmapFormat_bfBGRA);
   try
     PdfBitmap.FillRect(0, 0, Width, Height, $FFFFFFFF);
-    Page.DrawToPdfBitmap(PdfBitmap, 0, 0, Width, Height);
+    DrawToPdfBitmap(Page, PdfBitmap, 0, 0, Width, Height);
 
     SizeInt := Width * Height * 4;
 
@@ -41,6 +42,11 @@ begin
   finally
     PdfBitmap.Free;
   end;
+end;
+
+procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
+begin
+  FPDF_RenderPageBitmap(APdfBitmap.Bitmap, Page.Page, X, Y, Width, Height, 0, 1);
 end;
 
 end.

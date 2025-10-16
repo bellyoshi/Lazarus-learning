@@ -43,20 +43,27 @@
         <UnitName Value="Unit1"/>
       </Unit>
       <Unit>
-        <Filename Value="pdfimagecreator.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="PdfImageCreator"/>
-      </Unit>
-      <Unit>
-        <Filename Value="PdfiumCore.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="PdfiumLib.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="PdfBitmap.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="PdfDocument.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="PdfPage.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="PdfRenderer.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="PdfViewer.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>

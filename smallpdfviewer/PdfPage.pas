@@ -11,15 +11,15 @@ uses
 type
   TPdfPage = class; // Forward declaration
 
-  IPdfDocument = interface
-  end;
+ // IPdfDocument = interface
+ // end;
 
   TPdfPage = class(TObject)
   private
-    FDocument: IPdfDocument;
     FPage: FPDF_PAGE;
+    Findex : Integer;
   public
-    constructor Create(ADocument: IPdfDocument; APage: FPDF_PAGE);
+    constructor Create(ADocument:FPDF_DOCUMENT ; index : Integer);
     destructor Destroy; override;
     procedure Close;
     property Page: FPDF_PAGE read FPage;
@@ -29,16 +29,15 @@ implementation
 
 { TPdfPage }
 
-constructor TPdfPage.Create(ADocument: IPdfDocument; APage: FPDF_PAGE);
+constructor TPdfPage.Create(ADocument : FPDF_DOCUMENT; index : Integer);
 begin
   inherited Create;
-  FDocument := ADocument;
-  FPage := APage;
+  FPage := FPDF_LoadPage(ADocument, index);
+  Findex := index;
 end;
 
 destructor TPdfPage.Destroy;
 begin
-  Close;
   inherited Destroy;
 end;
 

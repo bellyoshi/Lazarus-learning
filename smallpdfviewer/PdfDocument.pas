@@ -13,7 +13,7 @@ uses
 type
 
 
-  TPdfDocument = class(TInterfacedObject, IPdfDocument)
+  TPdfDocument = class
   private
     FDocument: FPDF_DOCUMENT;
     FPages: array of TPdfPage;
@@ -60,16 +60,19 @@ end;
 constructor TPdfDocument.Create;
 begin
   inherited Create;
-  // 動的配列は自動的に初期化されるため、明示的な初期化は不要
-  SetLength(FPages, 0);
 
   InitLib;
 end;
 
 destructor TPdfDocument.Destroy;
+var
+  i : Integer;
 begin
   Close;
-  // 動的配列は自動的に解放されるため、明示的な解放は不要
+  for i := 0 to Length(FPages) - 1 do
+  begin
+    FPages[i].Free;
+  end;
   SetLength(FPages, 0);
   inherited Destroy;
 end;
@@ -80,10 +83,10 @@ var
 begin
   FClosing := True;
   try
-
-
-
-
+  for i := 0 to Length(FPages) - 1 do
+  begin
+    FPages[i].Close;
+  end;
 
     if FDocument <> nil then
     begin
@@ -92,8 +95,7 @@ begin
     end;
 
     FFileName := '';
-    // 配列をクリア
-    SetLength(FPages, 0);
+
   finally
     FClosing := False;
   end;
@@ -115,21 +117,26 @@ begin
 end;
 
 procedure TPdfDocument.DocumentLoaded;
+var
+  i : Integer;
+  count : Integer;
 begin
-  SetLength(FPages, FPDF_GetPageCount(FDocument));
+  count := FPDF_GetPageCount(FDocument);
+  SetLength(FPages, count);
+  for i := 0 to count - 1 do
+  begin
+    FPages[i] := TPdfPage.Create(FDocument, i);
+    end;
 end;
 
 function TPdfDocument.GetPage(Index: Integer): TPdfPage;
-var
-  LPage: FPDF_PAGE;
 begin
   Result := FPages[Index];
-  if Result = nil then
-  begin
-    LPage := FPDF_LoadPage(FDocument, Index);
-    Result := TPdfPage.Create(Self, LPage);
-    FPages[Index] := Result;
-  end
+end;
+
+procedure TPdfDocument.SetPage(Index: Integer; APage: TPdfPage);
+begin
+  FPages[Index] := APage;
 end;
 
 function TPdfDocument.GetPageCount: Integer;
@@ -144,10 +151,6 @@ end;
 
 
 
-procedure TPdfDocument.SetPage(Index: Integer; APage: TPdfPage);
-begin
-  FPages[Index] := APage;
-end;
 
 
 end.

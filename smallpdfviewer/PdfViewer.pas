@@ -86,7 +86,6 @@ begin
   try
   If Assigned(FPdfDocument) then
   begin
-  FPdfDocument.Close();
   FPdfDocument.Free();
   end;
 

@@ -9,15 +9,10 @@ uses
   PdfiumLib;
 
 type
-  TPdfPage = class; // Forward declaration
-
- // IPdfDocument = interface
- // end;
 
   TPdfPage = class(TObject)
   private
     FPage: FPDF_PAGE;
-    Findex : Integer;
   public
     constructor Create(ADocument:FPDF_DOCUMENT ; index : Integer);
     destructor Destroy; override;
@@ -33,7 +28,6 @@ constructor TPdfPage.Create(ADocument : FPDF_DOCUMENT; index : Integer);
 begin
   inherited Create;
   FPage := FPDF_LoadPage(ADocument, index);
-  Findex := index;
 end;
 
 destructor TPdfPage.Destroy;

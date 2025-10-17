@@ -83,15 +83,15 @@ end;
 
 destructor TPdfViewer.Destroy;
 begin
-  try
-  If Assigned(FPdfDocument) then
-  begin
-  FPdfDocument.Free();
-  end;
-
-  finally
-  end;
+  FPdfDocument.Free;
   inherited;
+end;
+
+function GetEmptyBitmap(Width, Height: Integer): TBitmap;
+begin
+  Result := TBitmap.Create;
+  Result.Width := Width;
+  Result.Height := Height;
 end;
 
 function TPdfViewer.GetBitmap(Width, Height: Integer): TBitmap;
@@ -103,18 +103,9 @@ begin
     raise Exception.Create('PDF document not loaded');
 
   PdfPage := FPdfDocument.Pages[FPageIndex];
-  if PdfPage = nil then
-  begin
-    // ページが存在しない場合は例外を発生
-    raise Exception.Create('Page not found');
-  end;
 
-  Bitmap := TBitmap.Create;
-  Bitmap.Width := Width;
-  Bitmap.Height := Height;
-
-  DrawToBitmap(PdfPage, Bitmap, Width, Height);
-
+  Bitmap := GetEmptyBitmap(Width, Height);
+  DrawToBitmap(PdfPage, Bitmap);
   Result := Bitmap;
 end;
 

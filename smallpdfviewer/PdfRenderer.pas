@@ -7,41 +7,62 @@ interface
 uses
   Classes, SysUtils, PdfPage, PdfBitmap, Graphics, GraphType, PdfiumLib;
 
-procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; Width, Height: Integer);
-procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
+procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap);
+
 
 implementation
 
-procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap; Width, Height: Integer);
+// ヘルパー関数の前方宣言
+procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);forward;
+function CreateEmptyPdfBitmap(Width, Height: Integer): TPdfBitmap; forward;
+function ExtractImageDataFromPdfBitmap(PdfBitmap: TPdfBitmap; Width, Height: Integer): TBytes; forward;
+function CreateRawImageFromData(const ImageData: TBytes; Width, Height: Integer): TRawImage; forward;
+
+procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap);
 var
-  SizeInt: Integer;
+  width : Integer;
+  height : Integer;
   PdfBitmap: TPdfBitmap;
   ImageData: TBytes;
-  buffer: Pointer;
   RawImage: TRawImage;
 begin
-  PdfBitmap := TPdfBitmap.Create(Width, Height, BitmapFormat_bfBGRA);
+  width := Bitmap.Width;
+  height := Bitmap.Height;
+  PdfBitmap := CreateEmptyPdfBitmap(Width, Height);
   try
-    PdfBitmap.FillRect(0, 0, Width, Height, $FFFFFFFF);
     DrawToPdfBitmap(Page, PdfBitmap, 0, 0, Width, Height);
-
-    SizeInt := Width * Height * 4;
-
-    ImageData := nil;
-    SetLength(ImageData, SizeInt);
-
-    buffer := PdfBitmap.GetBuffer;
-    Move(buffer^, ImageData[0], SizeInt);
-
-    RawImage.Init;
-    RawImage.Description.Init_BPP32_B8G8R8A8_M1_BIO_TTB(Width, Height);
-    RawImage.CreateData(true);
-    RawImage.Data:=@ImageData[0];
-
+    ImageData := ExtractImageDataFromPdfBitmap(PdfBitmap, Width, Height);
+    RawImage := CreateRawImageFromData(ImageData, Width, Height);
     Bitmap.LoadFromRawImage(RawImage, false);
   finally
     PdfBitmap.Free;
   end;
+end;
+
+function CreateEmptyPdfBitmap(Width, Height: Integer): TPdfBitmap;
+begin
+  Result := TPdfBitmap.Create(Width, Height, BitmapFormat_bfBGRA);
+  Result.FillRect(0, 0, Width, Height, $FFFFFFFF);
+end;
+
+function ExtractImageDataFromPdfBitmap(PdfBitmap: TPdfBitmap; Width, Height: Integer): TBytes;
+var
+  SizeInt: Integer;
+  buffer: Pointer;
+begin
+  Result := nil; // 明示的に初期化
+  SizeInt := Width * Height * 4;
+  SetLength(Result, SizeInt);
+  buffer := PdfBitmap.GetBuffer;
+  Move(buffer^, Result[0], SizeInt);
+end;
+
+function CreateRawImageFromData(const ImageData: TBytes; Width, Height: Integer): TRawImage;
+begin
+  Result.Init;
+  Result.Description.Init_BPP32_B8G8R8A8_M1_BIO_TTB(Width, Height);
+  Result.CreateData(true);
+  Result.Data := @ImageData[0];
 end;
 
 procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);

@@ -66,8 +66,29 @@ begin
 end;
 
 procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
+const
+  // FPDF_RenderPageBitmap の回転角度定数
+  ROTATE_NONE = 0;        // 回転なし
+  // ROTATE_90 = 1;          // 90度回転
+  // ROTATE_180 = 2;         // 180度回転
+  // ROTATE_270 = 3;         // 270度回転
+  
+  // FPDF_RenderPageBitmap のフラグ定数
+  // RENDER_FLAG_NONE = 0;   // 通常のレンダリング（アノテーション無視）
+  RENDER_FLAG_ANNOT = 1;  // アノテーションを含むレンダリング
 begin
-  FPDF_RenderPageBitmap(APdfBitmap.Bitmap, Page.Page, X, Y, Width, Height, 0, 1);
+  // PDFページをビットマップにレンダリング
+  // 
+  // パラメータ説明:
+  // - rotate: ROTATE_NONE (0) = 回転なし（ページをそのまま表示）
+  // - flags: RENDER_FLAG_ANNOT (1) = アノテーションを含むレンダリング
+  // 
+  // アノテーションとは:
+  // - PDF文書に追加される注釈やマークアップ（ハイライト、コメント、図形など）
+  // - ユーザーが文書に追加した付箋、下線、矢印、スタンプなど
+  // - RENDER_FLAG_ANNOT = 1 により、これらの注釈も一緒に表示される
+  // - RENDER_FLAG_NONE = 0 にすると、元の文書内容のみ表示（注釈は無視）
+  FPDF_RenderPageBitmap(APdfBitmap.Bitmap, Page.Page, X, Y, Width, Height, ROTATE_NONE, RENDER_FLAG_ANNOT);
 end;
 
 end.

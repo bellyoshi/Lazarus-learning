@@ -21,6 +21,7 @@ type
     function GetPage(Index: Integer): TPdfPage;
     procedure SetPage(Index: Integer; APage: TPdfPage);
     function GetPageCount: Integer;
+    function GetFileName: string;
     procedure InitializePages;
     procedure CloseAllPages;
     procedure CloseDocument;
@@ -30,8 +31,6 @@ type
     destructor Destroy; override;
 
     procedure LoadFromFile(const FileName: string; const Password: UTF8String = '');
-
-    function GetFileName: string;
 
     property FileName: string read GetFileName;
     property PageCount: Integer read GetPageCount;
@@ -45,7 +44,6 @@ implementation
 constructor TPdfDocument.Create;
 begin
   inherited Create;
-
   InitializeLibrary;
 end;
 

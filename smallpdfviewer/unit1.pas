@@ -28,6 +28,7 @@ type
     procedure LoadPdfFile(const FileName: string);
     procedure UpdatePageDisplay;
     procedure UpdatePageInfo;
+    procedure UpdatePage;
   end;
 
 var
@@ -40,7 +41,7 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   FPdfViewer := nil;
-  UpdatePageInfo;
+  UpdatePage;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -62,8 +63,7 @@ begin
   if Assigned(FPdfViewer) then
   begin
     FPdfViewer.Previous;
-    UpdatePageDisplay;
-    UpdatePageInfo;
+    UpdatePage;
   end;
 end;
 
@@ -72,8 +72,7 @@ begin
   if Assigned(FPdfViewer) then
   begin
     FPdfViewer.Next;
-    UpdatePageDisplay;
-    UpdatePageInfo;
+    UpdatePage;
   end;
 end;
 
@@ -87,9 +86,7 @@ begin
 
     FPdfViewer := TPdfViewer.Create(FileName);
 
-
-    UpdatePageDisplay;
-    UpdatePageInfo;
+    UpdatePage;
     
     Caption := 'PDF Viewer - ' + ExtractFileName(FileName);
   except
@@ -137,6 +134,12 @@ begin
     
   Button2.Enabled := Assigned(FPdfViewer) and FPdfViewer.CanPrevious;
   Button3.Enabled := Assigned(FPdfViewer) and FPdfViewer.CanNext;
+end;
+
+procedure TForm1.UpdatePage;
+begin
+  UpdatePageDisplay;
+  UpdatePageInfo;
 end;
 
 end.

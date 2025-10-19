@@ -5,7 +5,7 @@ unit PdfiumUtils;
 interface
 
 uses
-  SysUtils, Math, PdfiumLib;
+  Math, PdfiumLib;
 
 procedure InitializeLibrary;
 
@@ -17,11 +17,8 @@ begin
   FPDF_InitLibrary();
 end;
 
+var Initialized: boolean = false;
 procedure InitializeLibrary;
-{$J+}
-const
-  Initialized: boolean = false;
-{$J-}
 begin
   if not Initialized then
   begin

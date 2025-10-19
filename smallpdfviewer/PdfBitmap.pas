@@ -15,12 +15,10 @@ type
   TPdfBitmap = class(TObject)
   private
     FBitmap: FPDF_BITMAP;
-    FOwnsBitmap: Boolean;
     FWidth: Integer;
     FHeight: Integer;
   public
-    constructor Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean = False); overload;
-    constructor Create(AWidth, AHeight: Integer; AFormat: Integer); overload;
+    constructor Create(AWidth, AHeight: Integer; AFormat: Integer);
     destructor Destroy; override;
 
     procedure FillRect(ALeft, ATop, AWidth, AHeight: Integer; AColor: FPDF_DWORD);
@@ -33,11 +31,10 @@ type
 
 implementation
 
-constructor TPdfBitmap.Create(ABitmap: FPDF_BITMAP; AOwnsBitmap: Boolean);
+constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AFormat: Integer);
 begin
   inherited Create;
-  FBitmap := ABitmap;
-  FOwnsBitmap := AOwnsBitmap;
+  FBitmap := FPDFBitmap_CreateEx(AWidth, AHeight, AFormat, nil, 0);
   if FBitmap <> nil then
   begin
     FWidth := FPDFBitmap_GetWidth(FBitmap);
@@ -45,14 +42,9 @@ begin
   end;
 end;
 
-constructor TPdfBitmap.Create(AWidth, AHeight: Integer; AFormat: Integer);
-begin
-  Create(FPDFBitmap_CreateEx(AWidth, AHeight, AFormat, nil, 0), True);
-end;
-
 destructor TPdfBitmap.Destroy;
 begin
-  if FOwnsBitmap and (FBitmap <> nil) then
+  if FBitmap <> nil then
     FPDFBitmap_Destroy(FBitmap);
   inherited Destroy;
 end;

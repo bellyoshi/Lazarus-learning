@@ -17,14 +17,14 @@ begin
   FPDF_InitLibrary();
 end;
 
-var Initialized: boolean = false;
 procedure InitializeLibrary;
+{$J+}
+const Initialized : boolean = false;
+{$J-}
 begin
   if not Initialized then
-  begin
     InitializeLibraryImpl;
-    Initialized := true;
-  end;
+  Initialized := true;
 end;
 
 end.

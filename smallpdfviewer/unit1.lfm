@@ -12,7 +12,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   object Image1: TImage
     Left = 8
-    Height = 480
+    Height = 590
     Top = 80
     Width = 784
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -60,16 +60,6 @@ object Form1: TForm1
     Top = 50
     Width = 68
     Caption = 'ページ 0 / 0'
-  end
-  object Memo1: TMemo
-    Left = 8
-    Height = 100
-    Top = 490
-    Width = 784
-    Anchors = [akLeft, akRight, akBottom]
-    ReadOnly = True
-    ScrollBars = ssVertical
-    TabOrder = 3
   end
   object OpenDialog1: TOpenDialog
     Filter = 'PDFファイル|*.pdf|すべてのファイル|*.*'

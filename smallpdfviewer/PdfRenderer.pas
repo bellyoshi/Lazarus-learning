@@ -9,34 +9,47 @@ uses
 
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap);
 
+function GetBitmap(Page: TPdfPage; Width, Height: Integer): TBitmap;
 
 implementation
 
 // ヘルパー関数の前方宣言
-procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);forward;
+procedure DrawToPdfBitmap(
+  {from}Page: TPdfPage;
+  {to}APdfBitmap: TPdfBitmap);forward;
 function CreateEmptyPdfBitmap(Width, Height: Integer): TPdfBitmap; forward;
-function ExtractImageDataFromPdfBitmap(PdfBitmap: TPdfBitmap; Width, Height: Integer): TBytes; forward;
+function ExtractImageDataFromPdfBitmap(PdfBitmap: TPdfBitmap): TBytes; forward;
 function CreateRawImageFromData(const ImageData: TBytes; Width, Height: Integer): TRawImage; forward;
+
+function GetPdfBitmap(Page: TPdfPage; Width, Height: Integer) : TPdfBitmap;
+begin
+  Result:= CreateEmptyPdfBitmap(Width , Height);
+  DrawToPdfBitmap(Page, Result);
+end;
+
 
 procedure DrawToBitmap(Page: TPdfPage; Bitmap: TBitmap);
 var
-  width : Integer;
-  height : Integer;
   PdfBitmap: TPdfBitmap;
   ImageData: TBytes;
   RawImage: TRawImage;
 begin
-  width := Bitmap.Width;
-  height := Bitmap.Height;
-  PdfBitmap := CreateEmptyPdfBitmap(Width, Height);
   try
-    DrawToPdfBitmap(Page, PdfBitmap, 0, 0, Width, Height);
-    ImageData := ExtractImageDataFromPdfBitmap(PdfBitmap, Width, Height);
-    RawImage := CreateRawImageFromData(ImageData, Width, Height);
+    PdfBitmap := GetPdfBitmap(Page, Bitmap.Width , Bitmap.Height);
+    ImageData := ExtractImageDataFromPdfBitmap(PdfBitmap);
+    RawImage := CreateRawImageFromData(ImageData, PdfBitmap.Width, PdfBitmap.Height);
     Bitmap.LoadFromRawImage(RawImage, false);
   finally
     PdfBitmap.Free;
   end;
+end;
+
+function GetBitmap(Page: TPdfPage; Width, Height: Integer): TBitmap;
+begin
+  Result := TBitmap.Create;
+  Result.Width := Width;
+  Result.Height := Height;
+  DrawToBitmap(Page, Result);
 end;
 
 function CreateEmptyPdfBitmap(Width, Height: Integer): TPdfBitmap;
@@ -45,13 +58,13 @@ begin
   Result.FillRect(0, 0, Width, Height, $FFFFFFFF);
 end;
 
-function ExtractImageDataFromPdfBitmap(PdfBitmap: TPdfBitmap; Width, Height: Integer): TBytes;
+function ExtractImageDataFromPdfBitmap(PdfBitmap: TPdfBitmap): TBytes;
 var
   SizeInt: Integer;
   buffer: Pointer;
 begin
   Result := nil; // 明示的に初期化
-  SizeInt := Width * Height * 4;
+  SizeInt := pdfBitmap.Width * pdfBitmap.Height * 4;
   SetLength(Result, SizeInt);
   buffer := PdfBitmap.GetBuffer;
   Move(buffer^, Result[0], SizeInt);
@@ -65,30 +78,15 @@ begin
   Result.Data := @ImageData[0];
 end;
 
-procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap; X, Y, Width, Height: Integer);
+procedure DrawToPdfBitmap(Page: TPdfPage; APdfBitmap: TPdfBitmap);
 const
-  // FPDF_RenderPageBitmap の回転角度定数
   ROTATE_NONE = 0;        // 回転なし
-  // ROTATE_90 = 1;          // 90度回転
-  // ROTATE_180 = 2;         // 180度回転
-  // ROTATE_270 = 3;         // 270度回転
-  
-  // FPDF_RenderPageBitmap のフラグ定数
-  // RENDER_FLAG_NONE = 0;   // 通常のレンダリング（アノテーション無視）
   RENDER_FLAG_ANNOT = 1;  // アノテーションを含むレンダリング
+  locate_X = 0;
+  locate_Y = 0;
 begin
-  // PDFページをビットマップにレンダリング
-  // 
-  // パラメータ説明:
-  // - rotate: ROTATE_NONE (0) = 回転なし（ページをそのまま表示）
-  // - flags: RENDER_FLAG_ANNOT (1) = アノテーションを含むレンダリング
-  // 
-  // アノテーションとは:
-  // - PDF文書に追加される注釈やマークアップ（ハイライト、コメント、図形など）
-  // - ユーザーが文書に追加した付箋、下線、矢印、スタンプなど
-  // - RENDER_FLAG_ANNOT = 1 により、これらの注釈も一緒に表示される
-  // - RENDER_FLAG_NONE = 0 にすると、元の文書内容のみ表示（注釈は無視）
-  FPDF_RenderPageBitmap(APdfBitmap.Bitmap, Page.Page, X, Y, Width, Height, ROTATE_NONE, RENDER_FLAG_ANNOT);
+  // PDFページをビットマップにレンダリング（アノテーション含む）
+  FPDF_RenderPageBitmap(APdfBitmap.Bitmap, Page.Page, locate_X, locate_Y, APdfBitmap.Width, APdfBitmap.Height, ROTATE_NONE, RENDER_FLAG_ANNOT);
 end;
 
 end.

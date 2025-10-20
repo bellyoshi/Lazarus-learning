@@ -97,16 +97,11 @@ end;
 function TPdfViewer.GetBitmap(Width, Height: Integer): TBitmap;
 var
   PdfPage: TPdfPage;
-  Bitmap: TBitmap;
 begin
-  if not Assigned(FPdfDocument) then
-    raise Exception.Create('PDF document not loaded');
 
   PdfPage := FPdfDocument.Pages[FPageIndex];
+  Result := PdfRenderer.GetBitmap(PdfPage, Width, Height);
 
-  Bitmap := GetEmptyBitmap(Width, Height);
-  DrawToBitmap(PdfPage, Bitmap);
-  Result := Bitmap;
 end;
 
 end.

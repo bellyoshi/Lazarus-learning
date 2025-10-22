@@ -23,6 +23,8 @@ type
     function CanPrevious: Boolean;
     procedure Next;
     procedure Previous;
+    function GetCurrentPageWidth: Double;
+    function GetCurrentPageHeight: Double;
     property PageCount : Integer read GetPageCount;
     property PageIndex : Integer read FPageIndex write SetPageIndex;
   end;
@@ -102,6 +104,32 @@ begin
   PdfPage := FPdfDocument.Pages[FPageIndex];
   Result := PdfRenderer.GetBitmap(PdfPage, Width, Height);
 
+end;
+
+function TPdfViewer.GetCurrentPageWidth: Double;
+var
+  PdfPage: TPdfPage;
+begin
+  if Assigned(FPdfDocument) and (FPageIndex >= 0) and (FPageIndex < GetPageCount) then
+  begin
+    PdfPage := FPdfDocument.Pages[FPageIndex];
+    Result := PdfPage.Width;
+  end
+  else
+    Result := 0.0;
+end;
+
+function TPdfViewer.GetCurrentPageHeight: Double;
+var
+  PdfPage: TPdfPage;
+begin
+  if Assigned(FPdfDocument) and (FPageIndex >= 0) and (FPageIndex < GetPageCount) then
+  begin
+    PdfPage := FPdfDocument.Pages[FPageIndex];
+    Result := PdfPage.Height;
+  end
+  else
+    Result := 0.0;
 end;
 
 end.

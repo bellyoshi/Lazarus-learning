@@ -1,4 +1,4 @@
-unit PdfiumUtils;
+unit PdfiumInitializer;
 
 {$mode ObjFPC}{$H+}
 

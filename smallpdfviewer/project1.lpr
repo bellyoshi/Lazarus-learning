@@ -5,7 +5,7 @@ program project1;
 uses
 
   Interfaces,
-  Forms, Unit1, PdfDocument, PdfPage, PdfRenderer, PdfViewer, PdfiumUtils,
+  Forms, Unit1, PdfDocument, PdfPage, PdfRenderer, PdfViewer, PdfiumInitializer,
   Classes, SysUtils, Windows;
 
 {$R *.res}

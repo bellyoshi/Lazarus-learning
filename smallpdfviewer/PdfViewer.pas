@@ -17,14 +17,12 @@ type
   public
     constructor Create(const Filename: string);
     destructor Destroy; override;
-    function GetBitmap(Width, Height: Integer): TBitmap;
+    function GetBitmap(ClientWidth, ClientHeight: Integer): TBitmap;
     function GetPageCount : Integer ;
     function CanNext: Boolean;
     function CanPrevious: Boolean;
     procedure Next;
     procedure Previous;
-    function GetCurrentPageWidth: Double;
-    function GetCurrentPageHeight: Double;
     property PageCount : Integer read GetPageCount;
     property PageIndex : Integer read FPageIndex write SetPageIndex;
   end;
@@ -96,40 +94,36 @@ begin
   Result.Height := Height;
 end;
 
-function TPdfViewer.GetBitmap(Width, Height: Integer): TBitmap;
+function TPdfViewer.GetBitmap(ClientWidth, ClientHeight: Integer): TBitmap;
 var
   PdfPage: TPdfPage;
+  PageWidth: Double;
+  PageHeight: Double;
+  AspectRatio: Double;
+  Width: Integer;
+  Height: Integer;
 begin
+// ページのサイズからアスペクト比を計算
+  PageWidth := FPdfDocument.Pages[FPageIndex].Width;
+  PageHeight := FPdfDocument.Pages[FPageIndex].Height;
+  AspectRatio := PageWidth / PageHeight;
+
+  // クライアントサイズからビットマップサイズを計算
+  if ClientWidth / ClientHeight > AspectRatio then
+  begin
+    Width := Round(ClientHeight * AspectRatio);
+    Height := ClientHeight;
+  end
+  else
+  begin
+    Width := ClientWidth;
+    Height := Round(ClientWidth / AspectRatio);
+  end;
 
   PdfPage := FPdfDocument.Pages[FPageIndex];
   Result := PdfRenderer.GetBitmap(PdfPage, Width, Height);
 
 end;
 
-function TPdfViewer.GetCurrentPageWidth: Double;
-var
-  PdfPage: TPdfPage;
-begin
-  if Assigned(FPdfDocument) and (FPageIndex >= 0) and (FPageIndex < GetPageCount) then
-  begin
-    PdfPage := FPdfDocument.Pages[FPageIndex];
-    Result := PdfPage.Width;
-  end
-  else
-    Result := 0.0;
-end;
-
-function TPdfViewer.GetCurrentPageHeight: Double;
-var
-  PdfPage: TPdfPage;
-begin
-  if Assigned(FPdfDocument) and (FPageIndex >= 0) and (FPageIndex < GetPageCount) then
-  begin
-    PdfPage := FPdfDocument.Pages[FPageIndex];
-    Result := PdfPage.Height;
-  end
-  else
-    Result := 0.0;
-end;
 
 end.

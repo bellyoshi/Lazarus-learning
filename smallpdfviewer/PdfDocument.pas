@@ -8,7 +8,7 @@ uses
   SysUtils,
   PdfiumLib,
   PdfPage,
-  PdfiumUtils;
+  PdfiumInitializer;
 
 type
 

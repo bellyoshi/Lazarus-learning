@@ -34,6 +34,10 @@ function FPDF_LoadPage(document: FPDF_DOCUMENT; page: Integer): FPDF_PAGE;
 
 procedure FPDF_ClosePage(page: FPDF_PAGE); cdecl;external PDFiumDll;
 
+function FPDF_GetPageWidth(page: FPDF_PAGE): Double; cdecl;external PDFiumDll;
+
+function FPDF_GetPageHeight(page: FPDF_PAGE): Double; cdecl;external PDFiumDll;
+
 procedure FPDF_RenderPageBitmap(bitmap: FPDF_BITMAP; page: FPDF_PAGE;
   start_x, start_y, size_x, size_y: Integer;rotate: Integer; flags: Integer); 
   cdecl;external PDFiumDll;

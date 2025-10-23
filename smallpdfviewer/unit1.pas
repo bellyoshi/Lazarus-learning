@@ -22,6 +22,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     FPdfViewer: TPdfViewer;
     procedure LoadPdfFile(const FileName: string);
@@ -104,6 +105,10 @@ end;
 procedure TForm1.UpdatePageDisplay;
 var
   Bitmap: TBitmap;
+  PageWidth, PageHeight: Double;
+  AspectRatio: Double;
+  DisplayWidth, DisplayHeight: Integer;
+  ImageWidth, ImageHeight: Integer;
 begin
   if not Assigned(FPdfViewer) then
   begin
@@ -112,7 +117,42 @@ begin
   end;
   
   try
-    Bitmap := FPdfViewer.GetBitmap(Image1.Width, Image1.Height);
+    // ページのサイズを取得
+    PageWidth := FPdfViewer.GetCurrentPageWidth;
+    PageHeight := FPdfViewer.GetCurrentPageHeight;
+    
+    if (PageWidth > 0) and (PageHeight > 0) then
+    begin
+      // ページのアスペクト比を計算
+      AspectRatio := PageWidth / PageHeight;
+      
+      // 利用可能な表示領域のサイズを取得
+      ImageWidth := Image1.Width;
+      ImageHeight := Image1.Height;
+      
+      // アスペクト比を維持しながら表示サイズを計算
+      if (ImageWidth / ImageHeight) > AspectRatio then
+      begin
+        // 高さに合わせる
+        DisplayHeight := ImageHeight;
+        DisplayWidth := Round(ImageHeight * AspectRatio);
+      end
+      else
+      begin
+        // 幅に合わせる
+        DisplayWidth := ImageWidth;
+        DisplayHeight := Round(ImageWidth / AspectRatio);
+      end;
+      
+      // ビットマップを生成（アスペクト比を維持したサイズで）
+      Bitmap := FPdfViewer.GetBitmap(DisplayWidth, DisplayHeight);
+    end
+    else
+    begin
+      // ページサイズが取得できない場合は元のサイズで表示
+      Bitmap := FPdfViewer.GetBitmap(Image1.Width, Image1.Height);
+    end;
+    
     try
       Image1.Picture.Assign(Bitmap);
     finally
@@ -139,6 +179,13 @@ procedure TForm1.UpdatePage;
 begin
   UpdatePageDisplay;
   UpdatePageInfo;
+end;
+
+procedure TForm1.FormResize(Sender: TObject);
+begin
+  // フォームがリサイズされた時にページ表示を更新
+  if Assigned(FPdfViewer) then
+    UpdatePageDisplay;
 end;
 
 end.

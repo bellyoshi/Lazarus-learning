@@ -143,8 +143,10 @@ end;
 
 procedure TForm1.FormResize(Sender: TObject);
 begin
+  Panel1.Left := 0;
+  Panel1.Top:=50;
   Panel1.Width:= Form1.Width;
-  Panel1.Height:=Form1.Height - 50;
+  Panel1.Height:=Form1.Height - Panel1.Top;
   // フォームがリサイズされた時にページ表示を更新
   if Assigned(FPdfViewer) then
     UpdatePage;

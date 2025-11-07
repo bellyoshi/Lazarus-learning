@@ -65,12 +65,15 @@ type
     function CheckKomaMove(Koma: TKoma; FromX, FromY, ToX, ToY: Integer): Boolean;
     procedure AddMochigoma(Koma: TKoma);
     function CheckNifu(X: Integer; IsSente: Boolean): Boolean;
+    procedure NaruKoma(var Koma: TKoma);
+    function CanMoveFrom(Kind: TKomaKind; IsSente: Boolean; FromY: Integer): Boolean;
   public
     constructor Create;
+    function MustNaru(Koma: TKoma; ToY: Integer): Boolean;
     function GetKoma(X, Y: Integer): TKoma;
     function IsValidMove(FromX, FromY, ToX, ToY: Integer): Boolean;
     function IsValidDrop(Kind: TKomaKind; ToX, ToY: Integer): Boolean;
-    function MoveKoma(FromX, FromY, ToX, ToY: Integer): Boolean;
+    function MoveKoma(FromX, FromY, ToX, ToY: Integer; DoNaru: Boolean = False): Boolean;
     function DropKoma(Kind: TKomaKind; ToX, ToY: Integer): Boolean;
     function GetTurn: TTurn;
     procedure ChangeTurn;
@@ -231,7 +234,7 @@ begin
   Result := CheckKomaMove(FromKoma, FromX, FromY, ToX, ToY);
 end;
 
-function TShogiGame.MoveKoma(FromX, FromY, ToX, ToY: Integer): Boolean;
+function TShogiGame.MoveKoma(FromX, FromY, ToX, ToY: Integer; DoNaru: Boolean = False): Boolean;
 var
   ToKoma: TKoma;
   FromKoma: TKoma;
@@ -262,6 +265,18 @@ begin
     // 取った側（現在の手番）の持ち駒に追加（取られた駒の持ち主とは逆）
     ToKoma.IsSente := not ToKoma.IsSente;
     AddMochigoma(ToKoma);
+  end;
+  
+  // 成り駒の処理
+  if MustNaru(FromKoma, ToY) then
+  begin
+    // 強制成り
+    NaruKoma(FromKoma);
+  end
+  else if DoNaru and CanNaru(FromKoma, ToY, FromKoma.IsSente) then
+  begin
+    // 選択成り
+    NaruKoma(FromKoma);
   end;
   
   // 駒を移動
@@ -589,6 +604,25 @@ begin
     end;
   end;
   
+  // 香車、桂馬の場合の特殊ルール
+  if (Kind = kkKyo) or (Kind = kkKei) then
+  begin
+    // 行き場のない段に打てない
+    if IsSente then
+    begin
+      if ToY = 1 then Exit; // 先手は1段目に打てない
+      if (Kind = kkKei) and (ToY = 2) then Exit; // 桂馬は2段目にも打てない
+    end
+    else
+    begin
+      if ToY = 9 then Exit; // 後手は9段目に打てない
+      if (Kind = kkKei) and (ToY = 8) then Exit; // 桂馬は8段目にも打てない
+    end;
+  end;
+  
+  // 移動不可能な場所に打てない
+  if not CanMoveFrom(Kind, IsSente, ToY) then Exit;
+  
   // 香の場合
   if Kind = kkKyo then
   begin
@@ -678,6 +712,96 @@ begin
     kkKyo: Result := Mochigoma.Kyo > 0;
     kkFu: Result := Mochigoma.Fu > 0;
     else Result := False;
+  end;
+end;
+
+// 強制成りかチェック
+function TShogiGame.MustNaru(Koma: TKoma; ToY: Integer): Boolean;
+var
+  IsSente: Boolean;
+begin
+  Result := False;
+  
+  // 既に成っている場合は成れない
+  if Koma.IsNari then Exit;
+  
+  // 王、玉、金は成れない
+  if (Koma.Kind = kkOu) or (Koma.Kind = kkGyoku) or (Koma.Kind = kkKin) then Exit;
+  
+  IsSente := Koma.IsSente;
+  
+  // 歩、香車は最後の行に移動したら強制成り
+  if (Koma.Kind = kkFu) or (Koma.Kind = kkKyo) then
+  begin
+    if IsSente then
+      Result := (ToY = 1)  // 先手は1段目
+    else
+      Result := (ToY = 9); // 後手は9段目
+  end
+  // 桂馬は2段目・最後の行に移動したら強制成り
+  else if Koma.Kind = kkKei then
+  begin
+    if IsSente then
+      Result := (ToY <= 2)  // 先手は1-2段目
+    else
+      Result := (ToY >= 8); // 後手は8-9段目
+  end;
+end;
+
+// 駒を成る
+procedure TShogiGame.NaruKoma(var Koma: TKoma);
+begin
+  if Koma.IsNari then Exit;
+  
+  case Koma.Kind of
+    kkHisha: Koma.Kind := kkRyu;
+    kkKaku: Koma.Kind := kkUma;
+    kkGin: Koma.Kind := kkNariGin;
+    kkKei: Koma.Kind := kkNariKei;
+    kkKyo: Koma.Kind := kkNariKyo;
+    kkFu: Koma.Kind := kkTo;
+  end;
+  Koma.IsNari := True;
+end;
+
+// その位置から移動可能かチェック（打ち駒用）
+function TShogiGame.CanMoveFrom(Kind: TKomaKind; IsSente: Boolean; FromY: Integer): Boolean;
+var
+  ForwardY: Integer;
+  TestKoma: TKoma;
+  X, Y: Integer;
+begin
+  Result := False;
+  
+  // 王、玉、金はどこからでも移動可能
+  if (Kind = kkOu) or (Kind = kkGyoku) or (Kind = kkKin) then
+  begin
+    Result := True;
+    Exit;
+  end;
+  
+  if IsSente then
+    ForwardY := -1  // 先手は上方向が前
+  else
+    ForwardY := 1;  // 後手は下方向が前
+  
+  TestKoma.Kind := Kind;
+  TestKoma.IsSente := IsSente;
+  TestKoma.IsNari := False;
+  
+  // その位置から1マスでも移動できるかチェック
+  for X := 1 to 9 do
+  begin
+    for Y := 1 to 9 do
+    begin
+      if (X = 5) and (Y = FromY) then Continue; // 現在位置はスキップ
+      
+      if CheckKomaMove(TestKoma, 5, FromY, X, Y) then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
   end;
 end;
 

@@ -1,0 +1,63 @@
+object Form1: TForm1
+  Left = 316
+  Height = 600
+  Top = 185
+  Width = 500
+  Caption = '将棋'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object MainPanel: TPanel
+    Left = 0
+    Height = 561
+    Top = 0
+    Width = 500
+    Align = alClient
+    Caption = 'MainPanel'
+    ClientHeight = 561
+    ClientWidth = 500
+    TabOrder = 0
+    object BoardPanel: TPanel
+      Left = 10
+      Height = 470
+      Top = 50
+      Width = 470
+      Caption = 'BoardPanel'
+      Color = 15790320
+      ParentColor = False
+      TabOrder = 0
+    end
+    object StatusLabel: TLabel
+      Left = 10
+      Height = 19
+      Top = 10
+      Width = 100
+      Caption = '手番: 先手'
+      Font.Height = -16
+      Font.Name = 'MS UI Gothic'
+      Font.Size = 12
+      ParentColor = False
+    end
+    object SenteMochigomaPanel: TPanel
+      Left = 490
+      Height = 470
+      Top = 50
+      Width = 120
+      Caption = '先手'
+      Color = 12632256
+      ParentColor = False
+      TabOrder = 1
+    end
+    object GoteMochigomaPanel: TPanel
+      Left = 620
+      Height = 470
+      Top = 50
+      Width = 120
+      Caption = '後手'
+      Color = 12632256
+      ParentColor = False
+      TabOrder = 2
+    end
+  end
+end

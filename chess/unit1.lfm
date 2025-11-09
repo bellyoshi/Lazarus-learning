@@ -1,0 +1,38 @@
+object Form1: TForm1
+  Left = 316
+  Height = 560
+  Top = 185
+  Width = 520
+  Caption = 'チェスボード'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  object PaintBox1: TPaintBox
+    Left = 10
+    Top = 50
+    Width = 480
+    Height = 480
+    OnMouseDown = PaintBox1MouseDown
+    OnPaint = PaintBox1Paint
+  end
+  object LabelTurn: TLabel
+    Left = 10
+    Top = 10
+    Height = 20
+    Width = 200
+    Caption = '手番: 白 (White)'
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object ButtonStart: TButton
+    Left = 400
+    Top = 10
+    Height = 30
+    Width = 90
+    Caption = 'ゲーム開始'
+    OnClick = ButtonStartClick
+    TabOrder = 0
+  end
+end

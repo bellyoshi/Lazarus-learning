@@ -38,6 +38,8 @@ type
     FCellSize: Integer;
     FCurrentPlayer: TPieceColor;  // 現在の手番
     FSelectedRow, FSelectedCol: Integer;  // 選択されたマス（-1は未選択）
+    FGameStarted: Boolean;  // ゲームが開始されているか
+    FGameEnded: Boolean;  // ゲームが終了しているか
     // キャスリング用：キングとルークが動いたかどうか
     FKingMoved: array[TPieceColor] of Boolean;
     FRookMoved: array[TPieceColor, 0..1] of Boolean;  // [色, 0=キングサイド, 1=クイーンサイド]
@@ -53,6 +55,8 @@ type
     function IsPawnFirstMove(Row, Col: Integer): Boolean;
     function CanCastle(Kingside: Boolean): Boolean;
     procedure PerformCastle(Kingside: Boolean);
+    function CheckKingCaptured: Boolean;
+    procedure EndGame(Winner: TPieceColor);
   public
 
   end;
@@ -61,6 +65,8 @@ var
   Form1: TForm1;
 
 implementation
+
+uses Unit2;
 
 {$R *.lfm}
 
@@ -77,6 +83,8 @@ begin
   FCurrentPlayer := pcWhite;
   FSelectedRow := -1;  // 未選択
   FSelectedCol := -1;
+  FGameStarted := False;
+  FGameEnded := False;
   
   // キャスリング用の初期化
   FKingMoved[pcWhite] := False;
@@ -86,7 +94,8 @@ begin
   FRookMoved[pcBlack, 0] := False;  // 黒のキングサイドルーク
   FRookMoved[pcBlack, 1] := False;  // 黒のクイーンサイドルーク
   
-  UpdateTurnDisplay;
+  // 初期表示では手番を表示しない
+  LabelTurn.Caption := '';
 end;
 
 procedure TForm1.InitializeBoard;
@@ -317,6 +326,14 @@ begin
         // 別のマスをクリックした場合、移動を試みる
         else
         begin
+          // ゲームが終了している場合は移動できない
+          if FGameEnded or not FGameStarted then
+          begin
+            FSelectedRow := -1;
+            FSelectedCol := -1;
+            Exit;
+          end;
+          
           // 移動が有効かチェック
           if IsValidMove(FSelectedRow, FSelectedCol, Row, Col) then
           begin
@@ -334,14 +351,38 @@ begin
             begin
               // 通常の移動
               MovePiece(FSelectedRow, FSelectedCol, Row, Col);
+              
+              // ポーンのプロモーション（成り）チェック
+              if (FBoard[Row, Col].PieceType = ptPawn) then
+              begin
+                // 白のポーンが1列目（Row=0）に到達、または黒のポーンが8列目（Row=7）に到達
+                if ((FBoard[Row, Col].Color = pcWhite) and (Row = 0)) or
+                   ((FBoard[Row, Col].Color = pcBlack) and (Row = 7)) then
+                begin
+                  // プロモーション選択フォームを開く
+                  if Assigned(Form2) then
+                  begin
+                    FBoard[Row, Col].PieceType := Form2.SelectPromotion(FBoard[Row, Col].Color);
+                  end;
+                end;
+              end;
             end;
             
-            // 手番を切り替え
-            if FCurrentPlayer = pcWhite then
-              FCurrentPlayer := pcBlack
+            // キングが取られたかチェック
+            if CheckKingCaptured then
+            begin
+              // 勝者は現在の手番のプレイヤー（キングを取った側）
+              EndGame(FCurrentPlayer);
+            end
             else
-              FCurrentPlayer := pcWhite;
-            UpdateTurnDisplay;
+            begin
+              // 手番を切り替え
+              if FCurrentPlayer = pcWhite then
+                FCurrentPlayer := pcBlack
+              else
+                FCurrentPlayer := pcWhite;
+              UpdateTurnDisplay;
+            end;
           end;
           // 選択を解除
           FSelectedRow := -1;
@@ -351,6 +392,10 @@ begin
       // マスが選択されていない場合
       else
       begin
+        // ゲームが終了している場合は選択できない
+        if FGameEnded or not FGameStarted then
+          Exit;
+        
         // クリックしたマスに駒があり、それが現在の手番の駒の場合
         if (ClickedPiece.PieceType <> ptNone) and (ClickedPiece.Color = FCurrentPlayer) then
         begin
@@ -371,6 +416,8 @@ begin
   FCurrentPlayer := pcWhite;  // 白から開始
   FSelectedRow := -1;  // 選択を解除
   FSelectedCol := -1;
+  FGameStarted := True;
+  FGameEnded := False;
   
   // キャスリング用の初期化
   FKingMoved[pcWhite] := False;
@@ -729,11 +776,71 @@ end;
 
 procedure TForm1.UpdateTurnDisplay;
 begin
-  // 手番を表示
-  if FCurrentPlayer = pcWhite then
-    LabelTurn.Caption := '手番: 白 (White)'
+  // 手番を表示（ゲーム開始時のみ）
+  if FGameStarted and not FGameEnded then
+  begin
+    if FCurrentPlayer = pcWhite then
+      LabelTurn.Caption := '手番: 白 (White)'
+    else
+      LabelTurn.Caption := '手番: 黒 (Black)';
+  end;
+end;
+
+function TForm1.CheckKingCaptured: Boolean;
+var
+  Row, Col: Integer;
+  WhiteKingFound, BlackKingFound: Boolean;
+begin
+  Result := False;
+  WhiteKingFound := False;
+  BlackKingFound := False;
+  
+  // ボード全体をチェックしてキングが存在するか確認
+  for Row := 0 to 7 do
+    for Col := 0 to 7 do
+    begin
+      if FBoard[Row, Col].PieceType = ptKing then
+      begin
+        if FBoard[Row, Col].Color = pcWhite then
+          WhiteKingFound := True
+        else
+          BlackKingFound := True;
+      end;
+    end;
+  
+  // どちらかのキングが取られた場合
+  if not WhiteKingFound then
+  begin
+    // 白のキングが取られた → 黒の勝ち
+    Result := True;
+  end
+  else if not BlackKingFound then
+  begin
+    // 黒のキングが取られた → 白の勝ち
+    Result := True;
+  end;
+end;
+
+procedure TForm1.EndGame(Winner: TPieceColor);
+var
+  WinnerText: String;
+begin
+  FGameEnded := True;
+  
+  // 勝者を決定
+  if Winner = pcWhite then
+    WinnerText := '白 (White)'
   else
-    LabelTurn.Caption := '手番: 黒 (Black)';
+    WinnerText := '黒 (Black)';
+  
+  // 勝者を表示
+  LabelTurn.Caption := '勝者: ' + WinnerText + ' の勝利！';
+  
+  // メッセージボックスで勝者を表示
+  ShowMessage('ゲーム終了！' + #13#10 + '勝者: ' + WinnerText);
+  
+  // ボードを再描画
+  PaintBox1.Invalidate;
 end;
 
 end.

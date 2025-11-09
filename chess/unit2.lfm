@@ -1,0 +1,72 @@
+object Form2: TForm2
+  Left = 0
+  Height = 220
+  Top = 0
+  Width = 300
+  Caption = 'ポーンの成りを選択'
+  ClientHeight = 220
+  ClientWidth = 300
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '4.2.0.0'
+  object Label1: TLabel
+    Left = 20
+    Height = 20
+    Top = 20
+    Width = 260
+    Caption = 'ポーンを何に成りますか？'
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object ButtonQueen: TButton
+    Left = 20
+    Height = 50
+    Top = 60
+    Width = 120
+    Caption = 'クイーン'
+    Font.Height = -13
+    Font.Name = 'Segoe UI Symbol'
+    Font.Size = 16
+    OnClick = ButtonQueenClick
+    TabOrder = 0
+  end
+  object ButtonRook: TButton
+    Left = 160
+    Height = 50
+    Top = 60
+    Width = 120
+    Caption = 'ルーク'
+    Font.Height = -13
+    Font.Name = 'Segoe UI Symbol'
+    Font.Size = 16
+    OnClick = ButtonRookClick
+    TabOrder = 1
+  end
+  object ButtonBishop: TButton
+    Left = 20
+    Height = 50
+    Top = 120
+    Width = 120
+    Caption = 'ビショップ'
+    Font.Height = -13
+    Font.Name = 'Segoe UI Symbol'
+    Font.Size = 16
+    OnClick = ButtonBishopClick
+    TabOrder = 2
+  end
+  object ButtonKnight: TButton
+    Left = 160
+    Height = 50
+    Top = 120
+    Width = 120
+    Caption = 'ナイト'
+    Font.Height = -13
+    Font.Name = 'Segoe UI Symbol'
+    Font.Size = 16
+    OnClick = ButtonKnightClick
+    TabOrder = 3
+  end
+end
+

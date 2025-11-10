@@ -1,0 +1,45 @@
+object Form1: TForm1
+  Left = 316
+  Height = 600
+  Top = 185
+  Width = 700
+  Caption = '囲碁'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object PaintBox1: TPaintBox
+    Left = 8
+    Top = 40
+    Width = 600
+    Height = 600
+    OnMouseDown = PaintBox1MouseDown
+    OnPaint = PaintBox1Paint
+  end
+  object Label1: TLabel
+    Left = 8
+    Top = 8
+    Height = 23
+    Caption = '手番: 黒  着手数: 0'
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 620
+    Top = 40
+    Width = 75
+    Height = 30
+    Caption = 'パス'
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 620
+    Top = 80
+    Width = 75
+    Height = 30
+    Caption = 'クリア'
+    OnClick = Button2Click
+  end
+end

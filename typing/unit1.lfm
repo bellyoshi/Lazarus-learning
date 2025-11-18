@@ -1,0 +1,144 @@
+object Form1: TForm1
+  Left = 316
+  Height = 500
+  Top = 185
+  Width = 700
+  Caption = 'タイピングゲーム'
+  ClientHeight = 500
+  ClientWidth = 700
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  object LabelText: TLabel
+    Left = 40
+    Height = 60
+    Top = 40
+    Width = 620
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'ここにタイプするテキストが表示されます'
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -24
+    Font.Name = 'MS Sans Serif'
+    Font.Pitch = fpDefault
+    Font.Quality = fqDraft
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+    WordWrap = True
+  end
+  object EditInput: TEdit
+    Left = 40
+    Height = 40
+    Top = 120
+    Width = 620
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -20
+    Font.Name = 'MS Sans Serif'
+    Font.Pitch = fpDefault
+    Font.Quality = fqDraft
+    Font.Style = []
+    OnChange = EditInputChange
+    OnKeyPress = EditInputKeyPress
+    ParentFont = False
+    TabOrder = 0
+    Text = ''
+  end
+  object LabelStatus: TLabel
+    Left = 40
+    Height = 30
+    Top = 180
+    Width = 620
+    Alignment = taCenter
+    AutoSize = False
+    Caption = ''
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Pitch = fpDefault
+    Font.Quality = fqDraft
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+  end
+  object LabelScore: TLabel
+    Left = 40
+    Height = 30
+    Top = 240
+    Width = 300
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'スコア: 0'
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -20
+    Font.Name = 'MS Sans Serif'
+    Font.Pitch = fpDefault
+    Font.Quality = fqDraft
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object LabelTime: TLabel
+    Left = 360
+    Height = 30
+    Top = 240
+    Width = 300
+    Alignment = taCenter
+    AutoSize = False
+    Caption = '時間: 0:00'
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -20
+    Font.Name = 'MS Sans Serif'
+    Font.Pitch = fpDefault
+    Font.Quality = fqDraft
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object ButtonStart: TButton
+    Left = 200
+    Height = 50
+    Top = 320
+    Width = 120
+    Caption = '開始'
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Pitch = fpDefault
+    Font.Quality = fqDraft
+    Font.Style = []
+    OnClick = ButtonStartClick
+    ParentFont = False
+    TabOrder = 1
+  end
+  object ButtonReset: TButton
+    Left = 380
+    Height = 50
+    Top = 320
+    Width = 120
+    Caption = 'リセット'
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Pitch = fpDefault
+    Font.Quality = fqDraft
+    Font.Style = []
+    OnClick = ButtonResetClick
+    ParentFont = False
+    TabOrder = 2
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 1000
+    OnTimer = Timer1Timer
+    Left = 40
+    Top = 400
+  end
+end

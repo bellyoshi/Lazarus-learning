@@ -1,0 +1,58 @@
+object Form1: TForm1
+  Left = 316
+  Height = 600
+  Top = 185
+  Width = 650
+  Caption = '五目並べ'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object PaintBox1: TPaintBox
+    Left = 8
+    Top = 8
+    Width = 500
+    Height = 500
+    OnMouseDown = PaintBox1MouseDown
+    OnPaint = PaintBox1Paint
+  end
+  object Label1: TLabel
+    Left = 520
+    Top = 16
+    Width = 100
+    Height = 20
+    Caption = '現在のプレイヤー:'
+  end
+  object LabelPlayer: TLabel
+    Left = 520
+    Top = 40
+    Width = 60
+    Height = 20
+    Caption = '黒'
+    Font.Color = clBlack
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object LabelStatus: TLabel
+    Left = 520
+    Top = 80
+    Width = 100
+    Height = 20
+    Caption = ''
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object ButtonReset: TButton
+    Left = 520
+    Top = 120
+    Width = 100
+    Height = 30
+    Caption = 'リセット'
+    OnClick = ButtonResetClick
+  end
+end

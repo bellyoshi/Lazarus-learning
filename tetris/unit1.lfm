@@ -1,0 +1,49 @@
+object Form1: TForm1
+  Left = 316
+  Height = 700
+  Top = 185
+  Width = 400
+  Caption = 'テトリス'
+  DesignTimePPI = 120
+  KeyPreview = True
+  LCLVersion = '4.2.0.0'
+  OnKeyDown = FormKeyDown
+  object PaintBox1: TPaintBox
+    Left = 8
+    Top = 8
+    Width = 300
+    Height = 600
+    OnPaint = PaintBox1Paint
+  end
+  object Timer1: TTimer
+    Enabled = True
+    Interval = 50
+    OnTimer = Timer1Timer
+    Left = 320
+    Top = 8
+  end
+  object Label1: TLabel
+    Left = 320
+    Top = 40
+    Height = 15
+    Caption = 'スコア:'
+  end
+  object Label2: TLabel
+    Left = 320
+    Top = 80
+    Height = 15
+    Caption = 'ライン:'
+  end
+  object LabelScore: TLabel
+    Left = 320
+    Top = 56
+    Height = 15
+    Caption = '0'
+  end
+  object LabelLines: TLabel
+    Left = 320
+    Top = 96
+    Height = 15
+    Caption = '0'
+  end
+end

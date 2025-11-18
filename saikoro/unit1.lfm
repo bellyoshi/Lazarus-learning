@@ -1,0 +1,26 @@
+object Form1: TForm1
+  Left = 424
+  Height = 340
+  Top = 274
+  Width = 320
+  Caption = 'サイコロ'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  object PaintBox1: TPaintBox
+    Left = 40
+    Top = 24
+    Width = 240
+    Height = 240
+    OnPaint = PaintBox1Paint
+  end
+  object Button1: TButton
+    Left = 120
+    Top = 280
+    Width = 80
+    Height = 25
+    Caption = 'フル'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+end

@@ -1,0 +1,147 @@
+object Form1: TForm1
+  Left = 316
+  Height = 455
+  Top = 185
+  Width = 640
+  Caption = 'メモ帳'
+  ClientHeight = 455
+  ClientWidth = 640
+  DesignTimePPI = 120
+  Menu = MainMenu1
+  LCLVersion = '4.2.0.0'
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  object Memo1: TMemo
+    Left = 0
+    Height = 455
+    Top = 0
+    Width = 640
+    Align = alClient
+    Font.CharSet = ANSI_CHARSET
+    Font.Height = -13
+    Font.Name = 'MS UI Gothic'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    Lines.Strings = (
+      ''
+    )
+    ParentFont = False
+    ScrollBars = ssBoth
+    TabOrder = 0
+    WordWrap = False
+    OnChange = Memo1Change
+  end
+  object MainMenu1: TMainMenu
+    Left = 24
+    Top = 16
+    object MenuItem1: TMenuItem
+      Caption = 'ファイル(&F)'
+      object MenuItem2: TMenuItem
+        Caption = '新規(&N)'
+        ShortCut = 16462
+        OnClick = MenuItem2Click
+      end
+      object MenuItem3: TMenuItem
+        Caption = '開く(&O)...'
+        ShortCut = 16463
+        OnClick = MenuItem3Click
+      end
+      object MenuItem4: TMenuItem
+        Caption = '保存(&S)'
+        ShortCut = 16467
+        OnClick = MenuItem4Click
+      end
+      object MenuItem5: TMenuItem
+        Caption = '名前を付けて保存(&A)...'
+        OnClick = MenuItem5Click
+      end
+      object MenuItem6: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem7: TMenuItem
+        Caption = '終了(&X)'
+        OnClick = MenuItem7Click
+      end
+    end
+    object MenuItem8: TMenuItem
+      Caption = '編集(&E)'
+      object MenuItem9: TMenuItem
+        Caption = '切り取り(&T)'
+        ShortCut = 16472
+        OnClick = MenuItem8Click
+      end
+      object MenuItem10: TMenuItem
+        Caption = 'コピー(&C)'
+        ShortCut = 16451
+        OnClick = MenuItem9Click
+      end
+      object MenuItem11: TMenuItem
+        Caption = '貼り付け(&P)'
+        ShortCut = 16470
+        OnClick = MenuItem10Click
+      end
+      object MenuItem12: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem13: TMenuItem
+        Caption = 'すべて選択(&A)'
+        ShortCut = 16449
+        OnClick = MenuItem11Click
+      end
+    end
+    object MenuItem14: TMenuItem
+      Caption = '検索(&S)'
+      object MenuItem15: TMenuItem
+        Caption = '検索(&F)...'
+        ShortCut = 16454
+        OnClick = MenuItem15Click
+      end
+      object MenuItem16: TMenuItem
+        Caption = '次を検索(&N)'
+        ShortCut = 114
+        OnClick = MenuItem16Click
+      end
+    end
+    object MenuItem17: TMenuItem
+      Caption = '表示(&V)'
+      object MenuItem18: TMenuItem
+        Caption = 'フォント(&F)...'
+        OnClick = MenuItem18Click
+      end
+      object MenuItem19: TMenuItem
+        Caption = '折り返し(&W)'
+        OnClick = MenuItem19Click
+      end
+    end
+    object MenuItem20: TMenuItem
+      Caption = 'ヘルプ(&H)'
+      object MenuItem21: TMenuItem
+        Caption = 'バージョン情報(&A)...'
+        OnClick = MenuItem20Click
+      end
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    DefaultExt = '.txt'
+    Filter = 'テキストファイル (*.txt)|*.txt|すべてのファイル (*.*)|*.*'
+    Left = 88
+    Top = 16
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = 'テキストファイル (*.txt)|*.txt|すべてのファイル (*.*)|*.*'
+    Left = 152
+    Top = 16
+  end
+  object FontDialog1: TFontDialog
+    Font.CharSet = ANSI_CHARSET
+    Font.Height = -13
+    Font.Name = 'MS UI Gothic'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    MinFontSize = 0
+    MaxFontSize = 0
+    Left = 216
+    Top = 16
+  end
+end

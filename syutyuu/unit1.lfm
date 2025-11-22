@@ -1,0 +1,13 @@
+object Form1: TForm1
+  Left = 316
+  Height = 240
+  Top = 185
+  Width = 320
+  Caption = 'Form1'
+  Color = clBlack
+  DesignTimePPI = 120
+  KeyPreview = True
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+end

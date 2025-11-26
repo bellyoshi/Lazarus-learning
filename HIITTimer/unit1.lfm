@@ -1,0 +1,79 @@
+object Form1: TForm1
+  Left = 316
+  Height = 400
+  Top = 185
+  Width = 500
+  Caption = 'HIIT Timer'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  object LabelStatus: TLabel
+    Left = 40
+    Height = 28
+    Top = 40
+    Width = 420
+    Alignment = taCenter
+    Caption = '準備完了'
+    Font.Height = -24
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object LabelTime: TLabel
+    Left = 40
+    Height = 72
+    Top = 100
+    Width = 420
+    Alignment = taCenter
+    Caption = '00:00'
+    Font.Height = -64
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object LabelRound: TLabel
+    Left = 40
+    Height = 20
+    Top = 200
+    Width = 420
+    Alignment = taCenter
+    Caption = 'ラウンド: 0 / 8'
+    Font.Height = -16
+    ParentColor = False
+    ParentFont = False
+  end
+  object ButtonStart: TButton
+    Left = 80
+    Height = 40
+    Top = 260
+    Width = 100
+    Caption = '開始'
+    OnClick = ButtonStartClick
+    TabOrder = 0
+  end
+  object ButtonStop: TButton
+    Left = 200
+    Height = 40
+    Top = 260
+    Width = 100
+    Caption = '停止'
+    Enabled = False
+    OnClick = ButtonStopClick
+    TabOrder = 1
+  end
+  object ButtonReset: TButton
+    Left = 320
+    Height = 40
+    Top = 260
+    Width = 100
+    Caption = 'リセット'
+    OnClick = ButtonResetClick
+    TabOrder = 2
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 1000
+    OnTimer = Timer1Timer
+    Left = 40
+    Top = 320
+  end
+end

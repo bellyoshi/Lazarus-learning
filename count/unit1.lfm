@@ -1,0 +1,48 @@
+object Form1: TForm1
+  Left = 316
+  Height = 240
+  Top = 185
+  Width = 320
+  Caption = 'カウンター'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  object LabelCount: TLabel
+    Left = 120
+    Height = 48
+    Top = 60
+    Width = 80
+    Alignment = taCenter
+    Caption = '0'
+    Font.Height = -40
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object ButtonPlus: TButton
+    Left = 80
+    Height = 40
+    Top = 140
+    Width = 60
+    Caption = '+'
+    Font.Height = -24
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    OnClick = ButtonPlusClick
+    ParentFont = False
+    TabOrder = 0
+  end
+  object ButtonMinus: TButton
+    Left = 180
+    Height = 40
+    Top = 140
+    Width = 60
+    Caption = '-'
+    Font.Height = -24
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    OnClick = ButtonMinusClick
+    ParentFont = False
+    TabOrder = 1
+  end
+end

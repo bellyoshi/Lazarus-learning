@@ -1,0 +1,36 @@
+object Form1: TForm1
+  Left = 316
+  Height = 240
+  Top = 185
+  Width = 320
+  Caption = 'Form1'
+  ClientHeight = 240
+  ClientWidth = 320
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  object ButtonPlus: TButton
+    Left = 64
+    Height = 73
+    Top = 64
+    Width = 91
+    Caption = '+'
+    TabOrder = 0
+    OnClick = ButtonPlusClick
+  end
+  object ButtonMinus: TButton
+    Left = 176
+    Height = 73
+    Top = 64
+    Width = 91
+    Caption = '-'
+    TabOrder = 1
+    OnClick = ButtonMinusClick
+  end
+  object LabelCount: TLabel
+    Left = 116
+    Height = 20
+    Top = 181
+    Width = 75
+    Caption = 'LabelCount'
+  end
+end

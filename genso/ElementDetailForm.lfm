@@ -1,0 +1,109 @@
+object ElementDetailDialog: TElementDetailDialog
+  Left = 0
+  Height = 350
+  Top = 0
+  Width = 400
+  Caption = '元素詳細情報'
+  ClientHeight = 350
+  ClientWidth = 400
+  Position = poScreenCenter
+  LCLVersion = '4.2.0.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 350
+    Top = 0
+    Width = 400
+    Align = alClient
+    BevelOuter = bvNone
+    BorderSpacing.Around = 10
+    ClientHeight = 350
+    ClientWidth = 400
+    TabOrder = 0
+    object LabelTitle: TLabel
+      Left = 10
+      Height = 19
+      Top = 10
+      Width = 120
+      Caption = '元素詳細情報'
+      Font.Height = -13
+      Font.Style = [fsBold]
+      ParentColor = False
+    end
+    object LabelAtomicNumber: TLabel
+      Left = 10
+      Height = 15
+      Top = 50
+      Width = 60
+      Caption = '原子番号:'
+      ParentColor = False
+    end
+    object LabelSymbol: TLabel
+      Left = 10
+      Height = 28
+      Top = 80
+      Width = 30
+      Caption = ''
+      Font.Height = -20
+      Font.Style = [fsBold]
+      ParentColor = False
+    end
+    object LabelName: TLabel
+      Left = 10
+      Height = 15
+      Top = 120
+      Width = 50
+      Caption = '英語名:'
+      ParentColor = False
+    end
+    object LabelNameJP: TLabel
+      Left = 10
+      Height = 15
+      Top = 150
+      Width = 60
+      Caption = '日本語名:'
+      ParentColor = False
+    end
+    object LabelAtomicWeight: TLabel
+      Left = 10
+      Height = 15
+      Top = 180
+      Width = 50
+      Caption = '原子量:'
+      ParentColor = False
+    end
+    object LabelGroup: TLabel
+      Left = 10
+      Height = 15
+      Top = 210
+      Width = 30
+      Caption = '族:'
+      ParentColor = False
+    end
+    object LabelPeriod: TLabel
+      Left = 10
+      Height = 15
+      Top = 240
+      Width = 40
+      Caption = '周期:'
+      ParentColor = False
+    end
+    object LabelCategory: TLabel
+      Left = 10
+      Height = 15
+      Top = 270
+      Width = 40
+      Caption = '分類:'
+      ParentColor = False
+    end
+    object ButtonClose: TButton
+      Left = 150
+      Height = 30
+      Top = 300
+      Width = 100
+      Caption = '閉じる'
+      OnClick = ButtonCloseClick
+      TabOrder = 0
+    end
+  end
+end
+

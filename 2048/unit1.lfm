@@ -1,0 +1,66 @@
+object Form1: TForm1
+  Left = 316
+  Height = 500
+  Top = 185
+  Width = 400
+  Caption = '2048'
+  ClientHeight = 500
+  ClientWidth = 400
+  DesignTimePPI = 120
+  KeyPreview = True
+  LCLVersion = '4.2.0.0'
+  OnKeyDown = FormKeyDown
+  object TitleLabel: TLabel
+    Left = 16
+    Height = 32
+    Top = 8
+    Width = 100
+    Caption = '2048'
+    Font.Color = clBlack
+    Font.Height = -27
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object ScoreLabel: TLabel
+    Left = 200
+    Height = 19
+    Top = 20
+    Width = 60
+    Caption = 'スコア: 0'
+    Font.Height = -13
+    Font.Name = 'Arial'
+    ParentColor = False
+    ParentFont = False
+  end
+  object GameGrid: TStringGrid
+    Left = 16
+    Height = 360
+    Top = 60
+    Width = 360
+    ColCount = 4
+    DefaultColWidth = 80
+    DefaultRowHeight = 80
+    Font.Color = clWindowText
+    Font.Height = -18
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine]
+    ParentFont = False
+    RowCount = 4
+    TabOrder = 0
+    TabStop = True
+    OnDrawCell = GameGridDrawCell
+    OnKeyDown = GameGridKeyDown
+  end
+  object RestartButton: TButton
+    Left = 280
+    Height = 30
+    Top = 440
+    Width = 96
+    Caption = 'リスタート'
+    TabOrder = 1
+    OnClick = RestartButtonClick
+  end
+end

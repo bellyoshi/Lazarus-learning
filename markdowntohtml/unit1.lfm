@@ -1,0 +1,116 @@
+object Form1: TForm1
+  Left = 316
+  Height = 600
+  Top = 185
+  Width = 1000
+  Caption = 'Markdown to HTML Converter'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 1000
+    Align = alTop
+    Caption = ''
+    TabOrder = 0
+    object ButtonConvert: TButton
+      Left = 10
+      Height = 30
+      Top = 10
+      Width = 120
+      Caption = '変換'
+      OnClick = ButtonConvertClick
+      TabOrder = 0
+    end
+    object ButtonClear: TButton
+      Left = 140
+      Height = 30
+      Top = 10
+      Width = 120
+      Caption = 'クリア'
+      OnClick = ButtonClearClick
+      TabOrder = 1
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 490
+    Height = 550
+    Top = 50
+    Width = 5
+    Align = alLeft
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 550
+    Top = 50
+    Width = 490
+    Align = alLeft
+    Caption = ''
+    TabOrder = 1
+    object Label1: TLabel
+      Left = 10
+      Height = 15
+      Top = 5
+      Width = 100
+      Caption = 'Markdown入力:'
+    end
+    object MemoMarkdown: TMemo
+      Left = 0
+      Height = 525
+      Top = 25
+      Width = 490
+      Align = alClient
+      Font.Name = 'Consolas'
+      Font.Size = 10
+      Lines.Strings = (
+        '# 見出し1'
+        ''
+        '## 見出し2'
+        ''
+        'これは**太字**と*イタリック*のテキストです。'
+        ''
+        '- リスト項目1'
+        '- リスト項目2'
+        '- リスト項目3'
+        ''
+        '1. 番号付きリスト1'
+        '2. 番号付きリスト2'
+        ''
+        '[リンク](https://example.com)'
+        ''
+        '`コード`'
+      )
+      ScrollBars = ssBoth
+      TabOrder = 0
+    end
+  end
+  object Panel3: TPanel
+    Left = 495
+    Height = 550
+    Top = 50
+    Width = 505
+    Align = alClient
+    Caption = ''
+    TabOrder = 2
+    object Label2: TLabel
+      Left = 10
+      Height = 15
+      Top = 5
+      Width = 90
+      Caption = 'HTML出力:'
+    end
+    object MemoHTML: TMemo
+      Left = 0
+      Height = 525
+      Top = 25
+      Width = 505
+      Align = alClient
+      Font.Name = 'Consolas'
+      Font.Size = 10
+      ReadOnly = True
+      ScrollBars = ssBoth
+      TabOrder = 0
+    end
+  end
+end

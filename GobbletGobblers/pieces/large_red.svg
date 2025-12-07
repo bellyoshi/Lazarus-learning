@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160" height="160" 
+     viewBox="0 0 160 160" 
+     xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- グラデーション定義 -->
+    <linearGradient id="grad_large_red" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E74C3C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C0392B;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 影のフィルター -->
+    <filter id="shadow_large_red">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="2" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- 影 -->
+  <ellipse cx="82.0" cy="130.0" 
+           rx="62.0" ry="15.0" 
+           fill="#000000" opacity="0.2"/>
+  
+  <!-- 円筒形の側面（楕円） -->
+  <ellipse cx="80.0" cy="80.0" 
+           rx="60.0" ry="48.0" 
+           fill="url(#grad_large_red)" 
+           filter="url(#shadow_large_red)"/>
+  
+  <!-- 円筒形の上部円 -->
+  <circle cx="80.0" cy="32.0" 
+          r="60.0" 
+          fill="url(#grad_large_red)" 
+          opacity="0.9"/>
+  
+  <!-- 上部円のハイライト -->
+  <ellipse cx="60.0" cy="12.0" 
+           rx="30.0" ry="30.0" 
+           fill="#ffffff" opacity="0.4"/>
+  
+  <!-- 円筒形の下部円（見える部分） -->
+  <ellipse cx="80.0" cy="128.0" 
+           rx="60.0" ry="15.0" 
+           fill="#C0392B"/>
+  
+  <!-- 側面のハイライト -->
+  <ellipse cx="40.0" cy="80.0" 
+           rx="20.0" ry="48.0" 
+           fill="#ffffff" opacity="0.2"/>
+</svg>

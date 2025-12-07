@@ -1,0 +1,26 @@
+object Form1: TForm1
+  Left = 316
+  Height = 600
+  Top = 185
+  Width = 900
+  Caption = '乗り換えない日本史年表表示'
+  Color = clWhite
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  object ScrollBox1: TScrollBox
+    Left = 0
+    Height = 600
+    Top = 0
+    Width = 900
+    Align = alClient
+    BorderSpacing.Around = 0
+    Color = 15790320
+    HorzScrollBar.Visible = False
+    VertScrollBar.Smooth = True
+    VertScrollBar.Tracking = True
+    ParentColor = False
+    ClientHeight = 600
+    ClientWidth = 900
+  end
+end

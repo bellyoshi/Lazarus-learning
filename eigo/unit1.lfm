@@ -1,0 +1,43 @@
+object Form1: TForm1
+  Left = 316
+  Height = 400
+  Top = 185
+  Width = 600
+  Caption = '英単語フラッシュカード'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  object LabelCard: TLabel
+    Left = 50
+    Height = 150
+    Top = 50
+    Width = 500
+    Alignment = taCenter
+    Caption = 'apple'
+    Font.Color = clNavy
+    Font.Height = -32
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+    OnClick = LabelCardClick
+  end
+  object ButtonFlip: TButton
+    Left = 150
+    Height = 40
+    Top = 250
+    Width = 120
+    Caption = '裏返す'
+    OnClick = ButtonFlipClick
+    TabOrder = 0
+  end
+  object ButtonNext: TButton
+    Left = 330
+    Height = 40
+    Top = 250
+    Width = 120
+    Caption = '次のカード'
+    OnClick = ButtonNextClick
+    TabOrder = 1
+  end
+end

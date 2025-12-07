@@ -1,0 +1,50 @@
+object Form1: TForm1
+  Left = 316
+  Height = 600
+  Top = 185
+  Width = 600
+  Caption = 'Gobblet Gobblers'
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object PaintBox1: TPaintBox
+    Left = 0
+    Height = 500
+    Top = 0
+    Width = 600
+    Align = alClient
+    OnMouseDown = PaintBox1MouseDown
+    OnPaint = PaintBox1Paint
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 100
+    Top = 500
+    Width = 600
+    Align = alBottom
+    Caption = ''
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 16
+      Height = 23
+      Top = 16
+      Width = 200
+      Caption = '現在のプレイヤー: 赤'
+      Font.Height = -16
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 16
+      Height = 15
+      Top = 48
+      Width = 300
+      Caption = 'ボードをクリックして駒を配置'
+      Font.Height = -12
+      Font.Name = 'MS Sans Serif'
+      ParentFont = False
+    end
+  end
+end

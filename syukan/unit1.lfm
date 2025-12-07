@@ -1,0 +1,235 @@
+object Form1: TForm1
+  Left = 384
+  Height = 600
+  Top = 200
+  Width = 500
+  Caption = '習慣トラッカー - 最大3個まで'
+  ClientHeight = 600
+  ClientWidth = 500
+  DesignTimePPI = 120
+  LCLVersion = '4.2.0.0'
+  OnClose = FormClose
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  object PanelTitle: TPanel
+    Left = 0
+    Height = 60
+    Top = 0
+    Width = 500
+    Align = alTop
+    BevelOuter = bvNone
+    Caption = '今日の習慣'
+    Color = clSkyBlue
+    Font.Color = clNavy
+    Font.Height = -24
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 0
+  end
+  object PanelHabit1: TPanel
+    Left = 20
+    Height = 150
+    Top = 80
+    Width = 460
+    Anchors = [akTop, akLeft, akRight]
+    BevelOuter = bvLowered
+    BorderWidth = 2
+    Caption = 'PanelHabit1'
+    Color = clWhite
+    ParentColor = False
+    TabOrder = 1
+    object CheckBox1: TCheckBox
+      Left = 20
+      Height = 23
+      Top = 20
+      Width = 23
+      OnChange = CheckBox1Change
+      TabOrder = 0
+    end
+    object LabelHabit1: TLabel
+      Left = 50
+      Height = 23
+      Top = 20
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '習慣1: [クリックして編集]'
+      Font.Color = clNavy
+      Font.Height = -16
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OnClick = LabelHabit1Click
+    end
+    object LabelStreak1: TLabel
+      Left = 50
+      Height = 19
+      Top = 60
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '連続記録: 0日'
+      Font.Color = clGreen
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabelToday1: TLabel
+      Left = 50
+      Height = 19
+      Top = 90
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '今日: 未達成'
+      Font.Color = clGray
+      Font.Height = -12
+      Font.Name = 'MS Sans Serif'
+      ParentColor = False
+      ParentFont = False
+    end
+  end
+  object PanelHabit2: TPanel
+    Left = 20
+    Height = 150
+    Top = 250
+    Width = 460
+    Anchors = [akTop, akLeft, akRight]
+    BevelOuter = bvLowered
+    BorderWidth = 2
+    Caption = 'PanelHabit2'
+    Color = clWhite
+    ParentColor = False
+    TabOrder = 2
+    object CheckBox2: TCheckBox
+      Left = 20
+      Height = 23
+      Top = 20
+      Width = 23
+      OnChange = CheckBox2Change
+      TabOrder = 0
+    end
+    object LabelHabit2: TLabel
+      Left = 50
+      Height = 23
+      Top = 20
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '習慣2: [クリックして編集]'
+      Font.Color = clNavy
+      Font.Height = -16
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OnClick = LabelHabit2Click
+    end
+    object LabelStreak2: TLabel
+      Left = 50
+      Height = 19
+      Top = 60
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '連続記録: 0日'
+      Font.Color = clGreen
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabelToday2: TLabel
+      Left = 50
+      Height = 19
+      Top = 90
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '今日: 未達成'
+      Font.Color = clGray
+      Font.Height = -12
+      Font.Name = 'MS Sans Serif'
+      ParentColor = False
+      ParentFont = False
+    end
+  end
+  object PanelHabit3: TPanel
+    Left = 20
+    Height = 150
+    Top = 420
+    Width = 460
+    Anchors = [akTop, akLeft, akRight]
+    BevelOuter = bvLowered
+    BorderWidth = 2
+    Caption = 'PanelHabit3'
+    Color = clWhite
+    ParentColor = False
+    TabOrder = 3
+    object CheckBox3: TCheckBox
+      Left = 20
+      Height = 23
+      Top = 20
+      Width = 23
+      OnChange = CheckBox3Change
+      TabOrder = 0
+    end
+    object LabelHabit3: TLabel
+      Left = 50
+      Height = 23
+      Top = 20
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '習慣3: [クリックして編集]'
+      Font.Color = clNavy
+      Font.Name = 'MS Sans Serif'
+      Font.Height = -16
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      OnClick = LabelHabit3Click
+    end
+    object LabelStreak3: TLabel
+      Left = 50
+      Height = 19
+      Top = 60
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '連続記録: 0日'
+      Font.Color = clGreen
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabelToday3: TLabel
+      Left = 50
+      Height = 19
+      Top = 90
+      Width = 380
+      Anchors = [akTop, akLeft, akRight]
+      Caption = '今日: 未達成'
+      Font.Color = clGray
+      Font.Height = -12
+      Font.Name = 'MS Sans Serif'
+      ParentColor = False
+      ParentFont = False
+    end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 25
+    Top = 575
+    Width = 500
+    Panels = <    
+      item
+        Text = 'データは自動保存されます'
+        Width = 250
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+end

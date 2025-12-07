@@ -1,15 +1,15 @@
 object Form1: TForm1
   Left = 316
-  Height = 600
+  Height = 700
   Top = 185
-  Width = 600
+  Width = 900
   Caption = 'Gobblet Gobblers'
   DesignTimePPI = 120
   LCLVersion = '4.2.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object PaintBox1: TPaintBox
-    Left = 0
+    Left = 150
     Height = 500
     Top = 0
     Width = 600
@@ -17,11 +17,29 @@ object Form1: TForm1
     OnMouseDown = PaintBox1MouseDown
     OnPaint = PaintBox1Paint
   end
+  object PaintBoxRed: TPaintBox
+    Left = 0
+    Height = 500
+    Top = 0
+    Width = 150
+    Align = alLeft
+    OnMouseDown = PaintBoxRedMouseDown
+    OnPaint = PaintBoxRedPaint
+  end
+  object PaintBoxBlue: TPaintBox
+    Left = 750
+    Height = 500
+    Top = 0
+    Width = 150
+    Align = alRight
+    OnMouseDown = PaintBoxBlueMouseDown
+    OnPaint = PaintBoxBluePaint
+  end
   object Panel1: TPanel
     Left = 0
-    Height = 100
+    Height = 200
     Top = 500
-    Width = 600
+    Width = 900
     Align = alBottom
     Caption = ''
     TabOrder = 0
@@ -40,8 +58,8 @@ object Form1: TForm1
       Left = 16
       Height = 15
       Top = 48
-      Width = 300
-      Caption = 'ボードをクリックして駒を配置'
+      Width = 400
+      Caption = '持ち駒をクリックして選択、ボードをクリックして配置'
       Font.Height = -12
       Font.Name = 'MS Sans Serif'
       ParentFont = False

@@ -1,0 +1,100 @@
+object Form1: TForm1
+  Left = 316
+  Height = 575
+  Top = 185
+  Width = 1000
+  AllowDropFiles = True
+  Caption = 'TSV Viewer'
+  ClientHeight = 575
+  ClientWidth = 1000
+  DesignTimePPI = 120
+  Menu = MainMenu1
+  LCLVersion = '4.2.0.0'
+  OnCreate = FormCreate
+  OnDropFiles = FormDropFiles
+  object Panel1: TPanel
+    Left = 0
+    Height = 30
+    Top = 0
+    Width = 1000
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 30
+    ClientWidth = 1000
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 8
+      Height = 20
+      Top = 7
+      Width = 33
+      Caption = '検索:'
+    end
+    object EditFilter: TEdit
+      Left = 64
+      Height = 28
+      Top = 4
+      Width = 300
+      TabOrder = 0
+      OnChange = EditFilterChange
+    end
+    object LabelStatus: TLabel
+      Left = 380
+      Height = 20
+      Top = 7
+      Width = 4
+      Caption = ' '
+    end
+  end
+  object StringGrid1: TStringGrid
+    Left = 0
+    Height = 545
+    Top = 30
+    Width = 1000
+    Align = alClient
+    ColCount = 1
+    DefaultRowHeight = 20
+    FixedCols = 1
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goThumbTracking]
+    RowCount = 1
+    TabOrder = 1
+    OnDrawCell = StringGrid1DrawCell
+    OnHeaderClick = StringGrid1HeaderClick
+    OnKeyDown = StringGrid1KeyDown
+    OnPrepareCanvas = StringGrid1PrepareCanvas
+  end
+  object MainMenu1: TMainMenu
+    object MenuItemFile: TMenuItem
+      Caption = 'ファイル(&F)'
+      object MenuItemOpen: TMenuItem
+        Caption = '開く(&O)...'
+        ShortCut = 16463
+        OnClick = MenuItemOpenClick
+      end
+      object MenuItemSeparator1: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemExit: TMenuItem
+        Caption = '終了(&X)'
+        OnClick = MenuItemExitClick
+      end
+    end
+    object MenuItemEdit: TMenuItem
+      Caption = '編集(&E)'
+      object MenuItemCopy: TMenuItem
+        Caption = 'コピー(&C)'
+        ShortCut = 16451
+        OnClick = MenuItemCopyClick
+      end
+      object MenuItemSelectAll: TMenuItem
+        Caption = 'すべて選択(&A)'
+        ShortCut = 16449
+        OnClick = MenuItemSelectAllClick
+      end
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    Filter = 'TSVファイル|*.tsv|すべてのファイル|*.*'
+    Left = 24
+    Top = 40
+  end
+end

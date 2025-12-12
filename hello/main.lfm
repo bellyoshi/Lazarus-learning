@@ -1,0 +1,27 @@
+object Form1: TForm1
+  Left = 336
+  Height = 240
+  Top = 148
+  Width = 320
+  Caption = 'Hello World App'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '2.0.12.0'
+  object Label1: TLabel
+    Left = 112
+    Height = 15
+    Top = 80
+    Width = 91
+    Caption = 'Hello GUI World!'
+    ParentColor = False
+  end
+  object Button1: TButton
+    Left = 120
+    Height = 25
+    Top = 136
+    Width = 75
+    Caption = 'Click Me'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+end
